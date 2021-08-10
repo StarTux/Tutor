@@ -1,0 +1,38 @@
+main: com.cavetale.tutor.TutorPlugin
+
+name: Tutor
+version: 0.1
+description: Player Tutorials
+api-version: 1.17
+
+author: StarTux
+website: https://github.com/StarTux/Tutor
+
+depend: [Core, SQL, PlayerCache, Sidebar]
+softdepend: []
+
+commands:
+
+  tutor:
+    aliases: [tutorial]
+    description: Tutor Command
+    permission: tutor.tutor
+    usage: |-
+      /tutor
+
+  tutoradmin:
+    aliases: [tutoradm]
+    description: Admin command
+    permission: tutor.admin
+    usage: |-
+      /tutoradmin
+
+permissions:
+
+  tutor.tutor:
+    description: Use /tutor
+    default: op
+
+  tutor.admin:
+    description: Use /tutoradmin
+    default: op
