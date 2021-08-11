@@ -1,10 +1,14 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 /**
  * A Goal represents a currently active goal for the player. A goal is
@@ -25,6 +29,8 @@ public interface Goal {
      */
     List<Condition> getConditions();
 
+    Component getDisplayName();
+
     default GoalProgress newProgress() {
         return new GoalProgress();
     }
@@ -33,15 +39,28 @@ public interface Goal {
         return playerQuest.getProgress(GoalProgress.class, GoalProgress::new);
     }
 
+    default List<Component> getAdditionalBookPages() {
+        return Collections.emptyList();
+    }
+
     default List<Component> getBookPages(PlayerQuest playerQuest) {
         List<Component> pages = new ArrayList<>();
         List<Component> lines = new ArrayList<>();
-        lines.add(playerQuest.getQuest().getDisplayName());
+        final int index = playerQuest.getQuest().goalIndex(getId());
+        final int size = playerQuest.getQuest().getGoals().size();
+        lines.add(Component.text()
+                  .append(Component.text("Tutorial", NamedTextColor.DARK_AQUA, TextDecoration.BOLD))
+                  .append(Component.space())
+                  .append(playerQuest.getQuest().getDisplayName())
+                  .append(Component.text(" " + (index + 1) + "/" + size + " \u2014 ", NamedTextColor.DARK_GRAY))
+                  .append(getDisplayName())
+                  .build());
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
             lines.add(condition.toComponent(playerQuest, Background.LIGHT));
         }
         pages.add(Component.join(Component.newline(), lines));
+        pages.addAll(getAdditionalBookPages());
         return pages;
     }
 
@@ -52,4 +71,6 @@ public interface Goal {
         }
         return list;
     }
+
+    default void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) { }
 }

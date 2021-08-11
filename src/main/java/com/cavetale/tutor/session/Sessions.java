@@ -4,8 +4,10 @@ import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
+import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -68,6 +70,17 @@ public final class Sessions implements Listener {
         return result;
     }
 
+    public <G extends Goal> int applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
+        Session session = sessionsMap.get(player.getUniqueId());
+        if (session == null) return 0;
+        int result = 0;
+        for (PlayerQuest playerQuest : session.currentQuests.values()) {
+            callback.accept(playerQuest, playerQuest.getCurrentGoal());
+            result += 1;
+        }
+        return result;
+    }
+
     public int applyClick(Player player, String token) {
         Session session = sessionsMap.get(player.getUniqueId());
         if (session == null) return 0;
@@ -91,12 +104,18 @@ public final class Sessions implements Listener {
         if (sessionsMap.containsKey(uuid)) {
             throw new IllegalStateException("Session already exists: " + player.getName());
         }
-        plugin.getDatabase().find(SQLPlayerQuest.class).eq("player", uuid).findListAsync(list -> {
-                if (!player.isOnline()) return;
-                if (!enabled) return;
-                Session session = new Session(this, player);
-                sessionsMap.put(uuid, session);
-                session.enable(list);
+        plugin.getDatabase().scheduleAsyncTask(() -> {
+                List<SQLPlayerQuest> playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
+                    .eq("player", uuid).findList();
+                List<SQLCompletedQuest> completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
+                    .eq("player", uuid).findList();
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (!player.isOnline()) return;
+                        if (!enabled) return;
+                        Session session = new Session(this, player);
+                        sessionsMap.put(uuid, session);
+                        session.enable(playerQuestRows, completedQuestRows);
+                    });
             });
     }
 
@@ -120,5 +139,12 @@ public final class Sessions implements Listener {
     private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         removeSession(player);
+    }
+
+    public boolean openQuestBook(Player player) {
+        Session session = find(player);
+        if (session == null) return false;
+        session.openQuestBook(player);
+        return true;
     }
 }

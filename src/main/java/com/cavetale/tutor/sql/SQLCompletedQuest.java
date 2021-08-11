@@ -14,7 +14,7 @@ import lombok.Data;
 /**
  * The progress of one player within a certain quest (tutorial).
  */
-public final class SQLCompletedQuests {
+public final class SQLCompletedQuest {
     @Id
     private Integer id;
     @Column(nullable = false)
@@ -24,9 +24,9 @@ public final class SQLCompletedQuests {
     @Column(nullable = false)
     private Date time;
 
-    public SQLCompletedQuests() { }
+    public SQLCompletedQuest() { }
 
-    public SQLCompletedQuests(final UUID playerUuid, final Quest quest) {
+    public SQLCompletedQuest(final UUID playerUuid, final Quest quest) {
         this.player = playerUuid;
         this.quest = quest.getName().key;
         this.time = new Date();

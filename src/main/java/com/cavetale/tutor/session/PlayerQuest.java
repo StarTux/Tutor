@@ -4,11 +4,18 @@ import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.goal.GoalProgress;
-import com.cavetale.tutor.sql.SQLCompletedQuests;
+import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
+import java.time.Duration;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 @Getter @RequiredArgsConstructor
@@ -18,13 +25,24 @@ public final class PlayerQuest {
     protected final Quest quest;
     protected Goal currentGoal;
     protected GoalProgress currentProgress;
+    private static final long SECS = 3;
 
     /**
      * Initialize after new quest creation. Select the first goal.
      */
-    public void initialize() {
+    public void onQuestStart() {
         currentGoal = quest.getGoals().get(0);
         initializeCurrentGoal();
+        Player player = getPlayer();
+        if (player != null) {
+            Component msg = Component.text()
+                .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
+                .append(currentGoal.getDisplayName())
+                .build();
+            player.sendMessage(msg);
+            player.showTitle(Title.title(Component.empty(), msg,
+                                         Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+        }
     }
 
     /**
@@ -44,7 +62,8 @@ public final class PlayerQuest {
         currentGoal = quest.findGoal(row.getGoal());
         if (currentGoal == null) {
             session.sessions.plugin.getLogger().warning("Goal not found: " + row);
-            initialize();
+            currentGoal = quest.getGoals().get(0);
+            initializeCurrentGoal();
         }
         currentGoal.getProgress(this);
     }
@@ -83,15 +102,42 @@ public final class PlayerQuest {
         if (newIndex >= quest.getGoals().size()) {
             onQuestComplete();
         } else {
-            currentGoal = quest.getGoals().get(newIndex);
+            Goal newGoal = quest.getGoals().get(newIndex);
+            currentGoal = newGoal;
             initializeCurrentGoal();
             save();
+            Player player = getPlayer();
+            if (player != null) {
+                Component msg = Component.text("Goal complete", NamedTextColor.DARK_AQUA);
+                player.showTitle(Title.title(Component.empty(), msg,
+                                             Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+                player.sendMessage(msg);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
+                Bukkit.getScheduler().runTaskLater(session.sessions.plugin, () -> {
+                        if (!player.isOnline()) return;
+                        Component msg2 = Component.text()
+                            .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
+                            .append(newGoal.getDisplayName())
+                            .build();
+                        player.sendMessage(msg2);
+                        player.showTitle(Title.title(Component.empty(), msg2,
+                                                     Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+                    }, 20L * SECS);
+            }
         }
     }
 
     public void onQuestComplete() {
         session.removeQuest(quest.getName());
-        SQLCompletedQuests newRow = new SQLCompletedQuests(session.uuid, quest);
+        SQLCompletedQuest newRow = new SQLCompletedQuest(session.uuid, quest);
         session.sessions.plugin.getDatabase().saveAsync(newRow, null);
+        Player player = getPlayer();
+        if (player != null) {
+            Component msg = Component.text("Tutorial complete", NamedTextColor.DARK_AQUA);
+            player.sendMessage(msg);
+            player.showTitle(Title.title(Component.empty(), msg,
+                                         Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
+        }
     }
 }

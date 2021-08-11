@@ -1,7 +1,7 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.session.Sessions;
-import com.cavetale.tutor.sql.SQLCompletedQuests;
+import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.winthier.sql.SQLDatabase;
 import java.util.EnumMap;
@@ -22,7 +22,7 @@ public final class TutorPlugin extends JavaPlugin {
     public void onEnable() {
         database = new SQLDatabase(this);
         database.registerTables(SQLPlayerQuest.class,
-                                SQLCompletedQuests.class);
+                                SQLCompletedQuest.class);
         if (!database.createAllTables()) {
             throw new IllegalStateException("Table creation failed!");
         }

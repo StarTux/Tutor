@@ -2,12 +2,17 @@ package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 
+/**
+ * A POJO object holding descriptive information about a quest.
+ */
 @Getter @RequiredArgsConstructor
 public final class Quest {
     protected final QuestName name;
@@ -17,6 +22,13 @@ public final class Quest {
     public Quest(@NonNull final QuestName questName, @NonNull final Component displayName, @NonNull final List<Goal> goals) {
         if (goals.isEmpty()) {
             throw new IllegalArgumentException("goals is empty!");
+        }
+        Set<String> goalIds = new HashSet<>();
+        for (Goal goal : goals) {
+            if (goalIds.contains(goal.getId())) {
+                throw new IllegalStateException(questName + ": Duplicate goal id: " + goal.getId());
+            }
+            goalIds.add(goal.getId());
         }
         this.name = questName;
         this.displayName = displayName;

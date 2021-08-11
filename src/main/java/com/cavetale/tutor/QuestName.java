@@ -1,13 +1,13 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.WildGoal;
+import com.cavetale.tutor.goal.SetHomeGoal;
 import java.util.Arrays;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 
 public enum QuestName {
-    FRIENDLY,
-    BEGINNER;
+    MEMBER;
 
     public final String key;
 
@@ -24,12 +24,10 @@ public enum QuestName {
 
     public Quest create() {
         switch (this) {
-        case FRIENDLY:
-            return new Quest(this, Component.text("Friendly"),
-                             Arrays.asList(new WildGoal()));
-        case BEGINNER:
-            return new Quest(this, Component.text("Beginner"),
-                             Arrays.asList(new WildGoal()));
+        case MEMBER:
+            return new Quest(this, Component.text("The Path to Member"),
+                             Arrays.asList(new WildGoal(),
+                                           new SetHomeGoal()));
         default:
             throw new IllegalStateException("Quest not defined: " + this);
         }

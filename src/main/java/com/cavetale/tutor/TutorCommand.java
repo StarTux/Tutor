@@ -2,21 +2,12 @@ package com.cavetale.tutor;
 
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
-import com.cavetale.core.font.DefaultFont;
-import com.cavetale.tutor.session.PlayerQuest;
-import com.cavetale.tutor.session.Session;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 
 @RequiredArgsConstructor
 public final class TutorCommand implements TabExecutor {
@@ -43,24 +34,9 @@ public final class TutorCommand implements TabExecutor {
 
     private boolean tutor(Player player, String[] args) {
         if (args.length != 0) return false;
-        Session session = plugin.sessions.find(player);
-        if (session == null) {
+        if (!plugin.sessions.openQuestBook(player)) {
             throw new CommandWarn("Session loading. Please try again later!");
         }
-        List<PlayerQuest> quests = session.getQuestList();
-        // empty?
-        List<Component> pages = new ArrayList<>();
-        for (PlayerQuest playerQuest : quests) {
-            pages.addAll(playerQuest.getCurrentGoal().getBookPages(playerQuest));
-        }
-        BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
-        meta.addPages(pages.toArray(new Component[0]));
-        meta.setTitle("Quests");
-        meta.author(Component.text("Cavetale"));
-        meta.setGeneration(BookMeta.Generation.ORIGINAL);
-        ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
-        itemStack.setItemMeta(meta);
-        player.openBook(itemStack);
         return true;
     }
 
