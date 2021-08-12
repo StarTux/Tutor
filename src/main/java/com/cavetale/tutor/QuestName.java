@@ -1,7 +1,6 @@
 package com.cavetale.tutor;
 
-import com.cavetale.tutor.goal.WildGoal;
-import com.cavetale.tutor.goal.SetHomeGoal;
+import com.cavetale.tutor.goal.*;
 import java.util.Arrays;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
@@ -25,9 +24,12 @@ public enum QuestName {
     public Quest create() {
         switch (this) {
         case MEMBER:
-            return new Quest(this, Component.text("The Path to Member"),
-                             Arrays.asList(new WildGoal(),
-                                           new SetHomeGoal()));
+            return new Quest(this, Component.text("The Path to Member"), Arrays.asList(new Goal[] {
+                        new WildGoal(),
+                        new SetHomeGoal(),
+                        new SpawnGoal(),
+                        new HomeGoal(),
+                    }));
         default:
             throw new IllegalStateException("Quest not defined: " + this);
         }
