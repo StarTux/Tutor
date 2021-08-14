@@ -1,16 +1,13 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
-import com.cavetale.core.event.player.PluginPlayerQuery;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.entity.Player;
 
 public final class HomeGoal implements Goal {
     @Getter protected final String id;
