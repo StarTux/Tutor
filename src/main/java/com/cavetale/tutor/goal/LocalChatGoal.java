@@ -23,6 +23,10 @@ public final class LocalChatGoal implements Goal {
                                       playerQuest -> getProgress(playerQuest).stage == 0),
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
+                Component.text().content("View the channel list via ")
+                .append(Component.text("/ch list", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("."))
+                .build(),
             });
     }
 

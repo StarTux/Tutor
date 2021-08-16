@@ -13,29 +13,34 @@ public final class ServerSwitchGoal implements Goal {
     @Getter private final String id;
     @Getter private final List<Condition> conditions;
     @Getter private final Component displayName;
-    private final Component serverDisplayName;
     @Getter private final List<Component> additionalBookPages;
-    private final String serverName;
 
-    public ServerSwitchGoal(final String id, final String serverName, final Component displayName,
-                            final Component serverDisplayName) {
-        this.id = id;
-        this.serverName = serverName;
+    public ServerSwitchGoal() {
+        this.id = "server_switch";
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("Type /" + serverName),
-                                      playerQuest -> false),
+                new CheckboxCondition(Component.text("Visit the Hub"),
+                                      playerQuest -> getProgress(playerQuest).stage > 0),
+                new CheckboxCondition(Component.text("Visit Creative"),
+                                      playerQuest -> getProgress(playerQuest).stage > 1),
+                new CheckboxCondition(Component.text("Return to Cavetale"),
+                                      playerQuest -> getProgress(playerQuest).stage > 2),
             });
-        this.displayName = displayName;
-        this.serverDisplayName = serverDisplayName;
+        this.displayName = Component.text("Server switching");
         this.additionalBookPages = Arrays.asList(new Component[] {
-                Component.text()
-                .append(Component.text("Switch to the "))
-                .append(serverDisplayName)
-                .append(Component.text(" via "))
-                .append(Component.text("/" + serverName, NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-                .append(Component.text("."))
+                Component.text().content("Cavetale offers several servers, "
+                                         + "with various gamemodes on them.")
+                .append(Component.space())
+                .append(Component.text("There is main, the hub, creative, and several mini games."))
+                .append(Component.space())
+                .append(Component.text("To visit each server, use the following commands:"))
                 .append(Component.newline())
-                .append(Component.text("View a list of all available servers with the "))
+                .append(Component.text("/cavetale", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.newline())
+                .append(Component.text("/hun", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.newline())
+                .append(Component.text("/creative", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .build(),
+                Component.text().content("View a list of all available servers with the ")
                 .append(Component.text("/server", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
                 .append(Component.text(" command."))
                 .build(),
@@ -43,11 +48,43 @@ public final class ServerSwitchGoal implements Goal {
     }
 
     @Override
+    public ServerSwitchProgress newProgress() {
+        return new ServerSwitchProgress();
+    }
+
+    @Override
+    public ServerSwitchProgress getProgress(PlayerQuest playerQuest) {
+        return playerQuest.getProgress(ServerSwitchProgress.class, ServerSwitchProgress::new);
+    }
+
+    @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.SWITCH_SERVER) {
-            if (serverName.equals(event.getDetail("server_name", String.class, null))) {
-                playerQuest.onGoalComplete();
+            TargetServer targetServer;
+            try {
+                targetServer = TargetServer.valueOf(event.getDetail("server_name", String.class, null));
+            } catch (IllegalArgumentException iae) {
+                return;
+            }
+            ServerSwitchProgress progress = getProgress(playerQuest);
+            if (progress.stage == targetServer.ordinal()) {
+                progress.stage += 1;
+                if (progress.stage > TargetServer.values().length) {
+                    playerQuest.onGoalComplete();
+                } else {
+                    playerQuest.save();
+                }
             }
         }
+    }
+
+    protected enum TargetServer {
+        HUB,
+        CREATIVE,
+        CAVETALE;
+    }
+
+    protected static final class ServerSwitchProgress extends GoalProgress {
+        protected int stage = 0;
     }
 }

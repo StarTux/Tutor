@@ -35,10 +35,7 @@ public enum QuestName {
                 new SetHomeGoal(),
                 new SpawnGoal(),
                 new HomeGoal(),
-                new ServerSwitchGoal("server_hub", "hub", Component.text("Visit the hub"),
-                                     Component.text("Hub")),
-                new ServerSwitchGoal("server_cavetale", "cavetale", Component.text("Back to main"),
-                                     Component.text("Cavetale")),
+                new ServerSwitchGoal(),
                 new LocalChatGoal(),
             });
         default:

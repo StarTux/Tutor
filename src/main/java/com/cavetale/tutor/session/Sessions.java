@@ -4,10 +4,7 @@ import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
-import com.cavetale.tutor.sql.SQLCompletedQuest;
-import com.cavetale.tutor.sql.SQLPlayerQuest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -35,7 +32,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public final class Sessions implements Listener {
     protected final TutorPlugin plugin;
     private final Map<UUID, Session> sessionsMap = new HashMap<>();
-    private boolean enabled;
+    protected boolean enabled;
 
     public void enable() {
         enabled = true;
@@ -46,39 +43,22 @@ public final class Sessions implements Listener {
     }
 
     public void disable() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            removeSession(player);
+        for (Session session : sessionsMap.values()) {
+            session.disable();
         }
+        sessionsMap.clear();
         enabled = false;
     }
 
     // Nullable!
     public Session find(Player player) {
-        return sessionsMap.get(player.getUniqueId());
+        Session session = sessionsMap.get(player.getUniqueId());
+        return session != null && session.ready ? session : null;
     }
 
-    public <G extends Goal> int applyGoals(Player player,  Class<G> goalClass, BiConsumer<PlayerQuest, G> callback) {
+    public <G extends Goal> void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
         Session session = sessionsMap.get(player.getUniqueId());
-        if (session == null) return 0;
-        int result = 0;
-        for (PlayerQuest playerQuest : session.currentQuests.values()) {
-            if (goalClass.isInstance(playerQuest.currentGoal)) {
-                callback.accept(playerQuest, goalClass.cast(playerQuest.currentGoal));
-                result += 1;
-            }
-        }
-        return result;
-    }
-
-    public <G extends Goal> int applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
-        Session session = sessionsMap.get(player.getUniqueId());
-        if (session == null) return 0;
-        int result = 0;
-        for (PlayerQuest playerQuest : session.currentQuests.values()) {
-            callback.accept(playerQuest, playerQuest.getCurrentGoal());
-            result += 1;
-        }
-        return result;
+        session.applyGoals(callback);
     }
 
     public int applyClick(Player player, String token) {
@@ -99,24 +79,14 @@ public final class Sessions implements Listener {
         return result;
     }
 
-    public void createSession(Player player) {
+    private void createSession(Player player) {
         UUID uuid = player.getUniqueId();
         if (sessionsMap.containsKey(uuid)) {
             throw new IllegalStateException("Session already exists: " + player.getName());
         }
-        plugin.getDatabase().scheduleAsyncTask(() -> {
-                List<SQLPlayerQuest> playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
-                    .eq("player", uuid).findList();
-                List<SQLCompletedQuest> completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
-                    .eq("player", uuid).findList();
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (!player.isOnline()) return;
-                        if (!enabled) return;
-                        Session session = new Session(this, player);
-                        sessionsMap.put(uuid, session);
-                        session.enable(playerQuestRows, completedQuestRows);
-                    });
-            });
+        Session session = new Session(this, player);
+        sessionsMap.put(session.uuid, session);
+        session.load();
     }
 
     /**
