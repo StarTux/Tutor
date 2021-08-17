@@ -20,10 +20,14 @@ public final class WildGoal implements Goal {
     public WildGoal() {
         displayName = Component.text("Find a place to build");
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Type /wild"), playerQuest -> getProgress(playerQuest).wild),
-            new CheckboxCondition(Component.text("Make a claim").hoverEvent(Component.text("Create a claim")), pg -> false),
-            new ClickableCondition(Component.text("I already have a claim!"), "IHaveAClaim", WildGoal::onSkip),
-            new ClickableCondition(Component.text("I live with a friend!"), "ILiveWithAFriend", WildGoal::onSkipShare),
+            new CheckboxCondition(Component.text("Type /wild"),
+                                  playerQuest -> getProgress(playerQuest).wild),
+            new CheckboxCondition(Component.text("Make a claim").hoverEvent(Component.text("Create a claim")),
+                                  playerQuest -> false),
+            new ClickableCondition(Component.text("I already have a claim!"), "IHaveAClaim",
+                                   WildGoal::onSkip),
+            new ClickableCondition(Component.text("I live with a friend!"), "ILiveWithAFriend",
+                                   WildGoal::onSkipShare),
         };
         Component[] pages = new Component[] {
             Component.text()
@@ -45,16 +49,6 @@ public final class WildGoal implements Goal {
         additionalBookPages = Arrays.asList(pages);
     }
 
-    @Override
-    public WildProgress newProgress() {
-        return new WildProgress();
-    }
-
-    @Override
-    public WildProgress getProgress(PlayerQuest playerQuest) {
-        return playerQuest.getProgress(WildProgress.class, WildProgress::new);
-    }
-
     static void onSkip(PlayerQuest playerQuest) {
         Player player = playerQuest.getPlayer();
         if (PluginPlayerQuery.Name.CLAIM_COUNT.call(playerQuest.getPlugin(), player, 0) < 1) {
@@ -73,24 +67,31 @@ public final class WildGoal implements Goal {
         }
     }
 
-    public static class WildProgress extends GoalProgress {
-        boolean wild = false;
-
-        public static WildProgress deserialize(String json) {
-            return GoalProgress.deserialize(json, WildProgress.class, WildProgress::new);
-        }
-    }
-
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.USE_WILD) {
             WildProgress wildProgress = getProgress(playerQuest);
             if (!wildProgress.wild) {
                 wildProgress.wild = true;
-                playerQuest.save();
+                playerQuest.onProgress(wildProgress);
             }
         } else if (name == PluginPlayerEvent.Name.CREATE_CLAIM) {
+            WildProgress wildProgress = getProgress(playerQuest);
             playerQuest.onGoalComplete();
         }
+    }
+
+    @Override
+    public WildProgress newProgress() {
+        return new WildProgress();
+    }
+
+    @Override
+    public WildProgress getProgress(PlayerQuest playerQuest) {
+        return playerQuest.getProgress(WildProgress.class, WildProgress::new);
+    }
+
+    private static final class WildProgress extends GoalProgress {
+        private boolean wild;
     }
 }

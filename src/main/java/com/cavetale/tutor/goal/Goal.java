@@ -57,6 +57,7 @@ public interface Goal {
                   .build());
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
+            if (!condition.isVisible(playerQuest)) continue;
             lines.add(condition.toComponent(playerQuest, Background.LIGHT));
         }
         pages.add(Component.join(Component.newline(), lines));
@@ -67,6 +68,7 @@ public interface Goal {
     default List<Component> getSidebarLines(PlayerQuest playerQuest) {
         List<Component> list = new ArrayList<>();
         for (Condition condition : getConditions()) {
+            if (!condition.isVisible(playerQuest) || !condition.isOnSidebar(playerQuest)) continue;
             list.add(condition.toComponent(playerQuest, Background.DARK));
         }
         return list;

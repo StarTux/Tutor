@@ -34,7 +34,6 @@ public enum QuestName {
                 new WildGoal(),
                 new SetHomeGoal(),
                 new SpawnGoal(),
-                new HomeGoal(),
                 new ServerSwitchGoal(),
                 new LocalChatGoal(),
             });

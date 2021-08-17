@@ -21,4 +21,12 @@ public class GoalProgress {
     public static GoalProgress deserialize(String json) {
         return deserialize(json, GoalProgress.class, GoalProgress::new);
     }
+
+    /**
+     * Check if this goal is complete.
+     * Override this to use a subclass with PlayerQuest::onProgress.
+     */
+    public boolean isComplete() {
+        return false;
+    }
 }

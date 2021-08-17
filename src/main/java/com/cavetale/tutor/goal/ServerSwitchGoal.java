@@ -78,13 +78,13 @@ public final class ServerSwitchGoal implements Goal {
         }
     }
 
-    protected enum TargetServer {
+    public enum TargetServer {
         HUB,
         CREATIVE,
         CAVETALE;
     }
 
-    protected static final class ServerSwitchProgress extends GoalProgress {
-        protected int stage = 0;
+    private static final class ServerSwitchProgress extends GoalProgress {
+        private int stage = 0;
     }
 }

@@ -140,4 +140,13 @@ public final class PlayerQuest {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
         }
     }
+
+    public void onProgress(GoalProgress progress) {
+        currentProgress = progress;
+        if (progress.isComplete()) {
+            onGoalComplete();
+        } else {
+            save();
+        }
+    }
 }

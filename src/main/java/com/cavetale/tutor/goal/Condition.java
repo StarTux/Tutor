@@ -12,4 +12,12 @@ public interface Condition {
     Component getDescription();
 
     Component toComponent(PlayerQuest playerQuest, Background background);
+
+    default boolean isVisible(PlayerQuest playerQuest) {
+        return true;
+    }
+
+    default boolean isOnSidebar(PlayerQuest playerQuest) {
+        return true;
+    }
 }

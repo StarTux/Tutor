@@ -20,14 +20,20 @@ public final class SetHomeGoal implements Goal {
     public SetHomeGoal() {
         displayName = Component.text("Set your home");
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Set your home"), playerQuest -> false),
-            new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome", SetHomeGoal::onSkip),
+            new CheckboxCondition(Component.text("Set your home"),
+                                  playerQuest -> getProgress(playerQuest).sethome),
+            new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome",
+                                   SetHomeGoal::onSkip,
+                                   playerQuest -> !getProgress(playerQuest).sethome),
+            new CheckboxCondition(Component.text("Use your home"),
+                                  playerQuest -> getProgress(playerQuest).home,
+                                  playerQuest -> getProgress(playerQuest).sethome),
         };
         Component[] pages = new Component[] {
             Component.text()
             .append(Component.text("Set your primary home via "))
             .append(Component.text("/sethome", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-            .append(Component.text("."))
+            .append(Component.text(". You can change it any time with the same command."))
             .append(Component.space())
             .append(Component.text("A home is a place you can visit any time via "))
             .append(Component.text("/home", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
@@ -52,7 +58,32 @@ public final class SetHomeGoal implements Goal {
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.SET_PRIMARY_HOME) {
-            playerQuest.onGoalComplete();
+            SetHomeProgress progress = getProgress(playerQuest);
+            if (!progress.sethome) {
+                progress.sethome = true;
+                playerQuest.onProgress(progress);
+            }
+        } else if (name == PluginPlayerEvent.Name.USE_PRIMARY_HOME) {
+            SetHomeProgress progress = getProgress(playerQuest);
+            if (!progress.home) {
+                progress.home = true;
+                playerQuest.onProgress(progress);
+            }
         }
+    }
+
+    @Override
+    public SetHomeProgress newProgress() {
+        return new SetHomeProgress();
+    }
+
+    @Override
+    public SetHomeProgress getProgress(PlayerQuest playerQuest) {
+        return playerQuest.getProgress(SetHomeProgress.class, SetHomeProgress::new);
+    }
+
+    public final class SetHomeProgress extends GoalProgress {
+        boolean sethome;
+        boolean home;
     }
 }

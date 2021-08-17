@@ -16,6 +16,11 @@ import net.kyori.adventure.text.Component;
 public final class CheckboxCondition implements Condition {
     @Getter protected final Component description;
     protected final Function<PlayerQuest, Boolean> checkedGetter;
+    protected final Function<PlayerQuest, Boolean> visibleGetter;
+
+    public CheckboxCondition(final Component description, final Function<PlayerQuest, Boolean> checkedGetter) {
+        this(description, checkedGetter, null);
+    }
 
     @Override
     public Component toComponent(PlayerQuest playerQuest, Background background) {
@@ -27,5 +32,12 @@ public final class CheckboxCondition implements Condition {
             .append(Component.space())
             .append(description)
             .build();
+    }
+
+    @Override
+    public boolean isVisible(PlayerQuest playerQuest) {
+        return visibleGetter != null
+            ? visibleGetter.apply(playerQuest)
+            : true;
     }
 }
