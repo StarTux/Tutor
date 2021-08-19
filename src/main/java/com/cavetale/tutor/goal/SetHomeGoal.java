@@ -23,7 +23,7 @@ public final class SetHomeGoal implements Goal {
             new CheckboxCondition(Component.text("Set your home"),
                                   playerQuest -> getProgress(playerQuest).sethome),
             new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome",
-                                   SetHomeGoal::onSkip,
+                                   this::onSkip,
                                    playerQuest -> !getProgress(playerQuest).sethome),
             new CheckboxCondition(Component.text("Use your home"),
                                   playerQuest -> getProgress(playerQuest).home,
@@ -46,13 +46,17 @@ public final class SetHomeGoal implements Goal {
         additionalBookPages = Arrays.asList(pages);
     }
 
-    private static void onSkip(PlayerQuest playerQuest) {
-        Player player = playerQuest.getPlayer();
-        if (!PluginPlayerQuery.Name.PRIMARY_HOME_IS_SET.call(playerQuest.getPlugin(), player, false)) {
-            player.sendMessage(Component.text("You don't have a primary home set!", NamedTextColor.RED));
-            return;
+    private void onSkip(PlayerQuest playerQuest) {
+        SetHomeProgress progress = getProgress(playerQuest);
+        if (!progress.sethome) {
+            Player player = playerQuest.getPlayer();
+            if (!PluginPlayerQuery.Name.PRIMARY_HOME_IS_SET.call(playerQuest.getPlugin(), player, false)) {
+                player.sendMessage(Component.text("You don't have a primary home set!", NamedTextColor.RED));
+                return;
+            }
+            progress.sethome = true;
+            playerQuest.onProgress(progress);
         }
-        playerQuest.onGoalComplete();
     }
 
     @Override
@@ -85,5 +89,10 @@ public final class SetHomeGoal implements Goal {
     public final class SetHomeProgress extends GoalProgress {
         boolean sethome;
         boolean home;
+
+        @Override
+        public boolean isComplete() {
+            return sethome && home;
+        }
     }
 }

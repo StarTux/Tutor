@@ -31,6 +31,10 @@ public interface Goal {
 
     Component getDisplayName();
 
+    default void onEnable(PlayerQuest playerQuest) { }
+
+    default void onDisable(PlayerQuest playerQuest) { }
+
     default GoalProgress newProgress() {
         return new GoalProgress();
     }

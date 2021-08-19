@@ -27,12 +27,19 @@ public final class PlayerQuest {
     protected GoalProgress currentProgress;
     private static final long SECS = 3;
 
+    protected void disable() {
+        if (currentGoal != null) {
+            currentGoal.onDisable(this);
+        }
+    }
+
     /**
      * Initialize after new quest creation. Select the first goal.
      */
-    public void onQuestStart() {
+    protected void onQuestStart() {
         currentGoal = quest.getGoals().get(0);
         initializeCurrentGoal();
+        currentGoal.onEnable(this);
         Player player = getPlayer();
         if (player != null) {
             Component msg = Component.text()
@@ -48,7 +55,7 @@ public final class PlayerQuest {
     /**
      * Setup after a new goal has been selected.
      */
-    void initializeCurrentGoal() {
+    private void initializeCurrentGoal() {
         currentProgress = currentGoal.newProgress();
         row.setGoal(currentGoal.getId());
         row.setProgress(currentProgress.serialize());
@@ -58,7 +65,7 @@ public final class PlayerQuest {
      * Initialize after loading from database.
      * The row will remain unchanged.
      */
-    public void loadRow() {
+    protected void loadRow() {
         currentGoal = quest.findGoal(row.getGoal());
         if (currentGoal == null) {
             session.sessions.plugin.getLogger().warning("Goal not found: " + row);
@@ -66,6 +73,7 @@ public final class PlayerQuest {
             initializeCurrentGoal();
         }
         currentGoal.getProgress(this);
+        currentGoal.onEnable(this);
     }
 
     public void save() {
@@ -86,6 +94,10 @@ public final class PlayerQuest {
         return session.sessions.plugin;
     }
 
+    /**
+     * Get desired progress. This will clear the current progress if
+     * necessary!
+     */
     public <P extends GoalProgress> P getProgress(Class<P> progressType, Supplier<P> dfl) {
         if (!progressType.isInstance(currentProgress)) {
             String json = row.getProgress();
@@ -98,6 +110,8 @@ public final class PlayerQuest {
 
     public void onGoalComplete() {
         final int index = quest.goalIndex(currentGoal.getId());
+        currentGoal.onDisable(this);
+        currentGoal = null;
         final int newIndex = index + 1;
         if (newIndex >= quest.getGoals().size()) {
             onQuestComplete();
@@ -105,6 +119,7 @@ public final class PlayerQuest {
             Goal newGoal = quest.getGoals().get(newIndex);
             currentGoal = newGoal;
             initializeCurrentGoal();
+            currentGoal.onEnable(this);
             save();
             Player player = getPlayer();
             if (player != null) {

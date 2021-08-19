@@ -31,6 +31,7 @@ public enum QuestName {
     private List<Goal> createGoals() {
         switch (this) {
         case MEMBER: return Arrays.asList(new Goal[] {
+                new ChoosePetGoal(),
                 new WildGoal(),
                 new SetHomeGoal(),
                 new SpawnGoal(),

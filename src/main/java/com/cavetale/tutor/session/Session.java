@@ -5,6 +5,7 @@ import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
+import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -32,9 +33,10 @@ public final class Session {
     protected final String name;
     protected final Map<QuestName, PlayerQuest> currentQuests = new EnumMap<>(QuestName.class);
     protected final Map<QuestName, SQLCompletedQuest> completedQuests = new EnumMap<>(QuestName.class);
+    protected SQLPlayerPet playerPetRow = null;
     protected boolean ready;
     protected boolean disabled;
-    private final List<BiConsumer<PlayerQuest, Goal>> deferredCallbacks = new ArrayList<>();
+    private final List<Runnable> deferredCallbacks = new ArrayList<>();
 
     protected Session(final Sessions sessions, final Player player) {
         this.plugin = sessions.plugin;
@@ -49,6 +51,11 @@ public final class Session {
                     .eq("player", uuid).findList();
                 List<SQLCompletedQuest> completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
                     .eq("player", uuid).findList();
+                playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).findUnique();
+                if (playerPetRow == null) {
+                    playerPetRow = new SQLPlayerPet(uuid);
+                    plugin.getDatabase().insert(playerPetRow);
+                }
                 Bukkit.getScheduler().runTask(plugin, () -> enable(playerQuestRows, completedQuestRows));
             });
     }
@@ -75,13 +82,17 @@ public final class Session {
             completedQuests.put(questName, row);
         }
         ready = true;
-        for (BiConsumer<PlayerQuest, Goal> callback : deferredCallbacks) {
-            applyGoalsNow(callback);
+        for (Runnable callback : deferredCallbacks) {
+            callback.run();
         }
         deferredCallbacks.clear();
     }
 
     protected void disable() {
+        for (PlayerQuest playerQuest : currentQuests.values()) {
+            playerQuest.disable();
+        }
+        currentQuests.clear();
         disabled = true;
     }
 
@@ -115,6 +126,7 @@ public final class Session {
     public PlayerQuest removeQuest(QuestName questName) {
         PlayerQuest playerQuest = currentQuests.remove(questName);
         if (playerQuest != null) {
+            playerQuest.disable();
             plugin.getDatabase().deleteAsync(playerQuest.getRow(), null);
         }
         return playerQuest;
@@ -152,7 +164,7 @@ public final class Session {
         if (ready) {
             applyGoalsNow(callback);
         } else {
-            deferredCallbacks.add(callback);
+            deferredCallbacks.add(() -> applyGoalsNow(callback));
         }
     }
 

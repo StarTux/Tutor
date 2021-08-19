@@ -48,6 +48,12 @@
       <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
 
+    <!-- ProtocolLib -->
+    <repository>
+      <id>dmulloy2-repo</id>
+      <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
+    </repository>
+
   </repositories>
   <dependencies>
 
@@ -97,6 +103,21 @@
       <artifactId>sidebar</artifactId>
       <version>0.1-SNAPSHOT</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- Mytems -->
+    <dependency>
+      <groupId>com.cavetale.mytems</groupId>
+      <artifactId>mytems</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- ProtocolLib -->
+    <dependency>
+      <groupId>com.comphenix.protocol</groupId>
+      <artifactId>ProtocolLib</artifactId>
+      <version>4.7.1-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

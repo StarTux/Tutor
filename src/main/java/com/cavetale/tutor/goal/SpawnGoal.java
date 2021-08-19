@@ -19,7 +19,7 @@ public final class SpawnGoal implements Goal {
         id = "spawn";
         displayName = Component.text("Go to spawn");
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Type /spawn"), playerQuest -> false),
+            new CheckboxCondition(Component.text("Return to Spawn"), playerQuest -> false),
         };
         Component[] pages = new Component[] {
             Component.text().append(Component.text("Get back to the place you started via "))

@@ -2,6 +2,8 @@ package com.cavetale.tutor;
 
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.tutor.pet.Pet;
+import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.Session;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,15 @@ public final class TutorAdminCommand implements TabExecutor {
     private CommandNode rootNode = new CommandNode("tutoradmin");
 
     public void enable() {
-        rootNode.addChild("start").arguments("<player>")
+        rootNode.addChild("start").arguments("<player> <quest>")
             .description("Start tutorial for player")
             .senderCaller(this::start);
+        rootNode.addChild("stop").arguments("<player> <quest>")
+            .description("Stop tutorial for player")
+            .senderCaller(this::stop);
+        rootNode.addChild("createpet").arguments("<player> <type>")
+            .description("Spawn the player's pet")
+            .senderCaller(this::createPet);
         plugin.getCommand("tutoradmin").setExecutor(this);
     }
 
@@ -67,6 +75,32 @@ public final class TutorAdminCommand implements TabExecutor {
                            .append(Component.text(" starting quest: "))
                            .append(quest.getDisplayName())
                            .build());
+        return true;
+    }
+
+    private boolean stop(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        Session session = requireSession(args[0]);
+        Quest quest = requireQuest(args[1]);
+        if (session.removeQuest(quest.name) == null) {
+            throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
+        }
+        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
+                           .append(Component.text(session.getName()))
+                           .append(Component.text(" stopped quest: "))
+                           .append(quest.getDisplayName())
+                           .build());
+        return true;
+    }
+
+    private boolean createPet(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        Player player = requirePlayer(args[0]);
+        Pet pet = plugin.pets.createPet(player);
+        pet.setType(PetType.valueOf(args[1].toUpperCase()));
+        pet.setExclusive(true);
+        pet.setAutoRespawn(true);
+        sender.sendMessage(Component.text("Pet created!", NamedTextColor.YELLOW));
         return true;
     }
 }
