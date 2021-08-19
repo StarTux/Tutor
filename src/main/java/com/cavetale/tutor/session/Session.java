@@ -4,6 +4,8 @@ import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
+import com.cavetale.tutor.pet.Pet;
+import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import lombok.Getter;
@@ -37,6 +40,7 @@ public final class Session {
     protected boolean ready;
     protected boolean disabled;
     private final List<Runnable> deferredCallbacks = new ArrayList<>();
+    private Pet pet;
 
     protected Session(final Sessions sessions, final Player player) {
         this.plugin = sessions.plugin;
@@ -51,7 +55,7 @@ public final class Session {
                     .eq("player", uuid).findList();
                 List<SQLCompletedQuest> completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
                     .eq("player", uuid).findList();
-                playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).findUnique();
+                playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
                 if (playerPetRow == null) {
                     playerPetRow = new SQLPlayerPet(uuid);
                     plugin.getDatabase().insert(playerPetRow);
@@ -62,6 +66,7 @@ public final class Session {
 
     private void enable(List<SQLPlayerQuest> playerQuestRows, List<SQLCompletedQuest> completedQuestRows) {
         if (!sessions.enabled || disabled) return;
+        spawnPet();
         for (SQLPlayerQuest row : playerQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
             if (questName == null) {
@@ -71,7 +76,7 @@ public final class Session {
             Quest quest = plugin.getQuests().get(questName);
             PlayerQuest playerQuest = new PlayerQuest(this, row, quest);
             currentQuests.put(playerQuest.quest.getName(), playerQuest);
-            playerQuest.loadRow();
+            playerQuest.loadRow(); // enable
         }
         for (SQLCompletedQuest row : completedQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
@@ -86,13 +91,16 @@ public final class Session {
             callback.run();
         }
         deferredCallbacks.clear();
+        triggerAutomaticQuests();
     }
 
     protected void disable() {
-        for (PlayerQuest playerQuest : currentQuests.values()) {
-            playerQuest.disable();
+        if (ready) {
+            for (PlayerQuest playerQuest : currentQuests.values()) {
+                playerQuest.disable();
+            }
+            currentQuests.clear();
         }
-        currentQuests.clear();
         disabled = true;
     }
 
@@ -172,5 +180,47 @@ public final class Session {
         for (PlayerQuest playerQuest : currentQuests.values()) {
             callback.accept(playerQuest, playerQuest.getCurrentGoal());
         }
+    }
+
+    public void triggerAutomaticQuests() {
+        Player player = Objects.requireNonNull(getPlayer());
+        for (QuestName questName : QuestName.values()) {
+            if (questName.autoStartPermission == null) continue;
+            if (currentQuests.containsKey(questName)) continue;
+            if (completedQuests.containsKey(questName)) continue;
+            if (!player.isPermissionSet(questName.autoStartPermission)) continue;
+            if (!player.hasPermission(questName.autoStartPermission)) continue;
+            startQuest(questName);
+        }
+    }
+
+    /**
+     * Create the pet object and prepare it to be spawned.
+     */
+    public Pet spawnPet() {
+        PetType petType = playerPetRow.parsePetType();
+        if (petType == null) return null; // must not have finished beginner tut
+        if (pet != null && pet.isValid() && pet.getType() != petType) {
+            pet.despawn();
+        }
+        if (pet == null) {
+            pet = plugin.getPets().createPet(uuid);
+        }
+        pet.setType(petType);
+        pet.setExclusive(true);
+        pet.setAutoRespawn(playerPetRow.isAutoSpawn());
+        pet.setOwnerDistance(3.0);
+        pet.setCustomName(Component.text("Your Pet"));
+        pet.setOnClick(() -> {
+                openQuestBook(getPlayer());
+            });
+        return pet;
+    }
+
+    public void setPet(PetType petType, boolean autoSpawn) {
+        playerPetRow.setPetType(petType);
+        playerPetRow.setAutoSpawn(autoSpawn);
+        playerPetRow.setNow();
+        plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "auto_spawn");
     }
 }

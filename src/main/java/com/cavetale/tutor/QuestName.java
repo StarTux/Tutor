@@ -7,14 +7,20 @@ import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 
 public enum QuestName {
-    MEMBER(Component.text("The Path to Member"));
+    BEGINNER(Component.text("Beginner"), "group.trusted");
 
     public final String key;
     public final Component displayName;
+    public final String autoStartPermission;
 
-    QuestName(final Component displayName) {
+    QuestName(final Component displayName, final String autoStartPermission) {
         this.key = name().toLowerCase();
         this.displayName = displayName;
+        this.autoStartPermission = autoStartPermission;
+    }
+
+    QuestName(final Component displayName) {
+        this(displayName, null);
     }
 
     public static QuestName of(@NonNull String key) {
@@ -30,7 +36,7 @@ public enum QuestName {
 
     private List<Goal> createGoals() {
         switch (this) {
-        case MEMBER: return Arrays.asList(new Goal[] {
+        case BEGINNER: return Arrays.asList(new Goal[] {
                 new ChoosePetGoal(),
                 new WildGoal(),
                 new SetHomeGoal(),

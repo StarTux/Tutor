@@ -1,14 +1,22 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.sidebar.PlayerSidebarEvent;
+import com.cavetale.sidebar.Priority;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
+import com.winthier.perm.event.PlayerPermissionUpdateEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,7 +58,12 @@ public final class Sessions implements Listener {
         enabled = false;
     }
 
-    // Nullable!
+    /**
+     * Find a usable session. (Nullable!)
+     * @param player the player
+     * @return the session, null if the session does not exist or is
+     * not ready.
+     */
     public Session find(Player player) {
         Session session = sessionsMap.get(player.getUniqueId());
         return session != null && session.ready ? session : null;
@@ -109,6 +122,41 @@ public final class Sessions implements Listener {
     private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         removeSession(player);
+    }
+
+    @EventHandler
+    void onPluginPlayer(PluginPlayerEvent event) {
+        PluginPlayerEvent.Name name = event.parseName();
+        applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                goal.onPluginPlayer(playerQuest, name, event);
+            });
+    }
+
+    @EventHandler
+    void onPlayerSidebar(PlayerSidebarEvent event) {
+        Session session = find(event.getPlayer());
+        if (session == null) return;
+        List<Component> lines = null;
+        for (PlayerQuest playerQuest : session.getQuestList()) {
+            lines = new ArrayList<>();
+            lines.add(Component.text()
+                      .append(Component.text("Your ", NamedTextColor.AQUA))
+                      .append(Component.text("/tutorial", NamedTextColor.YELLOW))
+                      .build());
+            lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
+            break;
+        }
+        if (lines == null) return;
+        event.add(plugin, Priority.DEFAULT, lines);
+    }
+
+    @EventHandler
+    void onPlayerPermissionUpdate(PlayerPermissionUpdateEvent event) {
+        plugin.getLogger().info(event.getPlayer().getName()
+                                + "Permission update: " + event.getPermissionChanges());
+        Session session = find(event.getPlayer());
+        if (session == null) return;
+        session.triggerAutomaticQuests();
     }
 
     public boolean openQuestBook(Player player) {

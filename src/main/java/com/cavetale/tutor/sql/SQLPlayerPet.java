@@ -1,5 +1,6 @@
 package com.cavetale.tutor.sql;
 
+import com.cavetale.tutor.pet.PetType;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -34,5 +35,18 @@ public final class SQLPlayerPet {
 
     public void setNow() {
         this.updated = new Date();
+    }
+
+    public PetType parsePetType() {
+        if (pet == null) return null;
+        try {
+            return PetType.valueOf(pet.toUpperCase());
+        } catch (IllegalStateException iae) {
+            return null;
+        }
+    }
+
+    public void setPetType(PetType petType) {
+        this.pet = petType.name().toLowerCase();
     }
 }

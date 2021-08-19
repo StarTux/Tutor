@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -35,10 +37,11 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  */
 @RequiredArgsConstructor
 public final class Pets implements Listener {
-    private final TutorPlugin plugin;
-    private final Map<Integer, Pet> petMap = new HashMap<>();
+    protected final TutorPlugin plugin;
+    protected final Map<Integer, Pet> petMap = new HashMap<>();
     // updated by Pet
     protected final Map<Integer, Pet> entityPetMap = Collections.synchronizedMap(new HashMap<>());
+    protected final Map<Integer, Pet> armorStandMap = new HashMap<>();
     private final Map<UUID, List<Pet>> ownerPetMap = new HashMap<>();
     private int nextPetId = 0;
     private static final PacketType[] ENTITY_PACKETS = {
@@ -97,13 +100,17 @@ public final class Pets implements Listener {
     }
 
     public Pet createPet(final Player owner) {
-        Pet pet = new Pet(this, owner.getUniqueId(), nextPetId++);
+        return createPet(owner.getUniqueId());
+    }
+
+    public Pet createPet(final UUID ownerId) {
+        Pet pet = new Pet(this, ownerId, nextPetId++);
         addPet(pet);
         return pet;
     }
 
     public List<Pet> findPets(Player owner) {
-        return ownerPetMap.computeIfAbsent(owner.getUniqueId(), u -> new ArrayList<>());
+        return findPets(owner.getUniqueId());
     }
 
     public List<Pet> findPets(UUID owner) {
@@ -137,6 +144,21 @@ public final class Pets implements Listener {
         }
     }
 
+    /**
+     * Remove all pets belonging to owner who have the given tag
+     * assigned.
+     */
+    public void removeOwnerTag(UUID owner, String tag) {
+        List<Pet> pets = findPets(owner);
+        if (pets == null) return;
+        pets = new ArrayList<>(pets);
+        for (Pet pet : pets) {
+            if (Objects.equals(pet.getTag(), tag)) {
+                removePet(pet);
+            }
+        }
+    }
+
     private void despawnOwner(Player owner) {
         for (Pet pet : findPets(owner)) {
             pet.despawn();
@@ -145,16 +167,24 @@ public final class Pets implements Listener {
 
     private boolean shouldCancelPacket(int entityId, PacketEvent event) {
         Pet pet = entityPetMap.get(entityId);
-        if (pet == null || !pet.exclusive) return false;
+        if (pet == null) {
+            pet = armorStandMap.get(entityId);
+        }
+        if (pet == null) return false;
+        if (!pet.exclusive) return false;
         if (pet.ownerId.equals(event.getPlayer().getUniqueId())) return false;
         return true;
     }
 
     @EventHandler
     void onEntityRemoveFromWorld(EntityRemoveFromWorldEvent event) {
-        Pet pet = entityPetMap.remove(event.getEntity().getEntityId());
-        if (pet == null) return;
-        pet.entity = null;
+        int entityId = event.getEntity().getEntityId();
+        Pet pet = entityPetMap.remove(entityId);
+        if (pet != null) {
+            pet.entity = null;
+            return;
+        }
+        armorStandMap.remove(entityId);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -217,5 +247,26 @@ public final class Pets implements Listener {
         Pet pet = entityPetMap.get(event.getRightClicked().getEntityId());
         if (pet == null) return;
         if (pet.onClick != null) pet.onClick.run();
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    void onEntityMove(EntityMoveEvent event) {
+        int entityId = event.getEntity().getEntityId();
+        Pet pet = entityPetMap.get(entityId);
+        if (pet == null) return;
+        if (pet.currentSpeechBubble != null) {
+            pet.currentSpeechBubble.updateLocations();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
+        switch (event.getNewGameMode()) {
+        case SURVIVAL:
+        case ADVENTURE:
+            return;
+        default:
+            despawnOwner(event.getPlayer());
+        }
     }
 }

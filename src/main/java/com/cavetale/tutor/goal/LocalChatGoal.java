@@ -19,14 +19,15 @@ public final class LocalChatGoal implements Goal {
         this.id = "local_chat";
         this.displayName = Component.text("Local Chat");
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("View the channel list"),
-                                      playerQuest -> getProgress(playerQuest).stage > 0),
+                // new CheckboxCondition(Component.text("View the channel list"),
+                //                       playerQuest -> getProgress(playerQuest).list),
                 new CheckboxCondition(Component.text("Focus local chat"),
-                                      playerQuest -> getProgress(playerQuest).stage > 1),
-                new CheckboxCondition(Component.text("Use local chat"),
-                                      playerQuest -> getProgress(playerQuest).stage > 3),
+                                      playerQuest -> getProgress(playerQuest).focus),
                 new CheckboxCondition(Component.text("Open local chat settings"),
-                                      playerQuest -> getProgress(playerQuest).stage > 4),
+                                      playerQuest -> getProgress(playerQuest).settings),
+                new CheckboxCondition(Component.text("Use local chat"),
+                                      playerQuest -> getProgress(playerQuest).use,
+                                      playerQuest -> getProgress(playerQuest).focus),
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 Component.text().content("Chat is organized in channels.")
@@ -75,22 +76,41 @@ public final class LocalChatGoal implements Goal {
         return playerQuest.getProgress(LocalChatProgress.class, LocalChatProgress::new);
     }
 
-    public static final class LocalChatProgress extends GoalProgress {
-        protected int stage = 0;
+    protected static final class LocalChatProgress extends GoalProgress {
+        //protected boolean list;
+        protected boolean focus;
+        protected boolean use;
+        protected boolean settings;
+
+        @Override
+        public boolean isComplete() {
+            return focus && use && settings; // && list;
+        }
     }
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         LocalChatProgress progress = getProgress(playerQuest);
-        switch (progress.stage) {
-        case 0:
-            if (name == PluginPlayerEvent.Name.FOCUS_CHAT_CHANNEL
-                && PluginPlayerEvent.Detail.NAME.is(event, "local")) {
-                progress.stage += 1;
-                playerQuest.save();
+        if (name == PluginPlayerEvent.Name.FOCUS_CHAT_CHANNEL) {
+            if (PluginPlayerEvent.Detail.NAME.is(event, "local") && !progress.focus) {
+                progress.focus = true;
+                playerQuest.onProgress(progress);
             }
-            break;
-        default: break;
+        // } else if (name == PluginPlayerEvent.Name.LIST_CHAT_CHANNELS) {
+        //     if (!progress.list) {
+        //         progress.list = true;
+        //         playerQuest.onProgress(progress);
+        //     }
+        } else if (name == PluginPlayerEvent.Name.USE_CHAT_CHANNEL) {
+            if (PluginPlayerEvent.Detail.NAME.is(event, "local") && !progress.use) {
+                progress.use = true;
+                playerQuest.onProgress(progress);
+            }
+        } else if (name == PluginPlayerEvent.Name.OPEN_CHAT_SETTINGS) {
+            if (!progress.settings) {
+                progress.settings = true;
+                playerQuest.onProgress(progress);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public final class ServerSwitchGoal implements Goal {
                 .append(Component.newline())
                 .append(Component.text("/cavetale", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
                 .append(Component.newline())
-                .append(Component.text("/hun", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("/hub", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
                 .append(Component.newline())
                 .append(Component.text("/creative", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
                 .build(),
@@ -62,18 +63,14 @@ public final class ServerSwitchGoal implements Goal {
         if (name == PluginPlayerEvent.Name.SWITCH_SERVER) {
             TargetServer targetServer;
             try {
-                targetServer = TargetServer.valueOf(event.getDetail("server_name", String.class, null));
+                targetServer = TargetServer.valueOf(Detail.NAME.get(event, "").toUpperCase());
             } catch (IllegalArgumentException iae) {
                 return;
             }
             ServerSwitchProgress progress = getProgress(playerQuest);
             if (progress.stage == targetServer.ordinal()) {
                 progress.stage += 1;
-                if (progress.stage > TargetServer.values().length) {
-                    playerQuest.onGoalComplete();
-                } else {
-                    playerQuest.save();
-                }
+                playerQuest.onProgress(progress);
             }
         }
     }
@@ -84,7 +81,12 @@ public final class ServerSwitchGoal implements Goal {
         CAVETALE;
     }
 
-    private static final class ServerSwitchProgress extends GoalProgress {
-        private int stage = 0;
+    protected static final class ServerSwitchProgress extends GoalProgress {
+        protected int stage = 0;
+
+        @Override
+        public boolean isComplete() {
+            return stage >= 3;
+        }
     }
 }

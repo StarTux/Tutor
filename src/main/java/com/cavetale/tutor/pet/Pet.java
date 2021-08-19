@@ -1,5 +1,7 @@
 package com.cavetale.tutor.pet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -18,6 +20,7 @@ import org.bukkit.entity.Cat;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Sittable;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
 import org.bukkit.util.RayTraceResult;
@@ -27,11 +30,13 @@ public final class Pet {
     protected final Pets pets;
     protected final UUID ownerId;
     protected final int petId;
+    @Setter protected String tag;
     @Setter protected PetType type;
     @Setter protected boolean exclusive;
     @Setter protected boolean autoRespawn;
     @Setter protected AutoRespawnRule autoRespawnRule = AutoRespawnRule.AREA;
     @Setter protected boolean collidable;
+    @Setter protected double ownerDistance;
     @Setter protected Component customName;
     @Setter protected boolean customNameVisible;
     @Setter protected Runnable onClick;
@@ -40,6 +45,8 @@ public final class Pet {
     protected long autoRespawnCooldown;
     protected long moveToCooldown;
     private int moveToFails;
+    protected SpeechBubble currentSpeechBubble;
+    private List<SpeechBubble> speechBubbleQueue = new ArrayList<>();
 
     public void spawn(Location location) {
         despawn();
@@ -60,6 +67,7 @@ public final class Pet {
         default:
             throw new IllegalStateException("type=" + type);
         }
+        triggerSpeechBubble();
     }
 
     public void teleport(Location location) {
@@ -71,10 +79,49 @@ public final class Pet {
     }
 
     public void despawn() {
+        if (entity != null) {
+            pets.entityPetMap.remove(entity.getEntityId()); // necessary?
+            entity.remove();
+            entity = null;
+        }
+        if (currentSpeechBubble != null) {
+            currentSpeechBubble.disable(); // calls triggerSpeechBubble()
+        }
+    }
+
+    /**
+     * Attempt to trigger the next speech bubble. Do nothing if
+     * anything makes this impossible (for now).
+     */
+    protected void triggerSpeechBubble() {
+        if (currentSpeechBubble != null) return;
         if (entity == null) return;
-        pets.entityPetMap.remove(entity.getEntityId());
-        entity.remove();
-        entity = null;
+        if (speechBubbleQueue.isEmpty()) return;
+        currentSpeechBubble = speechBubbleQueue.remove(0);
+        currentSpeechBubble.enable();
+        for (int i = 0; i < 5; i += 1) {
+            Bukkit.getScheduler().runTaskLater(pets.plugin, () -> {
+                    if (!isSpawned() || !isValid()) return;
+                    Player owner = Bukkit.getPlayer(ownerId);
+                    type.voice.play(owner, entity.getLocation());
+                }, (long) i * 8L);
+        }
+    }
+
+    public void addSpeechBubble(long lifetime, Component... lines) {
+        SpeechBubble speechBubble = new SpeechBubble(this);
+        speechBubble.setLines(lifetime, lines);
+        speechBubbleQueue.add(speechBubble);
+        if (currentSpeechBubble == null) {
+            triggerSpeechBubble();
+        }
+    }
+
+    public void resetSpeechBubbles() {
+        speechBubbleQueue.clear();
+        if (currentSpeechBubble != null) {
+            currentSpeechBubble.disable();
+        }
     }
 
     public boolean isSpawned() {
@@ -101,6 +148,10 @@ public final class Pet {
     }
 
     protected void onOwnerMove(@NonNull Player owner) {
+        switch (owner.getGameMode()) {
+        case SURVIVAL: case ADVENTURE: break;
+        default: return;
+        }
         long now = System.currentTimeMillis();
         if (now < tickCooldown) return;
         tickCooldown = now + 100L;
@@ -113,20 +164,35 @@ public final class Pet {
                     despawn();
                     return;
                 }
+                double distance = mobLocation.distance(ownerLocation);
                 if (mobLocation.distance(ownerLocation) > 16.0) {
                     despawn();
                     return;
                 }
                 if (now >= moveToCooldown) {
-                    boolean moveToResult = mob.getPathfinder().moveTo(owner);
-                    if (moveToResult) {
-                        moveToCooldown = now + 2000L;
-                        moveToFails = 0;
-                    } else {
-                        moveToFails += 1;
-                        if (moveToFails > 10) {
-                            despawn();
+                    if (distance > ownerDistance) {
+                        if (entity instanceof Sittable) {
+                            Sittable sittable = (Sittable) entity;
+                            sittable.setSitting(false);
                         }
+                        boolean moveToResult = mob.getPathfinder().moveTo(owner);
+                        if (moveToResult) {
+                            moveToCooldown = now + 1000L;
+                            moveToFails = 0;
+                        } else {
+                            moveToFails += 1;
+                            if (moveToFails > 10) {
+                                despawn();
+                            }
+                        }
+                    } else {
+                        mob.getPathfinder().stopPathfinding();
+                        if (entity instanceof Sittable) {
+                            Sittable sittable = (Sittable) entity;
+                            sittable.setSitting(true);
+                        }
+                        mob.lookAt(owner.getEyeLocation());
+                        moveToCooldown = now + 1000L;
                     }
                 }
             }
@@ -192,5 +258,9 @@ public final class Pet {
         default:
             throw new IllegalStateException("autoRespawnRule=" + autoRespawnRule);
         }
+    }
+
+    public boolean isValid() {
+        return pets.petMap.containsKey(this.petId);
     }
 }

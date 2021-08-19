@@ -8,6 +8,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -50,12 +51,14 @@ public final class ChoosePetGoal implements Goal {
         Player player = playerQuest.getPlayer();
         Pet cat = playerQuest.getPlugin().getPets().createPet(player);
         Pet dog = playerQuest.getPlugin().getPets().createPet(player);
+        cat.setTag(id);
         cat.setType(PetType.CAT);
         cat.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
         cat.setOnClick(() -> onClick(playerQuest));
         cat.setExclusive(true);
         cat.setCollidable(true);
         cat.setAutoRespawn(true);
+        dog.setTag(id);
         dog.setType(PetType.DOG);
         dog.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
         dog.setOnClick(() -> onClick(playerQuest));
@@ -66,7 +69,15 @@ public final class ChoosePetGoal implements Goal {
 
     @Override
     public void onDisable(PlayerQuest playerQuest) {
-        playerQuest.getPlugin().getPets().removeOwner(playerQuest.getPlayer());
+        playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
+    }
+
+    @Override
+    public void onComplete(PlayerQuest playerQuest) {
+        ChoosePetProgress progress = getProgress(playerQuest);
+        PetType petType = Objects.requireNonNull(progress.petType);
+        playerQuest.getSession().setPet(petType, true);
+        Pet pet = playerQuest.getSession().spawnPet();
     }
 
     private void onClick(PlayerQuest playerQuest) {
@@ -90,11 +101,13 @@ public final class ChoosePetGoal implements Goal {
         gui.setItem(9 + 3, dog, click -> {
                 if (!click.isLeftClick()) return;
                 progress.choose = true;
+                progress.petType = PetType.DOG;
                 playerQuest.onProgress(progress);
             });
         gui.setItem(9 + 5, cat, click -> {
                 if (!click.isLeftClick()) return;
                 progress.choose = true;
+                progress.petType = PetType.CAT;
                 playerQuest.onProgress(progress);
             });
         gui.open(playerQuest.getPlayer());
@@ -113,6 +126,7 @@ public final class ChoosePetGoal implements Goal {
     protected static final class ChoosePetProgress extends GoalProgress {
         protected boolean click;
         protected boolean choose;
+        protected PetType petType;
 
         @Override
         public boolean isComplete() {

@@ -31,9 +31,22 @@ public interface Goal {
 
     Component getDisplayName();
 
+    /**
+     * Called by PlayerQuest when a goal is started or loaded from the database.
+     */
     default void onEnable(PlayerQuest playerQuest) { }
 
+    /**
+     * Called by PlayerQuest when a goal is removed from the player, so when it was
+     * completed, abandoned, the plugin is disabled, or the player
+     * disconnects.
+     */
     default void onDisable(PlayerQuest playerQuest) { }
+
+    /**
+     * Called by PlayerQuest when this goal is successfully completed.
+     */
+    default void onComplete(PlayerQuest playerQuest) { }
 
     default GoalProgress newProgress() {
         return new GoalProgress();

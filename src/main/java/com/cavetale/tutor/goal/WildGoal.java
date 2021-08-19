@@ -2,11 +2,14 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
+import com.cavetale.mytems.Mytems;
+import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
@@ -47,6 +50,23 @@ public final class WildGoal implements Goal {
         };
         conditions = Arrays.asList(conds);
         additionalBookPages = Arrays.asList(pages);
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        Pet pet = playerQuest.getSession().getPet();
+        if (pet != null) {
+            pet.addSpeechBubble(100L,
+                                Component.text("Let's find a place to"),
+                                TextComponent.ofChildren(Component.text("call our home! "),
+                                                         Mytems.SMILE.component));
+            pet.addSpeechBubble(100L,
+                                Component.text("Then make a claim there"),
+                                Component.text("so nobody else can build."));
+            pet.addSpeechBubble(100L,
+                                Component.text("You can share your claim"),
+                                Component.text("with friends, of course."));
+        }
     }
 
     static void onSkip(PlayerQuest playerQuest) {

@@ -110,6 +110,7 @@ public final class PlayerQuest {
 
     public void onGoalComplete() {
         final int index = quest.goalIndex(currentGoal.getId());
+        currentGoal.onComplete(this);
         currentGoal.onDisable(this);
         currentGoal = null;
         final int newIndex = index + 1;

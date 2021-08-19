@@ -17,7 +17,6 @@ public final class TutorPlugin extends JavaPlugin {
     protected SQLDatabase database;
     protected TutorCommand tutorCommand = new TutorCommand(this);
     protected TutorAdminCommand adminCommand = new TutorAdminCommand(this);
-    protected EventListener eventListener = new EventListener(this);
     protected Map<QuestName, Quest> quests = new EnumMap<>(QuestName.class);
     protected Sessions sessions = new Sessions(this);
     protected Pets pets = new Pets(this);
@@ -40,7 +39,6 @@ public final class TutorPlugin extends JavaPlugin {
         }
         tutorCommand.enable();
         adminCommand.enable();
-        eventListener.enable();
         sessions.enable();
         pets.enable();
         Gui.enable();
