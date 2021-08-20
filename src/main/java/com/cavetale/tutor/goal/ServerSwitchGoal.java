@@ -4,9 +4,12 @@ import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
@@ -20,31 +23,33 @@ public final class ServerSwitchGoal implements Goal {
         this.id = "server_switch";
         this.conditions = Arrays.asList(new Condition[] {
                 new CheckboxCondition(Component.text("Visit the Hub"),
-                                      playerQuest -> getProgress(playerQuest).stage > 0),
+                                      playerQuest -> getProgress(playerQuest).done.contains(TargetServer.HUB)),
                 new CheckboxCondition(Component.text("Visit Creative"),
-                                      playerQuest -> getProgress(playerQuest).stage > 1),
+                                      playerQuest -> getProgress(playerQuest).done.contains(TargetServer.CREATIVE)),
                 new CheckboxCondition(Component.text("Return to Cavetale"),
-                                      playerQuest -> getProgress(playerQuest).stage > 2),
+                                      playerQuest -> getProgress(playerQuest).done.contains(TargetServer.CAVETALE)),
             });
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = Arrays.asList(new Component[] {
-                Component.text().content("Cavetale offers several servers, "
-                                         + "with various gamemodes on them.")
-                .append(Component.space())
-                .append(Component.text("There is main, the hub, creative, and several mini games."))
-                .append(Component.space())
-                .append(Component.text("To visit each server, use the following commands:"))
-                .append(Component.newline())
-                .append(Component.text("/cavetale", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-                .append(Component.newline())
-                .append(Component.text("/hub", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-                .append(Component.newline())
-                .append(Component.text("/creative", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-                .build(),
-                Component.text().content("View a list of all available servers with the ")
-                .append(Component.text("/server", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
-                .append(Component.text(" command."))
-                .build(),
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("Cavetale offers several servers, "
+                                       + "with various gamemodes on them."),
+                        Component.space(),
+                        Component.text("There is main, the hub, creative, and several mini games."),
+                        Component.space(),
+                        Component.text("To visit each server, use the following commands:"),
+                        Component.newline(),
+                        Component.text("/cavetale", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.newline(),
+                        Component.text("/hub", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.newline(),
+                        Component.text("/creative", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                    }),
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("View a list of all available servers with the "),
+                        Component.text("/server", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text(" command."),
+                    }),
             });
     }
 
@@ -68,25 +73,25 @@ public final class ServerSwitchGoal implements Goal {
                 return;
             }
             ServerSwitchProgress progress = getProgress(playerQuest);
-            if (progress.stage == targetServer.ordinal()) {
-                progress.stage += 1;
+            if (!progress.done.contains(targetServer)) {
+                progress.done.add(targetServer);
                 playerQuest.onProgress(progress);
             }
         }
     }
 
-    public enum TargetServer {
+    protected enum TargetServer {
         HUB,
         CREATIVE,
         CAVETALE;
     }
 
     protected static final class ServerSwitchProgress extends GoalProgress {
-        protected int stage = 0;
+        Set<TargetServer> done = EnumSet.noneOf(TargetServer.class);
 
         @Override
         public boolean isComplete() {
-            return stage >= 3;
+            return done.size() == TargetServer.values().length;
         }
     }
 }
