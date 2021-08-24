@@ -19,6 +19,9 @@ public final class TutorCommand implements TabExecutor {
             .playerCaller(this::tutor);
         rootNode.addChild("click").hidden(true)
             .playerCaller(this::click);
+        rootNode.addChild("menu").denyTabCompletion()
+            .description("Open the tutorial menu")
+            .playerCaller(this::menu);
         plugin.getCommand("tutor").setExecutor(this);
     }
 
@@ -34,7 +37,7 @@ public final class TutorCommand implements TabExecutor {
 
     private boolean tutor(Player player, String[] args) {
         if (args.length != 0) return false;
-        if (!plugin.sessions.openQuestBook(player)) {
+        if (!plugin.sessions.apply(player, session -> session.clickPet(player))) {
             throw new CommandWarn("Session loading. Please try again later!");
         }
         return true;
@@ -43,6 +46,14 @@ public final class TutorCommand implements TabExecutor {
     private boolean click(Player player, String[] args) {
         if (args.length != 1) return true;
         plugin.sessions.applyClick(player, args[0]);
+        return true;
+    }
+
+    private boolean menu(Player player, String[] args) {
+        if (args.length != 0) return false;
+        if (!plugin.sessions.apply(player, session -> session.openPetMenu(player))) {
+            throw new CommandWarn("Session loading. Please try again later!");
+        }
         return true;
     }
 }

@@ -1,15 +1,19 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
+import com.cavetale.tutor.pet.Noise;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
+import com.cavetale.tutor.util.Gui;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +26,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -58,6 +63,7 @@ public final class Session {
                 playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
                 if (playerPetRow == null) {
                     playerPetRow = new SQLPlayerPet(uuid);
+                    playerPetRow.setAutoSpawn(true);
                     plugin.getDatabase().insert(playerPetRow);
                 }
                 Bukkit.getScheduler().runTask(plugin, () -> enable(playerQuestRows, completedQuestRows));
@@ -168,6 +174,21 @@ public final class Session {
         player.openBook(itemStack);
     }
 
+    public void openCompletedQuestBook(Player player, Quest quest) {
+        List<Component> pages = new ArrayList<>();
+        for (Goal goal : quest.getGoals()) {
+            pages.addAll(goal.getAdditionalBookPages());
+        }
+        BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+        meta.addPages(pages.toArray(new Component[0]));
+        meta.setTitle("Tutorial");
+        meta.author(Component.text("Cavetale"));
+        meta.setGeneration(BookMeta.Generation.ORIGINAL);
+        ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
+        itemStack.setItemMeta(meta);
+        player.openBook(itemStack);
+    }
+
     protected void applyGoals(BiConsumer<PlayerQuest, Goal> callback) {
         if (ready) {
             applyGoalsNow(callback);
@@ -204,15 +225,14 @@ public final class Session {
             pet.despawn();
         }
         if (pet == null) {
-            pet = plugin.getPets().createPet(uuid);
+            pet = plugin.getPets().createPet(uuid, petType);
         }
-        pet.setType(petType);
         pet.setExclusive(true);
         pet.setAutoRespawn(playerPetRow.isAutoSpawn());
         pet.setOwnerDistance(3.0);
-        pet.setCustomName(Component.text("Your Pet"));
+        pet.setCustomName(playerPetRow.getNameComponent());
         pet.setOnClick(() -> {
-                openQuestBook(getPlayer());
+                clickPet(getPlayer());
             });
         return pet;
     }
@@ -222,5 +242,123 @@ public final class Session {
         playerPetRow.setAutoSpawn(autoSpawn);
         playerPetRow.setNow();
         plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "auto_spawn");
+    }
+
+    /**
+     * Clicking your pet should intelligently open the most reasonable menu.
+     * - If you have a quest: Quest book
+     * - Otherwise: Tutor menu
+     */
+    public void clickPet(Player player) {
+        if (!currentQuests.isEmpty()) {
+            openQuestBook(player);
+        } else {
+            openPetMenu(player);
+        }
+    }
+
+    public void openPetMenu(Player player) {
+        if (pet == null) return;
+        int size = 3 * 9;
+        Gui gui = new Gui();
+        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
+        // Pet Item
+        ItemStack petItem = pet.getType().icon.createIcon();
+        petItem.editMeta(meta -> {
+                meta.displayName(playerPetRow.getNameComponent());
+                meta.lore(Arrays.asList(new Component[] {
+                            Component.text("Access pet options", NamedTextColor.GRAY),
+                        }));
+            });
+        gui.setItem(9 + 4, petItem, click -> {
+                if (!click.isLeftClick()) return;
+                Noise.CLICK.play(player);
+                openPetSettingsMenu(player);
+            });
+        // Quests Item
+        ItemStack questsItem = new ItemStack(Material.WRITTEN_BOOK);
+        questsItem.editMeta(meta -> {
+                meta.displayName(Component.text("Tutorials", NamedTextColor.YELLOW));
+                meta.lore(Arrays.asList(new Component[] {
+                            Component.text("Tutorial Menu", NamedTextColor.GRAY),
+                        }));
+                meta.addItemFlags(ItemFlag.values());
+            });
+        gui.setItem(9 + 2, questsItem, click -> {
+                if (!click.isLeftClick()) return;
+                Noise.CLICK.play(player);
+                openQuestsMenu(player);
+            });
+        gui.open(player);
+    }
+
+    public void openQuestsMenu(Player player) {
+        Gui gui = new Gui();
+        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
+        // Current Quest
+        ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
+        currentQuestIcon.editMeta(meta -> {
+                meta.displayName(Component.text("Current Tutorial", NamedTextColor.YELLOW));
+                meta.addItemFlags(ItemFlag.values());
+            });
+        gui.setItem(0 + 4, currentQuestIcon, click -> {
+                if (!click.isLeftClick()) return;
+                Noise.CLICK.play(player);
+                openQuestBook(player);
+            });
+        // Completed Quest List
+        int index = 0;
+        for (Map.Entry<QuestName, SQLCompletedQuest> entry : completedQuests.entrySet()) {
+            QuestName questName = entry.getKey();
+            Quest quest = plugin.getQuests().get(questName);
+            ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
+            item.editMeta(meta -> {
+                    meta.displayName(quest.getDisplayName());
+                    meta.addItemFlags(ItemFlag.values());
+                });
+            gui.setItem(9 + index++, item, click -> {
+                    if (!click.isLeftClick()) return;
+                    openCompletedQuestBook(player, quest);
+                });
+        }
+        //
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                Noise.CLICK.play(player);
+                openPetMenu(player);
+            });
+        gui.open(player);
+    }
+
+    public void openPetSettingsMenu(Player player) {
+        if (pet == null) return;
+        int size = 3 * 9;
+        Gui gui = new Gui();
+        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
+        // Auto Spawn
+        boolean on = playerPetRow.isAutoSpawn();
+        ItemStack autoSpawnItem = on
+            ? Mytems.OK.createIcon()
+            : Mytems.NO.createIcon();
+        autoSpawnItem.editMeta(meta -> {
+                meta.displayName(on
+                                 ? Component.text("Auto Respawn Enabled", NamedTextColor.GREEN)
+                                 : Component.text("Auto Respawn Disabled", NamedTextColor.RED));
+            });
+        gui.setItem(9 + 4, autoSpawnItem, click -> {
+                if (!click.isLeftClick()) return;
+                if (on == playerPetRow.isAutoSpawn()) {
+                    Noise.CLICK.play(player);
+                    playerPetRow.setAutoSpawn(!on);
+                    pet.setAutoRespawn(on);
+                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
+                }
+                openPetSettingsMenu(player);
+            });
+        //
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                Noise.CLICK.play(player);
+                openPetMenu(player);
+            });
+        gui.open(player);
     }
 }

@@ -1,6 +1,5 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.font.DefaultFont;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
@@ -49,17 +48,15 @@ public final class ChoosePetGoal implements Goal {
     @Override
     public void onEnable(PlayerQuest playerQuest) {
         Player player = playerQuest.getPlayer();
-        Pet cat = playerQuest.getPlugin().getPets().createPet(player);
-        Pet dog = playerQuest.getPlugin().getPets().createPet(player);
+        Pet cat = playerQuest.getPlugin().getPets().createPet(player, PetType.CAT);
+        Pet dog = playerQuest.getPlugin().getPets().createPet(player, PetType.DOG);
         cat.setTag(id);
-        cat.setType(PetType.CAT);
         cat.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
         cat.setOnClick(() -> onClick(playerQuest));
         cat.setExclusive(true);
         cat.setCollidable(true);
         cat.setAutoRespawn(true);
         dog.setTag(id);
-        dog.setType(PetType.DOG);
         dog.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
         dog.setOnClick(() -> onClick(playerQuest));
         dog.setExclusive(true);
@@ -86,15 +83,13 @@ public final class ChoosePetGoal implements Goal {
             progress.click = true;
             playerQuest.onProgress(progress);
         }
-        Gui gui = new Gui()
-            .size(3 * 9)
-            .title(TextComponent.ofChildren(DefaultFont.guiBlankOverlay(3 * 9, NamedTextColor.BLUE),
-                                            Component.text("Choose a pet!", NamedTextColor.DARK_BLUE)));
-        ItemStack cat = Mytems.PIC_CAT.createIcon();
+        Gui gui = new Gui();
+        gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.DARK_BLUE));
+        ItemStack cat = PetType.CAT.icon.createIcon();
         cat.editMeta(meta -> {
                 meta.displayName(Component.text("I'm more of a cat person!", NamedTextColor.BLUE));
             });
-        ItemStack dog = Mytems.PIC_WOLF.createIcon();
+        ItemStack dog = PetType.DOG.icon.createIcon();
         dog.editMeta(meta -> {
                 meta.displayName(Component.text("I'm more of a dog person!", NamedTextColor.BLUE));
             });

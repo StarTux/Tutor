@@ -163,6 +163,8 @@ public final class PlayerQuest {
             onGoalComplete();
         } else {
             save();
+            Player player = getPlayer();
+            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 1.0f, 0.5f);
         }
     }
 }

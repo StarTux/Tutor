@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
@@ -72,6 +74,9 @@ public interface Goal {
                   .append(Component.text(" " + (index + 1) + "/" + size + " \u2014 ", NamedTextColor.DARK_GRAY))
                   .append(getDisplayName())
                   .build());
+        lines.add(Component.text("[Menu]", NamedTextColor.BLUE)
+                  .clickEvent(ClickEvent.runCommand("/tutor menu"))
+                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE))));
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
             if (!condition.isVisible(playerQuest)) continue;

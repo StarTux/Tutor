@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -67,6 +68,16 @@ public final class Sessions implements Listener {
     public Session find(Player player) {
         Session session = sessionsMap.get(player.getUniqueId());
         return session != null && session.ready ? session : null;
+    }
+
+    public boolean apply(Player player, Consumer<Session> callback) {
+        Session session = sessionsMap.get(player.getUniqueId());
+        if (session != null && session.ready) {
+            callback.accept(session);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public <G extends Goal> void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
@@ -157,12 +168,5 @@ public final class Sessions implements Listener {
         Session session = find(event.getPlayer());
         if (session == null) return;
         session.triggerAutomaticQuests();
-    }
-
-    public boolean openQuestBook(Player player) {
-        Session session = find(player);
-        if (session == null) return false;
-        session.openQuestBook(player);
-        return true;
     }
 }

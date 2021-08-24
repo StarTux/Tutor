@@ -8,19 +8,27 @@ import org.bukkit.entity.Player;
 
 @Value
 public final class Noise {
+    public static final Noise CAT = Noise.of(Sound.ENTITY_CAT_AMBIENT, 1.2f);
+    public static final Noise DOG = Noise.of(Sound.ENTITY_WOLF_AMBIENT, 1.2f);
+    public static final Noise CLICK = Noise.of(Sound.UI_BUTTON_CLICK);
     public final Sound sound;
+    public final SoundCategory category;
     public final float volume;
     public final float pitch;
 
     public static Noise of(Sound sound, final float pitch) {
-        return new Noise(sound, 1.0f, pitch);
+        return new Noise(sound, SoundCategory.MASTER, 1.0f, pitch);
     }
 
     public static Noise of(Sound sound) {
-        return new Noise(sound, 1.0f, 1.0f);
+        return new Noise(sound, SoundCategory.MASTER, 1.0f, 1.0f);
     }
 
     public void play(Player target, Location at) {
-        target.playSound(at, sound, SoundCategory.MASTER, volume, pitch);
+        target.playSound(at, sound, category, volume, pitch);
+    }
+
+    public void play(Player target) {
+        target.playSound(target.getLocation(), sound, category, volume, pitch);
     }
 }

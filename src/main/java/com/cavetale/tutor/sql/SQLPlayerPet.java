@@ -1,12 +1,14 @@
 package com.cavetale.tutor.sql;
 
 import com.cavetale.tutor.pet.PetType;
+import com.cavetale.tutor.pet.PetGender;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import net.kyori.adventure.text.Component;
 
 @Data @Table(name = "player_pets")
 /**
@@ -21,6 +23,10 @@ public final class SQLPlayerPet {
     private String pet;
     @Column(nullable = false)
     private boolean autoSpawn;
+    @Column(nullable = true, length = 255)
+    private String name;
+    @Column(nullable = false)
+    private PetGender gender = PetGender.OTHER;
     @Column(nullable = true, length = 4096) // text
     private String settings; // json
     @Column(nullable = false)
@@ -48,5 +54,10 @@ public final class SQLPlayerPet {
 
     public void setPetType(PetType petType) {
         this.pet = petType.name().toLowerCase();
+    }
+
+    public Component getNameComponent() {
+        return Component.text(name != null ? name : "Your Pet")
+            .append(gender.component);
     }
 }

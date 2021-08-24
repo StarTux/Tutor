@@ -27,8 +27,8 @@ import org.bukkit.util.RayTraceResult;
 
 @Getter @RequiredArgsConstructor
 public final class Pet {
-    protected final Pets pets;
-    protected final UUID ownerId;
+    @NonNull protected final Pets pets;
+    @NonNull protected final UUID ownerId;
     protected final int petId;
     @Setter protected String tag;
     @Setter protected PetType type;
@@ -144,6 +144,28 @@ public final class Pet {
             tameable.setTamed(true);
             Player owner = Bukkit.getPlayer(ownerId);
             if (owner != null) tameable.setOwner(owner);
+        }
+    }
+
+    protected void onEntityMove() {
+        if (currentSpeechBubble != null) {
+            currentSpeechBubble.updateLocations();
+        }
+        if (entity instanceof Mob) {
+            Mob mob = (Mob) entity;
+            Player owner = Bukkit.getPlayer(ownerId);
+            Location mobLocation = mob.getLocation();
+            Location ownerLocation = owner.getLocation();
+            if (!Objects.equals(mobLocation.getWorld(), ownerLocation.getWorld())) {
+                despawn();
+            } else if (mobLocation.distance(ownerLocation) < ownerDistance) {
+                mob.getPathfinder().stopPathfinding();
+                if (entity instanceof Sittable) {
+                    Sittable sittable = (Sittable) entity;
+                    sittable.setSitting(true);
+                }
+                mob.lookAt(owner.getEyeLocation());
+            }
         }
     }
 

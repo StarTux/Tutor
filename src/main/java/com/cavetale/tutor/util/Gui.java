@@ -1,5 +1,6 @@
 package com.cavetale.tutor.util;
 
+import com.cavetale.core.font.DefaultFont;
 import com.cavetale.tutor.TutorPlugin;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,6 +61,11 @@ public final class Gui implements InventoryHolder {
         if (rowCount <= 0) throw new IllegalArgumentException("rowCount=" + rowCount);
         size = rowCount * 9;
         return this;
+    }
+
+    public Gui withOverlay(final int theSize, TextColor color, Component theTitle) {
+        return size(theSize).title(Component.text().append(DefaultFont.guiBlankOverlay(theSize, color))
+                                   .append(theTitle).build());
     }
 
     public Inventory getInventory() {

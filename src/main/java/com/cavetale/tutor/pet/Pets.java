@@ -1,5 +1,6 @@
 package com.cavetale.tutor.pet;
 
+import com.cavetale.core.event.entity.PluginEntityEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -99,12 +100,13 @@ public final class Pets implements Listener {
         ownerPetMap.clear();
     }
 
-    public Pet createPet(final Player owner) {
-        return createPet(owner.getUniqueId());
+    public Pet createPet(final Player owner, final PetType petType) {
+        return createPet(owner.getUniqueId(), petType);
     }
 
-    public Pet createPet(final UUID ownerId) {
+    public Pet createPet(final UUID ownerId, final PetType petType) {
         Pet pet = new Pet(this, ownerId, nextPetId++);
+        pet.setType(petType);
         addPet(pet);
         return pet;
     }
@@ -246,6 +248,9 @@ public final class Pets implements Listener {
     void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Pet pet = entityPetMap.get(event.getRightClicked().getEntityId());
         if (pet == null) return;
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        if (!Objects.equals(player.getUniqueId(), pet.ownerId)) return;
         if (pet.onClick != null) pet.onClick.run();
     }
 
@@ -254,9 +259,7 @@ public final class Pets implements Listener {
         int entityId = event.getEntity().getEntityId();
         Pet pet = entityPetMap.get(entityId);
         if (pet == null) return;
-        if (pet.currentSpeechBubble != null) {
-            pet.currentSpeechBubble.updateLocations();
-        }
+        pet.onEntityMove();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -268,5 +271,14 @@ public final class Pets implements Listener {
         default:
             despawnOwner(event.getPlayer());
         }
+    }
+
+    @EventHandler
+    void onPluginEntity(PluginEntityEvent event) {
+        if (event.getPlugin() == plugin) return;
+        int entityId = event.getEntity().getEntityId();
+        Pet pet = entityPetMap.get(entityId);
+        if (pet == null) return;
+        event.setCancelled(true);
     }
 }

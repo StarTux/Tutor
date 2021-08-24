@@ -96,8 +96,8 @@ public final class TutorAdminCommand implements TabExecutor {
     private boolean createPet(CommandSender sender, String[] args) {
         if (args.length != 2) return false;
         Player player = requirePlayer(args[0]);
-        Pet pet = plugin.pets.createPet(player);
-        pet.setType(PetType.valueOf(args[1].toUpperCase()));
+        PetType petType = PetType.valueOf(args[1].toUpperCase());
+        Pet pet = plugin.pets.createPet(player, petType);
         pet.setExclusive(true);
         pet.setAutoRespawn(true);
         sender.sendMessage(Component.text("Pet created!", NamedTextColor.YELLOW));
