@@ -22,6 +22,8 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -234,6 +236,7 @@ public final class Session {
         pet.setOnClick(() -> {
                 clickPet(getPlayer());
             });
+        pet.setOnDespawn(this::onPetDespawn);
         return pet;
     }
 
@@ -254,6 +257,23 @@ public final class Session {
             openQuestBook(player);
         } else {
             openPetMenu(player);
+        }
+    }
+
+    private void onPetDespawn() {
+        if (disabled) return;
+        Player player = getPlayer();
+        if (player == null) return;
+        if (!playerPetRow.isAutoSpawn()) {
+            Component msg = Component.text()
+                .append(playerPetRow.getNameComponent())
+                .append(Component.text(" despawned. Bring it back via "))
+                .append(Component.text("/tutor", NamedTextColor.YELLOW))
+                .color(NamedTextColor.WHITE)
+                .clickEvent(ClickEvent.runCommand("/tutor"))
+                .hoverEvent(HoverEvent.showText(Component.text("/turor", NamedTextColor.YELLOW)))
+                .build();
+            player.sendMessage(msg);
         }
     }
 
@@ -296,16 +316,18 @@ public final class Session {
         Gui gui = new Gui();
         gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
         // Current Quest
-        ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
-        currentQuestIcon.editMeta(meta -> {
-                meta.displayName(Component.text("Current Tutorial", NamedTextColor.YELLOW));
-                meta.addItemFlags(ItemFlag.values());
-            });
-        gui.setItem(0 + 4, currentQuestIcon, click -> {
-                if (!click.isLeftClick()) return;
-                Noise.CLICK.play(player);
-                openQuestBook(player);
-            });
+        if (!currentQuests.isEmpty()) {
+            ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
+            currentQuestIcon.editMeta(meta -> {
+                    meta.displayName(Component.text("Current Tutorial", NamedTextColor.YELLOW));
+                    meta.addItemFlags(ItemFlag.values());
+                });
+            gui.setItem(0 + 4, currentQuestIcon, click -> {
+                    if (!click.isLeftClick()) return;
+                    Noise.CLICK.play(player);
+                    openQuestBook(player);
+                });
+        }
         // Completed Quest List
         int index = 0;
         for (Map.Entry<QuestName, SQLCompletedQuest> entry : completedQuests.entrySet()) {
@@ -314,6 +336,9 @@ public final class Session {
             ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
             item.editMeta(meta -> {
                     meta.displayName(quest.getDisplayName());
+                    meta.lore(Arrays.asList(new Component[] {
+                                Component.text("Completed", NamedTextColor.GRAY),
+                            }));
                     meta.addItemFlags(ItemFlag.values());
                 });
             gui.setItem(9 + index++, item, click -> {

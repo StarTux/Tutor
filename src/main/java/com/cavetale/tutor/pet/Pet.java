@@ -40,6 +40,7 @@ public final class Pet {
     @Setter protected Component customName;
     @Setter protected boolean customNameVisible;
     @Setter protected Runnable onClick;
+    @Setter protected Runnable onDespawn;
     protected LivingEntity entity;
     private long tickCooldown;
     protected long autoRespawnCooldown;
@@ -87,6 +88,11 @@ public final class Pet {
         if (currentSpeechBubble != null) {
             currentSpeechBubble.disable(); // calls triggerSpeechBubble()
         }
+        if (onDespawn != null) onDespawn.run();
+    }
+
+    public Player getOwner() {
+        return Bukkit.getPlayer(ownerId);
     }
 
     /**
