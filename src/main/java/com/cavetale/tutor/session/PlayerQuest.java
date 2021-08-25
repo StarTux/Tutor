@@ -146,6 +146,7 @@ public final class PlayerQuest {
     public void onQuestComplete() {
         session.removeQuest(quest.getName());
         SQLCompletedQuest newRow = new SQLCompletedQuest(session.uuid, quest);
+        session.completedQuests.put(quest.getName(), newRow);
         session.sessions.plugin.getDatabase().saveAsync(newRow, null);
         Player player = getPlayer();
         if (player != null) {

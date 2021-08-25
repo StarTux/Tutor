@@ -374,7 +374,7 @@ public final class Session {
                 if (on == playerPetRow.isAutoSpawn()) {
                     Noise.CLICK.play(player);
                     playerPetRow.setAutoSpawn(!on);
-                    pet.setAutoRespawn(on);
+                    pet.setAutoRespawn(!on);
                     plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
                 }
                 openPetSettingsMenu(player);
