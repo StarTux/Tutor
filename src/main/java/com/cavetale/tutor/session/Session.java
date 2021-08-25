@@ -271,7 +271,7 @@ public final class Session {
                 .append(Component.text("/tutor", NamedTextColor.YELLOW))
                 .color(NamedTextColor.WHITE)
                 .clickEvent(ClickEvent.runCommand("/tutor"))
-                .hoverEvent(HoverEvent.showText(Component.text("/turor", NamedTextColor.YELLOW)))
+                .hoverEvent(HoverEvent.showText(Component.text("/tutor", NamedTextColor.YELLOW)))
                 .build();
             player.sendMessage(msg);
         }
