@@ -1,13 +1,13 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.mytems.Mytems;
+import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -26,8 +26,12 @@ public final class ChoosePetGoal implements Goal {
         this.id = "choose_pet";
         this.displayName = Component.text("Choosing a Pet");
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Click a pet"), pq -> getProgress(pq).click, pq -> true),
-            new CheckboxCondition(Component.text("Choose a pet"), pq -> getProgress(pq).choose, pq -> true),
+            new CheckboxCondition(Component.text("Click a pet"),
+                                  playerQuest -> getProgress(playerQuest).click),
+            new CheckboxCondition(Component.text("Choose a pet"),
+                                  playerQuest -> getProgress(playerQuest).choose),
+            new CheckboxCondition(Component.text("Give your pet a name"),
+                                  playerQuest -> getProgress(playerQuest).rename),
         };
         Component[] pages = new Component[] {
             TextComponent.ofChildren(new Component[] {
@@ -47,34 +51,29 @@ public final class ChoosePetGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        Player player = playerQuest.getPlayer();
-        Pet cat = playerQuest.getPlugin().getPets().createPet(player, PetType.CAT);
-        Pet dog = playerQuest.getPlugin().getPets().createPet(player, PetType.DOG);
-        cat.setTag(id);
-        cat.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
-        cat.setOnClick(() -> onClick(playerQuest));
-        cat.setExclusive(true);
-        cat.setCollidable(true);
-        cat.setAutoRespawn(true);
-        dog.setTag(id);
-        dog.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
-        dog.setOnClick(() -> onClick(playerQuest));
-        dog.setExclusive(true);
-        dog.setCollidable(true);
-        dog.setAutoRespawn(true);
+        ChoosePetProgress progress = getProgress(playerQuest);
+        if (!progress.choose) {
+            Player player = playerQuest.getPlayer();
+            Pet cat = playerQuest.getPlugin().getPets().createPet(player, PetType.CAT);
+            Pet dog = playerQuest.getPlugin().getPets().createPet(player, PetType.DOG);
+            cat.setTag(id);
+            cat.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
+            cat.setOnClick(() -> onClick(playerQuest));
+            cat.setExclusive(true);
+            cat.setCollidable(true);
+            cat.setAutoRespawn(true);
+            dog.setTag(id);
+            dog.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
+            dog.setOnClick(() -> onClick(playerQuest));
+            dog.setExclusive(true);
+            dog.setCollidable(true);
+            dog.setAutoRespawn(true);
+        }
     }
 
     @Override
     public void onDisable(PlayerQuest playerQuest) {
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
-    }
-
-    @Override
-    public void onComplete(PlayerQuest playerQuest) {
-        ChoosePetProgress progress = getProgress(playerQuest);
-        PetType petType = Objects.requireNonNull(progress.petType);
-        playerQuest.getSession().setPet(petType, true);
-        Pet pet = playerQuest.getSession().spawnPet();
     }
 
     private void onClick(PlayerQuest playerQuest) {
@@ -95,17 +94,43 @@ public final class ChoosePetGoal implements Goal {
             });
         gui.setItem(9 + 3, dog, click -> {
                 if (!click.isLeftClick()) return;
-                progress.choose = true;
-                progress.petType = PetType.DOG;
-                playerQuest.onProgress(progress);
+                onChoosePet(playerQuest, PetType.DOG);
+                click.getWhoClicked().closeInventory();
             });
         gui.setItem(9 + 5, cat, click -> {
                 if (!click.isLeftClick()) return;
-                progress.choose = true;
-                progress.petType = PetType.CAT;
-                playerQuest.onProgress(progress);
+                onChoosePet(playerQuest, PetType.CAT);
+                click.getWhoClicked().closeInventory();
             });
         gui.open(playerQuest.getPlayer());
+    }
+
+    private void onChoosePet(PlayerQuest playerQuest, PetType petType) {
+        ChoosePetProgress progress = getProgress(playerQuest);
+        if (progress.choose) return;
+        playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
+        playerQuest.getSession().setPet(petType, true);
+        Pet pet = playerQuest.getSession().spawnPet();
+        pet.addSpeechBubble(100, new Component[] {
+                Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
+            });
+        pet.addSpeechBubble(100, new Component[] {
+                Component.text("I will be your personal assistant."),
+                Component.text("Please give me a name, " + petType.speechGimmick + "."),
+            });
+        progress.choose = true;
+        playerQuest.onProgress(progress);
+    }
+
+    @Override
+    public void onTutorEvent(PlayerQuest playerQuest, TutorEvent tutorEvent) {
+        if (tutorEvent == TutorEvent.RENAME_PET) {
+            ChoosePetProgress progress = getProgress(playerQuest);
+            if (!progress.rename) {
+                progress.rename = true;
+                playerQuest.onProgress(progress);
+            }
+        }
     }
 
     @Override
@@ -121,11 +146,11 @@ public final class ChoosePetGoal implements Goal {
     protected static final class ChoosePetProgress extends GoalProgress {
         protected boolean click;
         protected boolean choose;
-        protected PetType petType;
+        protected boolean rename;
 
         @Override
         public boolean isComplete() {
-            return click && choose;
+            return click && choose && rename;
         }
     }
 }

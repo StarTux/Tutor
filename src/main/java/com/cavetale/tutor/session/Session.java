@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -47,7 +49,7 @@ public final class Session {
     protected boolean ready;
     protected boolean disabled;
     private final List<Runnable> deferredCallbacks = new ArrayList<>();
-    private Pet pet;
+    protected Pet pet;
 
     protected Session(final Sessions sessions, final Player player) {
         this.plugin = sessions.plugin;
@@ -191,7 +193,7 @@ public final class Session {
         player.openBook(itemStack);
     }
 
-    protected void applyGoals(BiConsumer<PlayerQuest, Goal> callback) {
+    public void applyGoals(BiConsumer<PlayerQuest, Goal> callback) {
         if (ready) {
             applyGoalsNow(callback);
         } else {
@@ -240,11 +242,25 @@ public final class Session {
         return pet;
     }
 
+    public boolean applyPet(Consumer<Pet> callback) {
+        if (pet == null) return false;
+        callback.accept(pet);
+        return true;
+    }
+
     public void setPet(PetType petType, boolean autoSpawn) {
         playerPetRow.setPetType(petType);
         playerPetRow.setAutoSpawn(autoSpawn);
         playerPetRow.setNow();
         plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "auto_spawn");
+    }
+
+    public void renamePet(String petName) {
+        playerPetRow.setName(petName);
+        if (pet != null) {
+            pet.setCustomName(playerPetRow.getNameComponent());
+        }
+        plugin.getDatabase().updateAsync(playerPetRow, null, "name");
     }
 
     /**
@@ -369,7 +385,7 @@ public final class Session {
                                  ? Component.text("Auto Respawn Enabled", NamedTextColor.GREEN)
                                  : Component.text("Auto Respawn Disabled", NamedTextColor.RED));
             });
-        gui.setItem(9 + 4, autoSpawnItem, click -> {
+        gui.setItem(9 + 2, autoSpawnItem, click -> {
                 if (!click.isLeftClick()) return;
                 if (on == playerPetRow.isAutoSpawn()) {
                     Noise.CLICK.play(player);
@@ -378,6 +394,21 @@ public final class Session {
                     plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
                 }
                 openPetSettingsMenu(player);
+            });
+        // Name
+        ItemStack nameItem = new ItemStack(Material.NAME_TAG);
+        nameItem.editMeta(meta -> {
+                meta.displayName(Component.text("Change name", NamedTextColor.GREEN));
+            });
+        gui.setItem(9 + 6, nameItem, click -> {
+                if (!click.isLeftClick()) return;
+                Noise.CLICK.play(player);
+                player.closeInventory();
+                player.sendMessage(Component.text().content("\n  Click here to change the name of your pet\n")
+                                   .color(NamedTextColor.BLUE)
+                                   .decorate(TextDecoration.BOLD)
+                                   .clickEvent(ClickEvent.suggestCommand("/tutor rename "))
+                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor rename", NamedTextColor.YELLOW))));
             });
         //
         gui.setItem(Gui.OUTSIDE, null, click -> {

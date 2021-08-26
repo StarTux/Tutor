@@ -3,7 +3,6 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
 import com.cavetale.mytems.Mytems;
-import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
 import java.util.List;
@@ -15,13 +14,14 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 
 public final class WildGoal implements Goal {
-    @Getter protected final String id = "wild";
+    @Getter protected final String id;
     @Getter private final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter private final List<Component> additionalBookPages;
 
     public WildGoal() {
-        displayName = Component.text("Find a place to build");
+        this.id = "wild";
+        this.displayName = Component.text("Find a place to build");
         Condition[] conds = new Condition[] {
             new CheckboxCondition(Component.text("Type /wild"),
                                   playerQuest -> getProgress(playerQuest).wild),
@@ -48,25 +48,24 @@ public final class WildGoal implements Goal {
             .append(Component.space())
             .append(Component.text("You can grow the claim further out later on.")).build(),
         };
-        conditions = Arrays.asList(conds);
-        additionalBookPages = Arrays.asList(pages);
+        this.conditions = Arrays.asList(conds);
+        this.additionalBookPages = Arrays.asList(pages);
     }
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        Pet pet = playerQuest.getSession().getPet();
-        if (pet != null) {
-            pet.addSpeechBubble(100L,
-                                Component.text("Let's find a place to"),
-                                TextComponent.ofChildren(Component.text("call our home! "),
-                                                         Mytems.SMILE.component));
-            pet.addSpeechBubble(100L,
-                                Component.text("Then make a claim there"),
-                                Component.text("so nobody else can build."));
-            pet.addSpeechBubble(100L,
-                                Component.text("You can share your claim"),
-                                Component.text("with friends, of course."));
-        }
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(100L,
+                                    Component.text("Let's find a place to"),
+                                    TextComponent.ofChildren(Component.text("call our home! "),
+                                                             Mytems.SMILE.component));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Then make a claim there"),
+                                    Component.text("so nobody else can build."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("You can share your claim"),
+                                    Component.text("with friends, of course."));
+            });
     }
 
     static void onSkip(PlayerQuest playerQuest) {

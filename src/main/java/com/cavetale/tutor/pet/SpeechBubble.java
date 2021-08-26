@@ -19,9 +19,8 @@ public final class SpeechBubble {
     private long lifetime;
 
     private Location getArmorStandLocation(int index, int total) {
-        Location location = pet.entity.getLocation().add(0.0, pet.entity.getHeight() + 0.24, 0.0);
-        double offset = (double) (total - index - 1) * 0.23;
-        return location.add(0, offset, 0);
+        double offset = (double) (total - index - 1) * 0.24;
+        return pet.entity.getLocation().add(0.0, pet.entity.getHeight() + 0.25 + offset, 0.0);
     }
 
     public void setLines(long theLifetime, Component... theLines) {

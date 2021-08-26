@@ -7,6 +7,7 @@ import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
+import com.cavetale.tutor.pet.Pet;
 import com.winthier.perm.event.PlayerPermissionUpdateEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,16 @@ public final class Sessions implements Listener {
         Session session = sessionsMap.get(player.getUniqueId());
         if (session != null && session.ready) {
             callback.accept(session);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean applyPet(Player player, Consumer<Pet> callback) {
+        Session session = sessionsMap.get(player.getUniqueId());
+        if (session != null && session.ready && session.pet != null) {
+            callback.accept(session.pet);
             return true;
         } else {
             return false;
@@ -152,7 +163,8 @@ public final class Sessions implements Listener {
             lines = new ArrayList<>();
             lines.add(Component.text()
                       .append(Component.text("Your ", NamedTextColor.AQUA))
-                      .append(Component.text("/tutorial", NamedTextColor.YELLOW))
+                      .append(Component.text("/tutor", NamedTextColor.YELLOW))
+                      .append(Component.text("ial", NamedTextColor.AQUA))
                       .build());
             lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
             break;

@@ -37,7 +37,7 @@ public final class Pet {
     @Setter protected AutoRespawnRule autoRespawnRule = AutoRespawnRule.AREA;
     @Setter protected boolean collidable;
     @Setter protected double ownerDistance;
-    @Setter protected Component customName;
+    protected Component customName;
     @Setter protected boolean customNameVisible;
     @Setter protected Runnable onClick;
     @Setter protected Runnable onDespawn;
@@ -132,6 +132,13 @@ public final class Pet {
 
     public boolean isSpawned() {
         return entity != null;
+    }
+
+    public void setCustomName(Component component) {
+        this.customName = component;
+        if (entity != null) {
+            entity.customName(component);
+        }
     }
 
     private void prepLivingEntity(LivingEntity living) {

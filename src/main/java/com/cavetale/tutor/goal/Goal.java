@@ -2,6 +2,7 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.Background;
+import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,12 @@ public interface Goal {
     List<Condition> getConditions();
 
     Component getDisplayName();
+
+    /**
+     * Called once per instance, as opposed to onEnable, which is
+     * called for every player.
+     */
+    default void enable() { }
 
     /**
      * Called by PlayerQuest when a goal is started or loaded from the database.
@@ -97,4 +104,6 @@ public interface Goal {
     }
 
     default void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) { }
+
+    default void onTutorEvent(PlayerQuest playerQuest, TutorEvent event) { }
 }
