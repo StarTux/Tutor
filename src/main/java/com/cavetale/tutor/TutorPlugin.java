@@ -1,5 +1,6 @@
 package com.cavetale.tutor;
 
+import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pets;
 import com.cavetale.tutor.session.Sessions;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
@@ -35,6 +36,9 @@ public final class TutorPlugin extends JavaPlugin {
         // We make sure that all quests are set (non null)
         for (QuestName questName : QuestName.values()) {
             Quest quest = questName.create(); // throws
+            for (Goal goal : quest.getGoals()) {
+                goal.enable();
+            }
             quests.put(questName, quest);
         }
         tutorCommand.enable();

@@ -71,13 +71,10 @@ public final class TutorCommand implements TabExecutor {
             throw new CommandWarn("You don't have a pet yet!");
         }
         String name = String.join(" ", args);
-        if (!name.matches("[a-zA-Z0-9-_ ]+")) {
-            throw new CommandWarn("Invalid name: " + name);
-        }
         if (name.length() < 3) {
             throw new CommandWarn("Invalid too short: " + name);
         }
-        if (name.length() > 16) {
+        if (name.length() > 32) {
             throw new CommandWarn("Invalid too long: " + name);
         }
         session.renamePet(name);

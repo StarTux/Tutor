@@ -1,5 +1,6 @@
 package com.cavetale.tutor.pet;
 
+import com.destroystokyo.paper.entity.ai.Goal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -84,11 +85,15 @@ public final class Pet {
             pets.entityPetMap.remove(entity.getEntityId()); // necessary?
             entity.remove();
             entity = null;
+            try {
+                if (onDespawn != null) onDespawn.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         if (currentSpeechBubble != null) {
             currentSpeechBubble.disable(); // calls triggerSpeechBubble()
         }
-        if (onDespawn != null) onDespawn.run();
     }
 
     public Player getOwner() {
@@ -150,7 +155,11 @@ public final class Pet {
         living.setCustomNameVisible(customNameVisible);
         if (living instanceof Mob) {
             Mob mob = (Mob) living;
-            Bukkit.getMobGoals().removeAllGoals(mob);
+            for (Goal goal : Bukkit.getMobGoals().getAllGoals(mob)) {
+                if (!goal.getKey().getNamespacedKey().getKey().equals("look_at_player")) {
+                    Bukkit.getMobGoals().removeGoal(mob, goal);
+                }
+            }
         }
         if (living instanceof Tameable) {
             Tameable tameable = (Tameable) living;
@@ -177,7 +186,6 @@ public final class Pet {
                     Sittable sittable = (Sittable) entity;
                     sittable.setSitting(true);
                 }
-                mob.lookAt(owner.getEyeLocation());
             }
         }
     }
@@ -226,7 +234,6 @@ public final class Pet {
                             Sittable sittable = (Sittable) entity;
                             sittable.setSitting(true);
                         }
-                        mob.lookAt(owner.getEyeLocation());
                         moveToCooldown = now + 1000L;
                     }
                 }
@@ -271,8 +278,10 @@ public final class Pet {
             Block base = owner.getLocation().getBlock();
             final int r = 8;
             for (int i = 0; i < 10; i += 1) {
-                int dx = random.nextBoolean() ? random.nextInt(r) : -random.nextInt(r);
-                int dz = random.nextBoolean() ? random.nextInt(r) : -random.nextInt(r);
+                double angle = random.nextDouble() * Math.PI * 2.0;
+                double distance = ownerDistance + random.nextDouble() * 8.0;
+                int dx = (int) Math.round(Math.cos(angle) * distance);
+                int dz = (int) Math.round(Math.sin(angle) * distance);
                 Block spawnBlock = base.getRelative(dx, 0, dz);
                 for (int j = 0; j < 4; j += 1) {
                     if (!spawnBlock.isEmpty()) break;
