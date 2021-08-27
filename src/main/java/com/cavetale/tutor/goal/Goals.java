@@ -22,6 +22,9 @@ public final class Goals {
                 new LocalChatGoal(),
             });
         case TEST: return Arrays.asList(new Goal[] {
+                new WarpGoal(),
+                new StorageGoal(),
+                new SellItemGoal(),
                 new MineGoal(),
             });
         default:

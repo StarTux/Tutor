@@ -1,5 +1,6 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.block.PluginBlockEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.VanillaItems;
@@ -41,7 +42,7 @@ public final class MineGoal implements Goal, Listener {
         this.id = "mine";
         this.displayName = Component.text("The Mining World");
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Use /mine"), playerQuest -> getProgress(playerQuest).mine),
+            new CheckboxCondition(Component.text("Warp to the mining world"), playerQuest -> getProgress(playerQuest).mine),
             new NumberCondition(Component.text("Mine iron ore"),
                                 playerQuest -> NumberProgress.of(getProgress(playerQuest).iron, IRON),
                                 playerQuest -> getProgress(playerQuest).mine),
@@ -58,29 +59,31 @@ public final class MineGoal implements Goal, Listener {
                     Component.text("The mining world is there for you to get your resources from."
                                    + " Not only do you keep the home worlds pristine by using this to harvest:"
                                    + " There are also way more ores to be found here!"
-                                   + " This world is reset once a week."
-                                   + "\n\n"
-                                   + "Commands:\n"),
+                                   + " This world is reset once a week."),
+                }),
+            TextComponent.ofChildren(new Component[] {
+                    Component.text("Mining World Commands:"),
+                    Component.text("\n/mine", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                    Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
                     Component.newline(),
-                    Component.text("- "), Component.text("/mine", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
-                    Component.text(" - View biome list. Click for a warp", NamedTextColor.GRAY),
-                    Component.newline(),
-                    Component.text("- "), Component.text("/mine random", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
-                    Component.text(" - Warp to a random biome", NamedTextColor.GRAY),
+                    Component.text("\n/mine random", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                    Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
                 }),
             // Dungeons
             TextComponent.ofChildren(new Component[] {
                     Component.text("Not only are there custom caves with bonus in the mining world,"
                                    + " it also offers custom dungeons, built by players just like you!"
-                                   + " To locate them, "),
+                                   + "\nDungeon chests contain special loot."
+                                   + " Make sure to pick it up!"),
+                }),
+            TextComponent.ofChildren(new Component[] {
+                    Component.text("Locating a dungeon:\n"),
                     Component.text("right-click", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
                     Component.text(" a "),
                     VanillaItems.componentOf(Material.COMPASS),
                     Component.text("compass", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
-                    Component.text(" and follow its directions."
-                                   + " You have to be deep enough underground for this to work."
-                                   + " Dungeon chests contain special loot."
-                                   + " Make sure to pick it up!"),
+                    Component.text("\nFollow its directions."
+                                   + " You have to be deep enough underground for this to work.", NamedTextColor.GRAY),
                 }),
         };
         this.conditions = Arrays.asList(conds);
@@ -150,7 +153,15 @@ public final class MineGoal implements Goal, Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
+        onBlockBreak(event.getPlayer(), event.getBlock());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerBreakBlock(PlayerBreakBlockEvent event) {
+        onBlockBreak(event.getPlayer(), event.getBlock());
+    }
+
+    private void onBlockBreak(Player player, Block block) {
         String worldName = block.getWorld().getName();
         if (!worldName.equals("mine") && !worldName.startsWith("mine_")) return;
         final Material blockMat = block.getType();
@@ -165,7 +176,6 @@ public final class MineGoal implements Goal, Listener {
         if (!PluginBlockEvent.Action.NATURAL.call(TutorPlugin.getInstance(), block)) {
             return;
         }
-        Player player = event.getPlayer();
         TutorPlugin.getInstance().getSessions().applyGoals(player, (playerQuest, goal) -> {
                 if (goal != this) return;
                 MineProgress progress = getProgress(playerQuest);
