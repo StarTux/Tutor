@@ -74,16 +74,20 @@ public interface Goal {
         List<Component> lines = new ArrayList<>();
         final int index = playerQuest.getQuest().goalIndex(getId());
         final int size = playerQuest.getQuest().getGoals().size();
-        lines.add(Component.text()
-                  .append(Component.text("Tutorial", NamedTextColor.DARK_AQUA, TextDecoration.BOLD))
-                  .append(Component.space())
-                  .append(playerQuest.getQuest().getDisplayName())
-                  .append(Component.text(" " + (index + 1) + "/" + size + " \u2014 ", NamedTextColor.DARK_GRAY))
-                  .append(getDisplayName())
+        lines.add(Component.text().append(playerQuest.getQuest().getDisplayName())
+                  .color(NamedTextColor.DARK_AQUA)
+                  .decorate(TextDecoration.BOLD)
                   .build());
-        lines.add(Component.text("[Menu]", NamedTextColor.BLUE)
+        lines.add(Component.text()
+                  .append(Component.text("Tutorial ", NamedTextColor.GRAY))
+                  .append(Component.text("[Menu]", NamedTextColor.BLUE))
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE))));
+                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE)))
+                  .build());
+        lines.add(Component.text()
+                  .append(getDisplayName())
+                  .append(Component.text(" (" + (index + 1) + "/" + size + ") ", NamedTextColor.DARK_GRAY))
+                  .build());
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
             if (!condition.isVisible(playerQuest)) continue;

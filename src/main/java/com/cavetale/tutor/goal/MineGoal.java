@@ -71,7 +71,7 @@ public final class MineGoal implements Goal, Listener {
                 }),
             // Dungeons
             TextComponent.ofChildren(new Component[] {
-                    Component.text("Not only are there custom caves with bonus in the mining world,"
+                    Component.text("Not only are there custom caves with bonus ores in the mining world,"
                                    + " it also offers custom dungeons, built by players just like you!"
                                    + "\nDungeon chests contain special loot."
                                    + " Make sure to pick it up!"),

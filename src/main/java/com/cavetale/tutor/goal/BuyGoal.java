@@ -36,7 +36,7 @@ public final class BuyGoal implements Goal {
                                        + " you can claim market plots and setup shop chests there."
                                        + "\n\nCommand:\n"),
                         Component.text("/market", NamedTextColor.DARK_BLUE),
-                        Component.text("\nWarp to the public market.\n", NamedTextColor.GRAY),
+                        Component.text("\nWarp to the public market\n", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("You can search the market for specific items"
@@ -45,7 +45,7 @@ public final class BuyGoal implements Goal {
                         Component.text("/shop search <item>", NamedTextColor.DARK_BLUE),
                         Component.text("\nSearch the shops for an item. Click the ", NamedTextColor.GRAY),
                         Component.text("[Port]", NamedTextColor.DARK_BLUE),
-                        Component.text(" button to port to the chest.", NamedTextColor.GRAY),
+                        Component.text(" button to port to the chest", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("To grow your claim, buy more claim blocks first."
@@ -53,7 +53,7 @@ public final class BuyGoal implements Goal {
                                        + " unless configured otherwise."
                                        + "\n\nCommand:\n"),
                         Component.text("/claim buy <amount>", NamedTextColor.DARK_BLUE),
-                        Component.text("\nEach block costs 10 Cents.", NamedTextColor.GRAY),
+                        Component.text("\nEach block costs 10 Cents", NamedTextColor.GRAY),
                     }),
             });
     }

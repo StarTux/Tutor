@@ -31,23 +31,21 @@ public final class ServerSwitchGoal implements Goal {
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
-                        Component.text("Cavetale offers several servers, "
-                                       + "with various gamemodes on them."),
-                        Component.space(),
-                        Component.text("There is main, the hub, creative, and several mini games."),
-                        Component.space(),
-                        Component.text("To visit each server, use the following commands:"),
-                        Component.newline(),
-                        Component.text("/cavetale", NamedTextColor.DARK_BLUE),
-                        Component.newline(),
-                        Component.text("/hub", NamedTextColor.DARK_BLUE),
-                        Component.newline(),
-                        Component.text("/creative", NamedTextColor.DARK_BLUE),
+                        Component.text("Cavetale is the main survival server, but we offer several others"
+                                       + " with various gamemodes on them."
+                                       + " There is also the hub, creative, and many mini games."),
+                        Component.text("\n\nCommands:\n"),
+                        Component.text("/server", NamedTextColor.DARK_BLUE),
+                        Component.text("\nList all servers", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
-                        Component.text("View a list of all available servers with the "),
-                        Component.text("/server", NamedTextColor.DARK_BLUE),
-                        Component.text(" command."),
+                        Component.text("Server Commands:\n"),
+                        Component.text("/hub", NamedTextColor.DARK_BLUE),
+                        Component.text("\nWhere you spawn when other servers go down\n\n", NamedTextColor.GRAY),
+                        Component.text("/creative", NamedTextColor.DARK_BLUE),
+                        Component.text("\nBuild in creative mode\n\n", NamedTextColor.GRAY),
+                        Component.text("/cavetale", NamedTextColor.DARK_BLUE),
+                        Component.text("\nThe main survival server", NamedTextColor.GRAY),
                     }),
             });
     }
