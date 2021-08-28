@@ -1,6 +1,7 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.session.PlayerQuest;
@@ -93,6 +94,14 @@ public interface Goal {
             if (!condition.isVisible(playerQuest)) continue;
             lines.add(condition.toComponent(playerQuest, Background.LIGHT));
         }
+        if (playerQuest.getCurrentProgress().isComplete()) {
+            lines.add(Component.text()
+                      .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
+                      .color(NamedTextColor.DARK_AQUA)
+                      .hoverEvent(HoverEvent.showText(Component.text("Complete this Part", NamedTextColor.AQUA)))
+                      .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key))
+                      .build());
+        }
         pages.add(Component.join(Component.newline(), lines));
         pages.addAll(getAdditionalBookPages());
         return pages;
@@ -103,6 +112,12 @@ public interface Goal {
         for (Condition condition : getConditions()) {
             if (!condition.isVisible(playerQuest) || !condition.isOnSidebar(playerQuest)) continue;
             list.add(condition.toComponent(playerQuest, Background.DARK));
+        }
+        if (playerQuest.getCurrentProgress().isComplete()) {
+            list.add(Component.text()
+                     .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
+                     .color(NamedTextColor.AQUA)
+                     .build());
         }
         return list;
     }

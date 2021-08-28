@@ -17,34 +17,40 @@ public final class SetHomeGoal implements Goal {
     @Getter private final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter private final List<Component> additionalBookPages;
+    protected final CheckboxCondition condSetHome;
+    protected final ClickableCondition condSkip;
+    protected final CheckboxCondition condHome;
 
     public SetHomeGoal() {
         displayName = Component.text("Set your home");
-        Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Set your home"),
-                                  playerQuest -> getProgress(playerQuest).sethome),
-            new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome",
-                                   this::onSkip,
-                                   playerQuest -> !getProgress(playerQuest).sethome),
-            new CheckboxCondition(Component.text("Use your home"),
-                                  playerQuest -> getProgress(playerQuest).home,
-                                  playerQuest -> getProgress(playerQuest).sethome),
-        };
-        Component[] pages = new Component[] {
-            Component.text()
-            .append(Component.text("Set your primary home via "))
-            .append(Component.text("/sethome", NamedTextColor.DARK_BLUE))
-            .append(Component.text(". You can change it any time with the same command."))
-            .append(Component.space())
-            .append(Component.text("A home is a place you can visit any time via "))
-            .append(Component.text("/home", NamedTextColor.DARK_BLUE))
-            .append(Component.text("."))
-            .append(Component.newline())
-            .append(Component.newline())
-            .append(Component.text("If you want, you can also set additional named homes.")).build(),
-        };
-        conditions = Arrays.asList(conds);
-        additionalBookPages = Arrays.asList(pages);
+        condSetHome = new CheckboxCondition(Component.text("Set your home"),
+                                            playerQuest -> getProgress(playerQuest).sethome,
+                                            playerQuest -> getProgress(playerQuest).sethome = true);
+        condSkip = new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome",
+                                          this::onSkip,
+                                          playerQuest -> !getProgress(playerQuest).sethome);
+        condHome = new CheckboxCondition(Component.text("Use your home"),
+                                         playerQuest -> getProgress(playerQuest).home,
+                                         playerQuest -> getProgress(playerQuest).home = true,
+                                         playerQuest -> getProgress(playerQuest).sethome);
+        conditions = Arrays.asList(new Condition[] {
+                condSetHome,
+                condSkip,
+                condHome,
+            });
+        additionalBookPages = Arrays.asList(new Component[] {
+                Component.text()
+                .append(Component.text("Set your primary home via "))
+                .append(Component.text("/sethome", NamedTextColor.DARK_BLUE))
+                .append(Component.text(". You can change it any time with the same command."))
+                .append(Component.space())
+                .append(Component.text("A home is a place you can visit any time via "))
+                .append(Component.text("/home", NamedTextColor.DARK_BLUE))
+                .append(Component.text("."))
+                .append(Component.newline())
+                .append(Component.newline())
+                .append(Component.text("If you want, you can also set additional named homes.")).build(),
+            });
     }
 
     @Override
@@ -69,32 +75,22 @@ public final class SetHomeGoal implements Goal {
     }
 
     private void onSkip(PlayerQuest playerQuest) {
-        SetHomeProgress progress = getProgress(playerQuest);
-        if (!progress.sethome) {
+        if (condSetHome.isVisible(playerQuest)) {
             Player player = playerQuest.getPlayer();
             if (!PluginPlayerQuery.Name.PRIMARY_HOME_IS_SET.call(playerQuest.getPlugin(), player, false)) {
                 player.sendMessage(Component.text("You don't have a primary home set!", NamedTextColor.RED));
                 return;
             }
-            progress.sethome = true;
-            playerQuest.onProgress(progress);
+            condSetHome.skip(playerQuest);
         }
     }
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.SET_PRIMARY_HOME) {
-            SetHomeProgress progress = getProgress(playerQuest);
-            if (!progress.sethome) {
-                progress.sethome = true;
-                playerQuest.onProgress(progress);
-            }
+            condSetHome.progress(playerQuest);
         } else if (name == PluginPlayerEvent.Name.USE_PRIMARY_HOME) {
-            SetHomeProgress progress = getProgress(playerQuest);
-            if (!progress.home) {
-                progress.home = true;
-                playerQuest.onProgress(progress);
-            }
+            condHome.progress(playerQuest);
         }
     }
 
@@ -108,7 +104,7 @@ public final class SetHomeGoal implements Goal {
         return playerQuest.getProgress(SetHomeProgress.class, SetHomeProgress::new);
     }
 
-    public final class SetHomeProgress extends GoalProgress {
+    public static final class SetHomeProgress extends GoalProgress {
         boolean sethome;
         boolean home;
 

@@ -16,14 +16,17 @@ public final class SellItemGoal implements Goal {
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Component> additionalBookPages;
-    private static final int DIAMOND = 10;
+    protected final NumberCondition condDiamond;
+    protected static final int DIAMONDS = 3;
 
     public SellItemGoal() {
         this.id = "sell_item";
         this.displayName = Component.text("Selling Items");
+        condDiamond = new NumberCondition(Component.text("Sell diamonds"), DIAMONDS,
+                                          playerQuest -> getProgress(playerQuest).diamond,
+                                          (playerQuest, diamond) -> getProgress(playerQuest).diamond = diamond);
         this.conditions = Arrays.asList(new Condition[] {
-                new NumberCondition(Component.text("Sell diamonds"),
-                                    playerQuest -> NumberProgress.of(getProgress(playerQuest).diamond, DIAMOND)),
+                condDiamond,
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
@@ -61,11 +64,7 @@ public final class SellItemGoal implements Goal {
             Material mat = event.getDetail(Detail.MATERIAL, null);
             int amount = event.getDetail(Detail.COUNT, 0);
             if (mat == Material.DIAMOND) {
-                SellItemProgress progress = getProgress(playerQuest);
-                if (progress.diamond < DIAMOND && amount > 0) {
-                    progress.diamond = Math.min(DIAMOND, progress.diamond + amount);
-                    playerQuest.onProgress(progress);
-                }
+                condDiamond.progress(playerQuest, amount);
             }
         }
     }
@@ -80,12 +79,12 @@ public final class SellItemGoal implements Goal {
         return playerQuest.getProgress(SellItemProgress.class, SellItemProgress::new);
     }
 
-    protected final class SellItemProgress extends GoalProgress {
+    protected static final class SellItemProgress extends GoalProgress {
         int diamond;
 
         @Override
         public boolean isComplete() {
-            return diamond >= DIAMOND;
+            return diamond >= DIAMONDS;
         }
     }
 }

@@ -456,7 +456,7 @@ public final class Session {
         // Name
         ItemStack nameItem = new ItemStack(Material.NAME_TAG);
         nameItem.editMeta(meta -> {
-                meta.displayName(Component.text("Change name", NamedTextColor.GREEN));
+                meta.displayName(Component.text("Change Name", NamedTextColor.GREEN));
             });
         gui.setItem(9 + 6, nameItem, click -> {
                 if (!click.isLeftClick()) return;

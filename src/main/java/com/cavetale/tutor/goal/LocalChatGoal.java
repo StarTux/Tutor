@@ -14,22 +14,34 @@ public final class LocalChatGoal implements Goal {
     @Getter private Component displayName;
     @Getter private final List<Condition> conditions;
     @Getter private final List<Component> additionalBookPages;
+    protected final CheckboxCondition condList;
+    protected final CheckboxCondition condFocus;
+    protected final CheckboxCondition condSettings;
+    protected final CheckboxCondition condUse;
 
     public LocalChatGoal() {
         this.id = "local_chat";
         this.displayName = Component.text("Local Chat");
+        condList = new CheckboxCondition(Component.text("View the channel list"),
+                                         playerQuest -> getProgress(playerQuest).list,
+                                         playerQuest -> getProgress(playerQuest).list = true);
+        condFocus = new CheckboxCondition(Component.text("Focus local chat"),
+                                          playerQuest -> getProgress(playerQuest).focus,
+                                          playerQuest -> getProgress(playerQuest).focus = true,
+                                          playerQuest -> getProgress(playerQuest).list);
+        condSettings = new CheckboxCondition(Component.text("Open local chat settings"),
+                                             playerQuest -> getProgress(playerQuest).settings,
+                                             playerQuest -> getProgress(playerQuest).settings = true,
+                                             playerQuest -> getProgress(playerQuest).list);
+        condUse = new CheckboxCondition(Component.text("Use local chat"),
+                                        playerQuest -> getProgress(playerQuest).use,
+                                        playerQuest -> getProgress(playerQuest).use = true,
+                                        playerQuest -> getProgress(playerQuest).focus);
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("View the channel list"),
-                                      playerQuest -> getProgress(playerQuest).list),
-                new CheckboxCondition(Component.text("Focus local chat"),
-                                      playerQuest -> getProgress(playerQuest).focus,
-                                      playerQuest -> getProgress(playerQuest).list),
-                new CheckboxCondition(Component.text("Open local chat settings"),
-                                      playerQuest -> getProgress(playerQuest).settings,
-                                      playerQuest -> getProgress(playerQuest).list),
-                new CheckboxCondition(Component.text("Use local chat"),
-                                      playerQuest -> getProgress(playerQuest).use,
-                                      playerQuest -> getProgress(playerQuest).focus),
+                condList,
+                condFocus,
+                condSettings,
+                condUse,
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 Component.text().content("Chat is organized in channels.")
@@ -112,26 +124,19 @@ public final class LocalChatGoal implements Goal {
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        LocalChatProgress progress = getProgress(playerQuest);
-        if (name == PluginPlayerEvent.Name.FOCUS_CHAT_CHANNEL) {
-            if (PluginPlayerEvent.Detail.NAME.is(event, "local") && !progress.focus) {
-                progress.focus = true;
-                playerQuest.onProgress(progress);
-            }
-        } else if (name == PluginPlayerEvent.Name.LIST_CHAT_CHANNELS) {
-            if (!progress.list) {
-                progress.list = true;
-                playerQuest.onProgress(progress);
-            }
-        } else if (name == PluginPlayerEvent.Name.USE_CHAT_CHANNEL) {
-            if (PluginPlayerEvent.Detail.NAME.is(event, "local") && !progress.use) {
-                progress.use = true;
-                playerQuest.onProgress(progress);
+        if (name == PluginPlayerEvent.Name.LIST_CHAT_CHANNELS) {
+            condList.progress(playerQuest);
+        } else if (name == PluginPlayerEvent.Name.FOCUS_CHAT_CHANNEL) {
+            if (PluginPlayerEvent.Detail.NAME.is(event, "local")) {
+                condFocus.progress(playerQuest);
             }
         } else if (name == PluginPlayerEvent.Name.OPEN_CHAT_SETTINGS) {
-            if (!progress.settings) {
-                progress.settings = true;
-                playerQuest.onProgress(progress);
+            if (PluginPlayerEvent.Detail.NAME.is(event, "local")) {
+                condSettings.progress(playerQuest);
+            }
+        } else if (name == PluginPlayerEvent.Name.USE_CHAT_CHANNEL) {
+            if (PluginPlayerEvent.Detail.NAME.is(event, "local")) {
+                condUse.progress(playerQuest);
             }
         }
     }

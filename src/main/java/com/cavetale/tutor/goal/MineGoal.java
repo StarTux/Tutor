@@ -37,57 +37,68 @@ public final class MineGoal implements Goal, Listener {
     @Getter protected final List<Component> additionalBookPages;
     private static final int IRON = 24;
     private static final int DIAMOND = 9;
+    protected final CheckboxCondition condMine;
+    protected final NumberCondition condIron;
+    protected final NumberCondition condDiamond;
+    protected final CheckboxCondition condDungeon;
 
     public MineGoal() {
         this.id = "mine";
         this.displayName = Component.text("The Mining World");
-        Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Warp to the mining world"), playerQuest -> getProgress(playerQuest).mine),
-            new NumberCondition(Component.text("Mine iron ore"),
-                                playerQuest -> NumberProgress.of(getProgress(playerQuest).iron, IRON),
-                                playerQuest -> getProgress(playerQuest).mine),
-            new NumberCondition(Component.text("Mine diamond ore"),
-                                playerQuest -> NumberProgress.of(getProgress(playerQuest).diamond, DIAMOND),
-                                playerQuest -> getProgress(playerQuest).mine),
-            new CheckboxCondition(Component.text("Loot a Dungeon"),
-                                  playerQuest -> getProgress(playerQuest).dungeon,
-                                  playerQuest -> getProgress(playerQuest).mine),
-        };
-        Component[] pages = new Component[] {
-            // Mine World
-            TextComponent.ofChildren(new Component[] {
-                    Component.text("The mining world is there for you to get your resources from."
-                                   + " Not only do you keep the home worlds pristine by using this to harvest:"
-                                   + " There are also way more ores to be found here!"
-                                   + " This world is reset once a week."),
-                }),
-            TextComponent.ofChildren(new Component[] {
-                    Component.text("Mining World Commands:"),
-                    Component.text("\n/mine", NamedTextColor.DARK_BLUE),
-                    Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
-                    Component.newline(),
-                    Component.text("\n/mine random", NamedTextColor.DARK_BLUE),
-                    Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
-                }),
-            // Dungeons
-            TextComponent.ofChildren(new Component[] {
-                    Component.text("Not only are there custom caves with bonus ores in the mining world,"
-                                   + " it also offers custom dungeons, built by players just like you!"
-                                   + "\nDungeon chests contain special loot."
-                                   + " Make sure to pick it up!"),
-                }),
-            TextComponent.ofChildren(new Component[] {
-                    Component.text("Locating a dungeon:\n"),
-                    Component.text("right-click", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
-                    Component.text(" a "),
-                    VanillaItems.componentOf(Material.COMPASS),
-                    Component.text("compass", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
-                    Component.text("\nFollow its directions."
-                                   + " You have to be deep enough underground for this to work.", NamedTextColor.GRAY),
-                }),
-        };
-        this.conditions = Arrays.asList(conds);
-        this.additionalBookPages = Arrays.asList(pages);
+        condMine = new CheckboxCondition(Component.text("Warp to the mining world"),
+                                         playerQuest -> getProgress(playerQuest).mine,
+                                         playerQuest -> getProgress(playerQuest).mine = true);
+        condIron = new NumberCondition(Component.text("Mine iron ore"), IRON,
+                                       playerQuest -> getProgress(playerQuest).iron,
+                                       (playerQuest, amount) -> getProgress(playerQuest).iron = amount,
+                                       playerQuest -> getProgress(playerQuest).mine);
+        condDiamond = new NumberCondition(Component.text("Mine diamond ore"), DIAMOND,
+                                          playerQuest -> getProgress(playerQuest).diamond,
+                                          (playerQuest, amount) -> getProgress(playerQuest).diamond = amount,
+                                          playerQuest -> getProgress(playerQuest).mine);
+        condDungeon = new CheckboxCondition(Component.text("Loot a Dungeon"),
+                                            playerQuest -> getProgress(playerQuest).dungeon,
+                                            playerQuest -> getProgress(playerQuest).dungeon = true,
+                                            playerQuest -> getProgress(playerQuest).mine);
+        this.conditions = Arrays.asList(new Condition[] {
+                condMine,
+                condIron,
+                condDiamond,
+                condDungeon,
+            });
+        this.additionalBookPages = Arrays.asList(new Component[] {
+                // Mine World
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("The mining world is there for you to get your resources from."
+                                       + " Not only do you keep the home worlds pristine by using this to harvest:"
+                                       + " There are also way more ores to be found here!"
+                                       + " This world is reset once a week."),
+                    }),
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("Mining World Commands:"),
+                        Component.text("\n/mine", NamedTextColor.DARK_BLUE),
+                        Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
+                        Component.newline(),
+                        Component.text("\n/mine random", NamedTextColor.DARK_BLUE),
+                        Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
+                    }),
+                // Dungeons
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("Not only are there custom caves with bonus ores in the mining world,"
+                                       + " it also offers custom dungeons, built by players just like you!"
+                                       + "\nDungeon chests contain special loot."
+                                       + " Make sure to pick it up!"),
+                    }),
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("Locating a dungeon:\n"),
+                        Component.text("right-click", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
+                        Component.text(" a "),
+                        VanillaItems.componentOf(Material.COMPASS),
+                        Component.text("compass", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
+                        Component.text("\nFollow its directions."
+                                       + " You have to be deep enough underground for this to work.", NamedTextColor.GRAY),
+                    }),
+            });
     }
 
     @Override
@@ -125,12 +136,9 @@ public final class MineGoal implements Goal, Listener {
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        MineProgress progress = getProgress(playerQuest);
         switch (name) {
         case USE_MINE:
-            if (!progress.mine) {
-                progress.mine = true;
-                playerQuest.onProgress(progress);
+            if (condMine.progress(playerQuest)) {
                 playerQuest.getSession().applyPet(pet -> {
                         pet.addSpeechBubble(100, new Component[] {
                                 Component.text("Here we are in the mining world..."),
@@ -142,10 +150,7 @@ public final class MineGoal implements Goal, Listener {
             }
             break;
         case DUNGEON_LOOT:
-            if (!progress.dungeon) {
-                progress.dungeon = true;
-                playerQuest.onProgress(progress);
-            }
+            condDungeon.progress(playerQuest);
             break;
         default: break;
         }
@@ -178,17 +183,10 @@ public final class MineGoal implements Goal, Listener {
         }
         TutorPlugin.getInstance().getSessions().applyGoals(player, (playerQuest, goal) -> {
                 if (goal != this) return;
-                MineProgress progress = getProgress(playerQuest);
                 if (mat == Material.DIAMOND_ORE) {
-                    if (progress.diamond < DIAMOND) {
-                        progress.diamond += 1;
-                        playerQuest.onProgress(progress);
-                    }
+                    condDiamond.progress(playerQuest, 1);
                 } else if (mat == Material.IRON_ORE) {
-                    if (progress.iron < IRON) {
-                        progress.iron += 1;
-                        playerQuest.onProgress(progress);
-                    }
+                    condIron.progress(playerQuest, 1);
                 }
             });
     }

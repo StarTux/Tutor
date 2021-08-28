@@ -1,8 +1,8 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.session.PlayerQuest;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
@@ -10,40 +10,36 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 
 /**
- * Condition with a score and a goal. Works in conjunction with
- * NumberProgress.
+ * Condition with a score and a goal.
+ * This must be constructed with a getter for the current progress,
+ * and a setter for the new progress.
  */
 @RequiredArgsConstructor
 public final class NumberCondition implements Condition {
-    @Getter private final Component description;
-    @NonNull protected final Function<PlayerQuest, NumberProgress> progressGetter;
+    @Getter protected final Component description;
+    protected final int goal;
+    @NonNull protected final Function<PlayerQuest, Integer> progressGetter;
+    @NonNull protected final BiConsumer<PlayerQuest, Integer> progressSetter;
     protected final Function<PlayerQuest, Boolean> visibleGetter;
 
-    NumberCondition(final Component description, final Function<PlayerQuest, NumberProgress> progressGetter) {
-        this(description, progressGetter, null);
+    NumberCondition(final Component description,
+                    final int goal,
+                    final Function<PlayerQuest, Integer> progressGetter,
+                    final BiConsumer<PlayerQuest, Integer> progressSetter) {
+        this(description, goal, progressGetter, progressSetter, null);
     }
 
     @Override
     public Component toComponent(PlayerQuest playerQuest, Background background) {
-        NumberProgress progress = progressGetter.apply(playerQuest);
-        final int has = Math.min(progress.has, progress.goal);
-        final int goal = progress.goal;
-        final boolean completed = progress.isComplete();
-        return goal == 1
-            ? (Component.text()
-               .append(completed
-                       ? Component.text(Unicode.CHECKED_CHECKBOX.character)
-                       : Component.text(Unicode.CHECKBOX.character))
-               .append(Component.space())
-               .append(description)
-               .color(completed ? background.green : background.text)
-               .build())
-            : (Component.text()
-               .append(Component.text("[" + has + "/" + goal + "]"))
-               .append(Component.space())
-               .append(description)
-               .color(completed ? background.green : background.text)
-               .build());
+        final int has = progressGetter.apply(playerQuest);
+        final boolean completed = has >= goal;
+        return Component.text()
+            .append(Component.text("[" + has + "/" + goal + "]",
+                                   (completed ? background.green : background.text)))
+            .append(Component.space())
+            .append(description)
+            .color(background.text)
+            .build();
     }
 
     @Override
@@ -51,5 +47,24 @@ public final class NumberCondition implements Condition {
         return visibleGetter != null
             ? visibleGetter.apply(playerQuest)
             : true;
+    }
+
+    public int getProgress(PlayerQuest playerQuest) {
+        return progressGetter.apply(playerQuest);
+    }
+
+    public boolean isComplete(PlayerQuest playerQuest) {
+        return getProgress(playerQuest) >= goal;
+    }
+
+    public boolean progress(PlayerQuest playerQuest, int amount) {
+        if (amount < 1) return false;
+        if (!isVisible(playerQuest)) return false;
+        int has = getProgress(playerQuest);
+        if (has >= goal) return false;
+        int progress = Math.min(goal, has + amount);
+        progressSetter.accept(playerQuest, progress);
+        playerQuest.onProgress();
+        return true;
     }
 }

@@ -2,6 +2,7 @@ package com.cavetale.tutor;
 
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,20 @@ public final class TutorCommand implements TabExecutor {
     }
 
     private boolean click(Player player, String[] args) {
-        if (args.length != 1) return true;
-        plugin.sessions.applyClick(player, args[0]);
+        if (args.length == 0) return true;
+        if (args.length == 1) {
+            plugin.sessions.applyClick(player, args[0]);
+        } else if (args.length == 2) {
+            if (args[0].equals("complete")) {
+                QuestName questName = QuestName.of(args[1]);
+                if (questName == null) return true;
+                Session session = plugin.sessions.find(player);
+                if (session == null) return true;
+                PlayerQuest playerQuest = session.getCurrentQuests().get(questName);
+                if (!playerQuest.getCurrentProgress().isComplete()) return true;
+                playerQuest.onGoalComplete();
+            }
+        }
         return true;
     }
 

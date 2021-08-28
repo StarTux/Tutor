@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -31,6 +32,11 @@ public final class SpeechBubble {
     public void enable() {
         if (lines != null) {
             showLines();
+            pet.getOwner().sendMessage(Component.text()
+                                       .append(Component.text().color(NamedTextColor.GRAY)
+                                               .append(pet.getCustomName())
+                                               .append(Component.text(": ")))
+                                       .append(Component.join(Component.space(), lines)));
             Bukkit.getScheduler().runTaskLater(pet.pets.plugin, () -> {
                     if (!disabled) disable();
                 }, lifetime);

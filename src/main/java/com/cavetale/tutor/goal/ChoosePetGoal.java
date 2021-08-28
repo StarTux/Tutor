@@ -1,5 +1,6 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.pet.Pet;
@@ -21,28 +22,40 @@ public final class ChoosePetGoal implements Goal {
     private final Component displayName;
     private final List<Condition> conditions;
     private final List<Component> additionalBookPages;
+    protected final CheckboxCondition condClick;
+    protected final CheckboxCondition condChoose;
+    protected final CheckboxCondition condRename;
 
     public ChoosePetGoal() {
         this.id = "choose_pet";
         this.displayName = Component.text("Choosing a Pet");
+        condClick = new CheckboxCondition(Component.text("Click a pet"),
+                                          playerQuest -> getProgress(playerQuest).click,
+                                          playerQuest -> getProgress(playerQuest).click = true);
+        condChoose = new CheckboxCondition(Component.text("Choose a pet"),
+                                           playerQuest -> getProgress(playerQuest).choose,
+                                           playerQuest -> getProgress(playerQuest).choose = true);
+        condRename = new CheckboxCondition(Component.text("Give your pet a name"),
+                                           playerQuest -> getProgress(playerQuest).rename,
+                                           playerQuest -> getProgress(playerQuest).rename = true);
         Condition[] conds = new Condition[] {
-            new CheckboxCondition(Component.text("Click a pet"),
-                                  playerQuest -> getProgress(playerQuest).click),
-            new CheckboxCondition(Component.text("Choose a pet"),
-                                  playerQuest -> getProgress(playerQuest).choose),
-            new CheckboxCondition(Component.text("Give your pet a name"),
-                                  playerQuest -> getProgress(playerQuest).rename),
+            condClick,
+            condChoose,
+            condRename,
         };
         Component[] pages = new Component[] {
             TextComponent.ofChildren(new Component[] {
-                    Component.text("You have arrived at a strange place."),
-                    Component.space(),
-                    Component.text("Why not choose a pet to keep you company!"),
-                    Component.newline(),
-                    Component.newline(),
-                    Component.text("We hope you enjoy your stay."),
-                    Component.space(),
+                    Component.text("You have arrived at a strange place."
+                                   + " Why not choose a pet to keep you company!"
+                                   + "\n\nWe hope you enjoy your stay. "),
                     Mytems.SMILE.component,
+                }),
+            TextComponent.ofChildren(new Component[] {
+                    Component.text("Naming your Pet:"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " [Menu]"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Pet Options"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Change Name"),
                 }),
         };
         this.conditions = Arrays.asList(conds);
@@ -51,8 +64,7 @@ public final class ChoosePetGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        ChoosePetProgress progress = getProgress(playerQuest);
-        if (!progress.choose) {
+        if (!condChoose.isComplete(playerQuest)) {
             Player player = playerQuest.getPlayer();
             Pet cat = playerQuest.getPlugin().getPets().createPet(player, PetType.CAT);
             Pet dog = playerQuest.getPlugin().getPets().createPet(player, PetType.DOG);
@@ -77,11 +89,7 @@ public final class ChoosePetGoal implements Goal {
     }
 
     private void onClick(PlayerQuest playerQuest) {
-        ChoosePetProgress progress = getProgress(playerQuest);
-        if (!progress.click) {
-            progress.click = true;
-            playerQuest.onProgress(progress);
-        }
+        condClick.progress(playerQuest);
         Gui gui = new Gui();
         gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.DARK_BLUE));
         ItemStack cat = PetType.CAT.icon.createIcon();
@@ -106,8 +114,9 @@ public final class ChoosePetGoal implements Goal {
     }
 
     private void onChoosePet(PlayerQuest playerQuest, PetType petType) {
-        ChoosePetProgress progress = getProgress(playerQuest);
-        if (progress.choose) return;
+        if (!condChoose.progress(playerQuest)) {
+            return;
+        }
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
         playerQuest.getSession().setPet(petType, true);
         Pet pet = playerQuest.getSession().spawnPet();
@@ -118,17 +127,21 @@ public final class ChoosePetGoal implements Goal {
                 Component.text("I will be your personal assistant."),
                 Component.text("Please give me a name, " + petType.speechGimmick + "."),
             });
-        progress.choose = true;
-        playerQuest.onProgress(progress);
     }
 
     @Override
     public void onTutorEvent(PlayerQuest playerQuest, TutorEvent tutorEvent) {
         if (tutorEvent == TutorEvent.RENAME_PET) {
-            ChoosePetProgress progress = getProgress(playerQuest);
-            if (!progress.rename) {
-                progress.rename = true;
-                playerQuest.onProgress(progress);
+            if (condRename.progress(playerQuest)) {
+                playerQuest.getSession().applyPet(pet -> {
+                        pet.addSpeechBubble(400L,
+                                            Component.text("When the ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
+                                            Component.text("appears, open the"),
+                                            Component.text("tutorial menu and"),
+                                            Component.text("click it."),
+                                            Component.text("You can just click"),
+                                            Component.text("me to open it!"));
+                    });
             }
         }
     }

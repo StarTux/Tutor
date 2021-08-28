@@ -175,8 +175,6 @@ public final class Sessions implements Listener {
 
     @EventHandler
     void onPlayerPermissionUpdate(PlayerPermissionUpdateEvent event) {
-        plugin.getLogger().info(event.getPlayer().getName()
-                                + "Permission update: " + event.getPermissionChanges());
         Session session = find(event.getPlayer());
         if (session == null) return;
         session.triggerAutomaticQuests();

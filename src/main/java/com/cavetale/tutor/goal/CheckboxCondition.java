@@ -3,8 +3,10 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.session.PlayerQuest;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 
@@ -15,11 +17,14 @@ import net.kyori.adventure.text.Component;
 @RequiredArgsConstructor
 public final class CheckboxCondition implements Condition {
     @Getter protected final Component description;
-    protected final Function<PlayerQuest, Boolean> checkedGetter;
+    @NonNull protected final Function<PlayerQuest, Boolean> checkedGetter;
+    @NonNull protected final Consumer<PlayerQuest> checkedSetter;
     protected final Function<PlayerQuest, Boolean> visibleGetter;
 
-    public CheckboxCondition(final Component description, final Function<PlayerQuest, Boolean> checkedGetter) {
-        this(description, checkedGetter, null);
+    public CheckboxCondition(final Component description,
+                             final Function<PlayerQuest, Boolean> checkedGetter,
+                             final Consumer<PlayerQuest> checkedSetter) {
+        this(description, checkedGetter, checkedSetter, null);
     }
 
     @Override
@@ -39,5 +44,28 @@ public final class CheckboxCondition implements Condition {
         return visibleGetter != null
             ? visibleGetter.apply(playerQuest)
             : true;
+    }
+
+    public boolean isComplete(PlayerQuest playerQuest) {
+        return checkedGetter.apply(playerQuest);
+    }
+
+    public void setComplete(PlayerQuest playerQuest) {
+        checkedSetter.accept(playerQuest);
+    }
+
+    public boolean progress(PlayerQuest playerQuest) {
+        if (isComplete(playerQuest)) return false;
+        if (!isVisible(playerQuest)) return false;
+        setComplete(playerQuest);
+        playerQuest.onProgress();
+        return true;
+    }
+
+    public boolean skip(PlayerQuest playerQuest) {
+        if (isComplete(playerQuest)) return false;
+        setComplete(playerQuest);
+        playerQuest.onProgress();
+        return true;
     }
 }

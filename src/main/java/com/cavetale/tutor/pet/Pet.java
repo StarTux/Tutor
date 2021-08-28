@@ -149,7 +149,7 @@ public final class Pet {
         return entity != null;
     }
 
-    public void setCustomName(Component component) {
+    public void setCustomName(@NonNull Component component) {
         this.customName = component;
         if (entity != null) {
             entity.customName(component);

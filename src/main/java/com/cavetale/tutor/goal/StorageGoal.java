@@ -16,17 +16,26 @@ public final class StorageGoal implements Goal {
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Component> additionalBookPages;
+    protected final CheckboxCondition condMs;
+    protected final CheckboxCondition condDiamonds;
+    protected final CheckboxCondition condStash;
 
     public StorageGoal() {
         this.id = "storage";
         this.displayName = Component.text("Extra Storage");
+        condMs = new CheckboxCondition(Component.text("Open Mass Storage"),
+                                       playerQuest -> getProgress(playerQuest).ms,
+                                       playerQuest -> getProgress(playerQuest).ms = true);
+        condDiamonds = new CheckboxCondition(Component.text("Store Some Diamonds"),
+                                             playerQuest -> getProgress(playerQuest).msDiamonds,
+                                             playerQuest -> getProgress(playerQuest).msDiamonds = true);
+        condStash = new CheckboxCondition(Component.text("Open Stash"),
+                                          playerQuest -> getProgress(playerQuest).stash,
+                                          playerQuest -> getProgress(playerQuest).stash = true);
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("Open Mass Storage"),
-                                      playerQuest -> getProgress(playerQuest).ms),
-                new CheckboxCondition(Component.text("Store Some Diamonds"),
-                                      playerQuest -> getProgress(playerQuest).msDiamonds),
-                new CheckboxCondition(Component.text("Open Stash"),
-                                      playerQuest -> getProgress(playerQuest).stash),
+                condMs,
+                condDiamonds,
+                condStash,
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
@@ -65,27 +74,15 @@ public final class StorageGoal implements Goal {
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.OPEN_MASS_STORAGE) {
-            StorageProgress progress = getProgress(playerQuest);
-            if (!progress.ms) {
-                progress.ms = true;
-                playerQuest.onProgress(progress);
-            }
+            condMs.progress(playerQuest);
         } else if (name == PluginPlayerEvent.Name.STORE_MASS_STORAGE) {
             Material mat = event.getDetail(Detail.MATERIAL, null);
             if (mat == Material.DIAMOND) {
-                StorageProgress progress = getProgress(playerQuest);
                 int amount = Detail.COUNT.get(event, 0);
-                if (!progress.msDiamonds && amount > 0) {
-                    progress.msDiamonds = true;
-                    playerQuest.onProgress(progress);
-                }
+                condDiamonds.progress(playerQuest);
             }
         } else if (name == PluginPlayerEvent.Name.OPEN_STASH) {
-            StorageProgress progress = getProgress(playerQuest);
-            if (!progress.stash) {
-                progress.stash = true;
-                playerQuest.onProgress(progress);
-            }
+            condStash.progress(playerQuest);
         }
     }
 
@@ -99,7 +96,7 @@ public final class StorageGoal implements Goal {
         return playerQuest.getProgress(StorageProgress.class, StorageProgress::new);
     }
 
-    protected final class StorageProgress extends GoalProgress {
+    protected static final class StorageProgress extends GoalProgress {
         boolean ms;
         boolean msDiamonds;
         boolean stash;

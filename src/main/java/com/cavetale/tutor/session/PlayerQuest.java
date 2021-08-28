@@ -108,6 +108,9 @@ public final class PlayerQuest {
         return progressType.cast(currentProgress);
     }
 
+    /**
+     * Happens when they click the [Complete] button.
+     */
     public void onGoalComplete() {
         final int index = quest.goalIndex(currentGoal.getId());
         currentGoal.onComplete(this);
@@ -128,7 +131,6 @@ public final class PlayerQuest {
                 player.showTitle(Title.title(Component.empty(), msg,
                                              Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
                 player.sendMessage(msg);
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
                 Bukkit.getScheduler().runTaskLater(session.sessions.plugin, () -> {
                         if (!player.isOnline()) return;
                         Component msg2 = Component.text()
@@ -139,6 +141,7 @@ public final class PlayerQuest {
                         player.showTitle(Title.title(Component.empty(), msg2,
                                                      Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
                     }, 20L * SECS);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
             }
         }
     }
@@ -158,13 +161,12 @@ public final class PlayerQuest {
         }
     }
 
-    public void onProgress(GoalProgress progress) {
-        currentProgress = progress;
-        if (progress.isComplete()) {
-            onGoalComplete();
+    public void onProgress() {
+        save();
+        Player player = getPlayer();
+        if (currentProgress.isComplete()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
         } else {
-            save();
-            Player player = getPlayer();
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 1.0f, 0.5f);
         }
     }

@@ -14,23 +14,38 @@ public final class WarpGoal implements Goal {
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Component> additionalBookPages;
+    protected final CheckboxCondition condSpawn;
+    protected final CheckboxCondition condListWarps;
+    protected final CheckboxCondition condUseWarp;
+    protected final CheckboxCondition condListVisits;
+    protected final CheckboxCondition condUseVisit;
 
     public WarpGoal() {
         this.id = "warp";
         this.displayName = Component.text("Getting around");
+        condSpawn = new CheckboxCondition(Component.text("Visit spawn"),
+                                          playerQuest -> getProgress(playerQuest).spawn,
+                                          playerQuest -> getProgress(playerQuest).spawn = true);
+        condListWarps = new CheckboxCondition(Component.text("List warps"),
+                                              playerQuest -> getProgress(playerQuest).listWarps,
+                                              playerQuest -> getProgress(playerQuest).listWarps = true);
+        condUseWarp = new CheckboxCondition(Component.text("Use a warp"),
+                                            playerQuest -> getProgress(playerQuest).useWarp,
+                                            playerQuest -> getProgress(playerQuest).useWarp = true,
+                                            playerQuest -> getProgress(playerQuest).listWarps);
+        condListVisits = new CheckboxCondition(Component.text("List public homes"),
+                                               playerQuest -> getProgress(playerQuest).listVisits,
+                                               playerQuest -> getProgress(playerQuest).listVisits = true);
+        condUseVisit = new CheckboxCondition(Component.text("Use a public home"),
+                                             playerQuest -> getProgress(playerQuest).useVisit,
+                                             playerQuest -> getProgress(playerQuest).useVisit = true,
+                                             playerQuest -> getProgress(playerQuest).listVisits);
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("Visit spawn"),
-                                      playerQuest -> getProgress(playerQuest).spawn),
-                new CheckboxCondition(Component.text("List warps"),
-                                      playerQuest -> getProgress(playerQuest).listWarps),
-                new CheckboxCondition(Component.text("Use a warp"),
-                                      playerQuest -> getProgress(playerQuest).useWarp,
-                                      playerQuest -> getProgress(playerQuest).listWarps),
-                new CheckboxCondition(Component.text("List public homes"),
-                                      playerQuest -> getProgress(playerQuest).listVisits),
-                new CheckboxCondition(Component.text("Use a public home"),
-                                      playerQuest -> getProgress(playerQuest).useVisit,
-                                      playerQuest -> getProgress(playerQuest).listVisits),
+                condSpawn,
+                condListWarps,
+                condUseWarp,
+                condListVisits,
+                condUseVisit
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
@@ -74,37 +89,21 @@ public final class WarpGoal implements Goal {
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        WarpProgress progress = getProgress(playerQuest);
         switch (name) {
         case USE_SPAWN:
-            if (!progress.spawn) {
-                progress.spawn = true;
-                playerQuest.onProgress(progress);
-            }
+            condSpawn.progress(playerQuest);
             break;
         case LIST_WARPS:
-            if (!progress.listWarps) {
-                progress.listWarps = true;
-                playerQuest.onProgress(progress);
-            }
+            condListWarps.progress(playerQuest);
             break;
         case USE_WARP:
-            if (!progress.useWarp) {
-                progress.useWarp = true;
-                playerQuest.onProgress(progress);
-            }
+            condUseWarp.progress(playerQuest);
             break;
         case VIEW_PUBLIC_HOMES:
-            if (!progress.listVisits) {
-                progress.listVisits = true;
-                playerQuest.onProgress(progress);
-            }
+            condListVisits.progress(playerQuest);
             break;
         case VISIT_PUBLIC_HOME:
-            if (!progress.useVisit) {
-                progress.useVisit = true;
-                playerQuest.onProgress(progress);
-            }
+            condUseVisit.progress(playerQuest);
             break;
         default: break;
         }
@@ -120,7 +119,7 @@ public final class WarpGoal implements Goal {
         return playerQuest.getProgress(WarpProgress.class, WarpProgress::new);
     }
 
-    protected final class WarpProgress extends GoalProgress {
+    protected static final class WarpProgress extends GoalProgress {
         boolean spawn;
         boolean listWarps;
         boolean useWarp;

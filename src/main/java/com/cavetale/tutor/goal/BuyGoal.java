@@ -16,18 +16,27 @@ public final class BuyGoal implements Goal {
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Component> additionalBookPages;
     private static final int CLAIM_BLOCKS = 2000;
+    protected final CheckboxCondition condShopSearch;
+    protected final CheckboxCondition condShopPort;
+    protected final NumberCondition condBuyClaimBlocks;
 
     public BuyGoal() {
         this.id = "buy";
         this.displayName = Component.text("Spending Coin");
+        condShopSearch = new CheckboxCondition(Component.text("Search the Market"),
+                                               playerQuest -> getProgress(playerQuest).shopSearch,
+                                               playerQuest -> getProgress(playerQuest).shopSearch = true);
+        condShopPort = new CheckboxCondition(Component.text("Port to a Shop Chest"),
+                                             playerQuest -> getProgress(playerQuest).shopPort,
+                                             playerQuest -> getProgress(playerQuest).shopPort = true,
+                                             playerQuest -> getProgress(playerQuest).shopSearch);
+        condBuyClaimBlocks = new NumberCondition(Component.text("Buy Claim Blocks"), CLAIM_BLOCKS,
+                                                 playerQuest -> getProgress(playerQuest).buyClaimBlocks,
+                                                 (playerQuest, amount) -> getProgress(playerQuest).buyClaimBlocks = amount);
         this.conditions = Arrays.asList(new Condition[] {
-                new CheckboxCondition(Component.text("Search the Market"),
-                                      playerQuest -> getProgress(playerQuest).shopSearch),
-                new CheckboxCondition(Component.text("Port to a Shop Chest"),
-                                      playerQuest -> getProgress(playerQuest).shopPort,
-                                      playerQuest -> getProgress(playerQuest).shopSearch),
-                new NumberCondition(Component.text("Buy Claim Blocks"),
-                                    playerQuest -> NumberProgress.of(getProgress(playerQuest).buyClaimBlocks, CLAIM_BLOCKS)),
+                condShopSearch,
+                condShopPort,
+                condBuyClaimBlocks,
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
@@ -70,24 +79,12 @@ public final class BuyGoal implements Goal {
 
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         if (name == PluginPlayerEvent.Name.SHOP_SEARCH) {
-            BuyProgress progress = getProgress(playerQuest);
-            if (!progress.shopSearch) {
-                progress.shopSearch = true;
-                playerQuest.onProgress(progress);
-            }
+            condShopSearch.progress(playerQuest);
         } else if (name == PluginPlayerEvent.Name.SHOP_SEARCH_PORT) {
-            BuyProgress progress = getProgress(playerQuest);
-            if (!progress.shopPort) {
-                progress.shopPort = true;
-                playerQuest.onProgress(progress);
-            }
+            condShopPort.progress(playerQuest);
         } else if (name == PluginPlayerEvent.Name.BUY_CLAIM_BLOCKS) {
-            BuyProgress progress = getProgress(playerQuest);
             int amount = event.getDetail(Detail.COUNT, 0);
-            if (progress.buyClaimBlocks < CLAIM_BLOCKS && amount > 0) {
-                progress.buyClaimBlocks = Math.min(CLAIM_BLOCKS, progress.buyClaimBlocks + amount);
-                playerQuest.onProgress(progress);
-            }
+            condBuyClaimBlocks.progress(playerQuest, amount);
         }
     }
 
@@ -101,7 +98,7 @@ public final class BuyGoal implements Goal {
         return playerQuest.getProgress(BuyProgress.class, BuyProgress::new);
     }
 
-    protected final class BuyProgress extends GoalProgress {
+    protected static final class BuyProgress extends GoalProgress {
         boolean shopSearch;
         boolean shopPort;
         int buyClaimBlocks;
