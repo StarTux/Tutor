@@ -8,7 +8,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public final class WarpGoal implements Goal {
     @Getter protected final String id;
@@ -33,19 +32,41 @@ public final class WarpGoal implements Goal {
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
+                        Component.text("Get back to the place you started any time."
+                                       + " There are many warps, merchants, and secrets to be discovered."
+                                       + "\n\nCommand:\n"),
+                        Component.text("/spawn", NamedTextColor.DARK_BLUE),
+                        Component.text("\nTeleport to spawn.", NamedTextColor.GRAY),
+                    }),
+                TextComponent.ofChildren(new Component[] {
                         Component.text("Warps can take you to key locations on the server."
                                        + " They are public places setup by the admins."
-                                       + "\n\nCommands:"),
-                        Component.text("/warp", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                                       + "\n\nCommand:"),
+                        Component.text("/warp", NamedTextColor.DARK_BLUE),
                         Component.text("\nView the warp list. Click to warp.", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Public homes are made by players."
                                        + " Anyone can turn their named home into a public homes."
                                        + "\n\nCommands:"),
-                        Component.text("/visit", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/visit", NamedTextColor.DARK_BLUE),
                         Component.text("\nView the public home list. Click to teleport.", NamedTextColor.GRAY),
                     }),
+            });
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(150L,
+                                    Component.text("Sharing is caring,"),
+                                    Component.text("and we can share our"),
+                                    Component.text("homes with others."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("There are public homes"),
+                                    Component.text("and public warps."));
+                pet.addSpeechBubble(60L,
+                                    Component.text("Let's check them out!"));
             });
     }
 

@@ -63,10 +63,10 @@ public final class MineGoal implements Goal, Listener {
                 }),
             TextComponent.ofChildren(new Component[] {
                     Component.text("Mining World Commands:"),
-                    Component.text("\n/mine", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                    Component.text("\n/mine", NamedTextColor.DARK_BLUE),
                     Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
                     Component.newline(),
-                    Component.text("\n/mine random", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                    Component.text("\n/mine random", NamedTextColor.DARK_BLUE),
                     Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
                 }),
             // Dungeons

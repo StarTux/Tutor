@@ -121,6 +121,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Ticket -->
+    <dependency>
+      <groupId>com.winthier.ticket</groupId>
+      <artifactId>ticket</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- ProtocolLib -->
     <dependency>
       <groupId>com.comphenix.protocol</groupId>

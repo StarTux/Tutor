@@ -1,21 +1,45 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goals;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 
 public enum QuestName {
-    BEGINNER(Component.text("Beginner"), "group.trusted"),
-    TEST(Component.text("Test!!!"));
+    BEGINNER(Component.text("Welcome to Cavetale!"), "group.trusted"),
+    ORIENTATION(Component.text("Beginner Tour"), QuestName.BEGINNER),
+    MONEY(Component.text("All About Money"), QuestName.BEGINNER),
+    MEMBER(Component.text("The Road to Member"), QuestName.MONEY, QuestName.ORIENTATION);
 
     public final String key;
     public final Component displayName;
     public final String autoStartPermission;
+    public final Set<QuestName> dependencies;
 
-    QuestName(final Component displayName, final String autoStartPermission) {
+    QuestName(final Component displayName, final String autoStartPermission, final Set<QuestName> dependencies) {
         this.key = name().toLowerCase();
         this.displayName = displayName;
         this.autoStartPermission = autoStartPermission;
+        this.dependencies = dependencies;
+    }
+
+    private static HashSet<QuestName> setOf(final QuestName dep, final QuestName... deps) {
+        HashSet<QuestName> result = new HashSet<>();
+        result.add(dep);
+        for (var dep1 : deps) {
+            result.add(dep1);
+        }
+        return result;
+    }
+
+    QuestName(final Component displayName, final QuestName dep, final QuestName... deps) {
+        this(displayName, (String) null, setOf(dep, deps));
+    }
+
+    QuestName(final Component displayName, final String autoStartPermission) {
+        this(displayName, autoStartPermission, Collections.emptySet());
     }
 
     QuestName(final Component displayName) {

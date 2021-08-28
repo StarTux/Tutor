@@ -141,6 +141,16 @@ public final class Session {
         return playerQuest;
     }
 
+    public void questComplete(QuestName questName) {
+        removeQuest(questName);
+        if (!completedQuests.containsKey(questName)) {
+            SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
+            completedQuests.put(questName, newRow);
+            plugin.getDatabase().insertAsync(newRow, null);
+        }
+        triggerAutomaticQuests();
+    }
+
     public PlayerQuest removeQuest(QuestName questName) {
         PlayerQuest playerQuest = currentQuests.remove(questName);
         if (playerQuest != null) {
@@ -208,6 +218,7 @@ public final class Session {
     }
 
     public void triggerAutomaticQuests() {
+        if (!currentQuests.isEmpty()) return;
         Player player = Objects.requireNonNull(getPlayer());
         for (QuestName questName : QuestName.values()) {
             if (questName.autoStartPermission == null) continue;
@@ -216,6 +227,21 @@ public final class Session {
             if (!player.isPermissionSet(questName.autoStartPermission)) continue;
             if (!player.hasPermission(questName.autoStartPermission)) continue;
             startQuest(questName);
+            return;
+        }
+        for (QuestName questName : QuestName.values()) {
+            if (!completedQuests.containsKey(questName) && canSee(questName)) {
+                if (pet != null) {
+                    pet.addSpeechBubble(150L,
+                                        Component.text("There are more"),
+                                        Component.text("tutorials waiting"),
+                                        Component.text("for you!"));
+                    pet.addSpeechBubble(150L,
+                                        Component.text("Click me or type"),
+                                        Component.text("/tutor", NamedTextColor.YELLOW));
+                }
+                return;
+            }
         }
     }
 
@@ -306,7 +332,7 @@ public final class Session {
                             Component.text("Access pet options", NamedTextColor.GRAY),
                         }));
             });
-        gui.setItem(9 + 4, petItem, click -> {
+        gui.setItem(9 + 5, petItem, click -> {
                 if (!click.isLeftClick()) return;
                 Noise.CLICK.play(player);
                 openPetSettingsMenu(player);
@@ -320,12 +346,19 @@ public final class Session {
                         }));
                 meta.addItemFlags(ItemFlag.values());
             });
-        gui.setItem(9 + 2, questsItem, click -> {
+        gui.setItem(9 + 3, questsItem, click -> {
                 if (!click.isLeftClick()) return;
                 Noise.CLICK.play(player);
                 openQuestsMenu(player);
             });
         gui.open(player);
+    }
+
+    private boolean canSee(QuestName questName) {
+        for (QuestName dep : questName.dependencies) {
+            if (!completedQuests.containsKey(dep)) return false;
+        }
+        return true;
     }
 
     public void openQuestsMenu(Player player) {
@@ -346,21 +379,46 @@ public final class Session {
         }
         // Completed Quest List
         int index = 0;
-        for (Map.Entry<QuestName, SQLCompletedQuest> entry : completedQuests.entrySet()) {
-            QuestName questName = entry.getKey();
-            Quest quest = plugin.getQuests().get(questName);
-            ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
-            item.editMeta(meta -> {
-                    meta.displayName(quest.getDisplayName());
-                    meta.lore(Arrays.asList(new Component[] {
-                                Component.text("Completed", NamedTextColor.GRAY),
-                            }));
-                    meta.addItemFlags(ItemFlag.values());
-                });
-            gui.setItem(9 + index++, item, click -> {
-                    if (!click.isLeftClick()) return;
-                    openCompletedQuestBook(player, quest);
-                });
+        for (QuestName questName : QuestName.values()) {
+            if (currentQuests.containsKey(questName)) {
+                continue;
+            } else if (completedQuests.containsKey(questName)) {
+                Quest quest = plugin.getQuests().get(questName);
+                ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
+                item.editMeta(meta -> {
+                        meta.displayName(quest.getDisplayName());
+                        meta.lore(Arrays.asList(new Component[] {
+                                    Component.text("Completed", NamedTextColor.GRAY),
+                                }));
+                        meta.addItemFlags(ItemFlag.values());
+                    });
+                gui.setItem(9 + index++, item, click -> {
+                        if (!click.isLeftClick()) return;
+                        Noise.CLICK.play(player);
+                        openCompletedQuestBook(player, quest);
+                    });
+            } else if (canSee(questName)) {
+                Quest quest = plugin.getQuests().get(questName);
+                ItemStack item = Mytems.STAR.createIcon();
+                item.editMeta(meta -> {
+                        meta.displayName(quest.getDisplayName());
+                        meta.lore(Arrays.asList(new Component[] {
+                                    Component.text("Start this tutorial?", NamedTextColor.GRAY),
+                                }));
+                    });
+                gui.setItem(9 + index++, item, click -> {
+                        if (!click.isLeftClick()) return;
+                        Noise.CLICK.play(player);
+                        if (!currentQuests.isEmpty()) {
+                            player.sendMessage(Component.text("You already have a quest!"));
+                            return;
+                        }
+                        if (!currentQuests.containsKey(questName)) {
+                            startQuest(quest);
+                        }
+                        player.closeInventory();
+                    });
+            }
         }
         //
         gui.setItem(Gui.OUTSIDE, null, click -> {

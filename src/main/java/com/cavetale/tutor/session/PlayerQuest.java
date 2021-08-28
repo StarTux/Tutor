@@ -4,13 +4,13 @@ import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.goal.GoalProgress;
-import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import java.time.Duration;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -144,13 +144,13 @@ public final class PlayerQuest {
     }
 
     public void onQuestComplete() {
-        session.removeQuest(quest.getName());
-        SQLCompletedQuest newRow = new SQLCompletedQuest(session.uuid, quest);
-        session.completedQuests.put(quest.getName(), newRow);
-        session.sessions.plugin.getDatabase().saveAsync(newRow, null);
+        session.questComplete(quest.getName());
         Player player = getPlayer();
         if (player != null) {
-            Component msg = Component.text("Tutorial complete", NamedTextColor.DARK_AQUA);
+            Component msg = TextComponent.ofChildren(new Component[] {
+                    Component.text("Tutorial complete: ", NamedTextColor.DARK_AQUA),
+                    quest.getDisplayName(),
+                });
             player.sendMessage(msg);
             player.showTitle(Title.title(Component.empty(), msg,
                                          Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));

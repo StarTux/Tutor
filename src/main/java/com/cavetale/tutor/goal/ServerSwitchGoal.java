@@ -11,7 +11,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public final class ServerSwitchGoal implements Goal {
     @Getter private final String id;
@@ -39,17 +38,34 @@ public final class ServerSwitchGoal implements Goal {
                         Component.space(),
                         Component.text("To visit each server, use the following commands:"),
                         Component.newline(),
-                        Component.text("/cavetale", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/cavetale", NamedTextColor.DARK_BLUE),
                         Component.newline(),
-                        Component.text("/hub", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/hub", NamedTextColor.DARK_BLUE),
                         Component.newline(),
-                        Component.text("/creative", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/creative", NamedTextColor.DARK_BLUE),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("View a list of all available servers with the "),
-                        Component.text("/server", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/server", NamedTextColor.DARK_BLUE),
                         Component.text(" command."),
                     }),
+            });
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(100L,
+                                    Component.text("This is the main"),
+                                    Component.text("survival server,"),
+                                    Component.text("but there are more."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Just like warps, you"),
+                                    Component.text("should know how to"),
+                                    Component.text("get to each one."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Remember this command:"),
+                                    Component.text("/server", NamedTextColor.YELLOW));
             });
     }
 

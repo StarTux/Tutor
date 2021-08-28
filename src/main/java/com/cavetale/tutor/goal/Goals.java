@@ -17,15 +17,21 @@ public final class Goals {
                 new ChoosePetGoal(),
                 new WildGoal(),
                 new SetHomeGoal(),
-                new SpawnGoal(),
-                new ServerSwitchGoal(),
-                new LocalChatGoal(),
             });
-        case TEST: return Arrays.asList(new Goal[] {
+        case ORIENTATION: return Arrays.asList(new Goal[] {
+                new LocalChatGoal(),
                 new WarpGoal(),
+                new ServerSwitchGoal(),
+            });
+        case MONEY: return Arrays.asList(new Goal[] {
+                new MineGoal(),
                 new StorageGoal(),
                 new SellItemGoal(),
-                new MineGoal(),
+                new BuyGoal(),
+            });
+        case MEMBER: return Arrays.asList(new Goal[] {
+                new TicketGoal(),
+                new MenuGoal(),
             });
         default:
             throw new IllegalStateException("Quest not defined: " + name);

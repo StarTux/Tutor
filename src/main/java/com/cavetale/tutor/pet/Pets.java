@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -194,8 +195,19 @@ public final class Pets implements Listener {
         Pet pet = entityPetMap.get(event.getEntity().getEntityId());
         if (pet == null) return;
         event.setCancelled(true);
+        if (pet.autoRespawn || pet.spawnOnce) {
+            pet.autoRespawnCooldown = System.currentTimeMillis() + 10000L;
+            if (pet.tag == null && event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent eedbee = (EntityDamageByEntityEvent) event;
+                if (Objects.equals(pet.ownerId, eedbee.getDamager().getUniqueId())) {
+                    pet.autoRespawnCooldown = System.currentTimeMillis() + 30000L;
+                    pet.resetSpeechBubbles();
+                }
+            }
+        } else {
+            pet.autoRespawnCooldown = 0L;
+        }
         pet.despawn();
-        pet.autoRespawnCooldown = System.currentTimeMillis() + 10000L;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

@@ -38,7 +38,7 @@ public final class LocalChatGoal implements Goal {
                 .append(Component.newline())
                 .append(Component.newline())
                 .append(Component.text("View the channel list via "))
-                .append(Component.text("/ch list", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("/ch list", NamedTextColor.DARK_BLUE))
                 .append(Component.text("."))
                 .build(),
                 Component.text().content("Local chat has a range of ")
@@ -50,10 +50,10 @@ public final class LocalChatGoal implements Goal {
                 .append(Component.text("Or you can focus on a channel to speak in there."))
                 .append(Component.newline())
                 .append(Component.newline())
-                .append(Component.text("/g", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("/g", NamedTextColor.DARK_BLUE))
                 .append(Component.text(" - Use global chat", NamedTextColor.DARK_GRAY))
                 .append(Component.newline())
-                .append(Component.text("/l", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("/l", NamedTextColor.DARK_BLUE))
                 .append(Component.text(" - Use local chat (500 blocks)", NamedTextColor.DARK_GRAY))
                 .build(),
                 Component.text().content("Chat has many settings.")
@@ -62,9 +62,29 @@ public final class LocalChatGoal implements Goal {
                 .append(Component.space())
                 .append(Component.text("Returning to the default settings is easy."))
                 .append(Component.newline())
-                .append(Component.text("/ch set", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+                .append(Component.text("/ch set", NamedTextColor.DARK_BLUE))
                 .append(Component.text(" - Open chat settings", NamedTextColor.DARK_GRAY))
                 .build(),
+            });
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(180L,
+                                    Component.text("Chatting is simple"),
+                                    Component.text("but with many players"),
+                                    Component.text("online, we must learn"),
+                                    Component.text("about channels."));
+                pet.addSpeechBubble(180L,
+                                    Component.text("When a conversation is"),
+                                    Component.text("not relevant to everyone,"),
+                                    Component.text("it's best to keep it in"),
+                                    Component.text("local, private, or party"),
+                                    Component.text("chat."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Remember this command:"),
+                                    Component.text("/ch", NamedTextColor.YELLOW));
             });
     }
 

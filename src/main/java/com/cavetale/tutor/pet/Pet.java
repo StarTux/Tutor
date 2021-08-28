@@ -35,6 +35,7 @@ public final class Pet {
     @Setter protected PetType type;
     @Setter protected boolean exclusive;
     @Setter protected boolean autoRespawn;
+    @Setter protected boolean spawnOnce;
     @Setter protected AutoRespawnRule autoRespawnRule = AutoRespawnRule.AREA;
     @Setter protected boolean collidable;
     @Setter protected double ownerDistance;
@@ -70,6 +71,7 @@ public final class Pet {
             throw new IllegalStateException("type=" + type);
         }
         triggerSpeechBubble();
+        spawnOnce = false;
     }
 
     public void teleport(Location location) {
@@ -108,11 +110,13 @@ public final class Pet {
         if (currentSpeechBubble != null) return;
         if (entity == null) return;
         if (speechBubbleQueue.isEmpty()) return;
-        currentSpeechBubble = speechBubbleQueue.remove(0);
+        final SpeechBubble theSpeechBubble = speechBubbleQueue.remove(0);
+        currentSpeechBubble = theSpeechBubble;
         currentSpeechBubble.enable();
         for (int i = 0; i < 5; i += 1) {
             Bukkit.getScheduler().runTaskLater(pets.plugin, () -> {
                     if (!isSpawned() || !isValid()) return;
+                    if (theSpeechBubble.isDisabled()) return;
                     Player owner = Bukkit.getPlayer(ownerId);
                     type.voice.play(owner, entity.getLocation());
                 }, (long) i * 8L);
@@ -125,6 +129,12 @@ public final class Pet {
         speechBubbleQueue.add(speechBubble);
         if (currentSpeechBubble == null) {
             triggerSpeechBubble();
+        }
+        if (!isSpawned()) {
+            if (!autoRespawn) {
+                spawnOnce = true;
+            }
+            autoRespawnCooldown = 0L;
         }
     }
 
@@ -155,7 +165,7 @@ public final class Pet {
         living.setCustomNameVisible(customNameVisible);
         if (living instanceof Mob) {
             Mob mob = (Mob) living;
-            for (Goal goal : Bukkit.getMobGoals().getAllGoals(mob)) {
+            for (Goal<Mob> goal : Bukkit.getMobGoals().getAllGoals(mob)) {
                 if (!goal.getKey().getNamespacedKey().getKey().equals("look_at_player")) {
                     Bukkit.getMobGoals().removeGoal(mob, goal);
                 }
@@ -239,7 +249,7 @@ public final class Pet {
                 }
             }
         } else { // if (entity == null) {
-            if (autoRespawn) {
+            if (autoRespawn || spawnOnce) {
                 if (now < autoRespawnCooldown) return;
                 tryToAutoRespawn(owner);
                 if (entity != null) {

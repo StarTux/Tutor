@@ -10,7 +10,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 
 public final class WildGoal implements Goal {
@@ -35,7 +34,7 @@ public final class WildGoal implements Goal {
         Component[] pages = new Component[] {
             Component.text()
             .append(Component.text("You can type "))
-            .append(Component.text("/wild", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+            .append(Component.text("/wild", NamedTextColor.DARK_BLUE))
             .append(Component.text(" in order to find a nice place for you to start your base."))
             .append(Component.space())
             .append(Component.text("This will teleport you to a random place in the main build world."))
@@ -43,7 +42,7 @@ public final class WildGoal implements Goal {
             .append(Component.text("You can repeat the command as often as you like.")).build(),
             Component.text()
             .append(Component.text("Once you have found a place you like, type "))
-            .append(Component.text("/claim new", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+            .append(Component.text("/claim new", NamedTextColor.DARK_BLUE))
             .append(Component.text(" to claim the area as your own."))
             .append(Component.space())
             .append(Component.text("You can grow the claim further out later on.")).build(),

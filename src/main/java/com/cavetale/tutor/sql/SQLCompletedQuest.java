@@ -1,6 +1,6 @@
 package com.cavetale.tutor.sql;
 
-import com.cavetale.tutor.Quest;
+import com.cavetale.tutor.QuestName;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -26,9 +26,9 @@ public final class SQLCompletedQuest {
 
     public SQLCompletedQuest() { }
 
-    public SQLCompletedQuest(final UUID playerUuid, final Quest quest) {
+    public SQLCompletedQuest(final UUID playerUuid, final QuestName questName) {
         this.player = playerUuid;
-        this.quest = quest.getName().key;
+        this.quest = questName.key;
         this.time = new Date();
     }
 }

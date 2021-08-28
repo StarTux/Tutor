@@ -9,7 +9,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 
 public final class SellItemGoal implements Goal {
@@ -32,12 +31,27 @@ public final class SellItemGoal implements Goal {
                                        + " The menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
                                        + "\n\nCommands:\n"),
-                        Component.text("/sell", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/sell", NamedTextColor.DARK_BLUE),
                         Component.text("\nOpen the sell menu", NamedTextColor.GRAY),
                         Component.newline(),
-                        Component.text("/money", NamedTextColor.DARK_BLUE, TextDecoration.BOLD),
+                        Component.text("/money", NamedTextColor.DARK_BLUE),
                         Component.text("\nCheck your balance", NamedTextColor.GRAY),
                     }),
+            });
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(100L,
+                                    Component.text("Time to learn about coins!"));
+                pet.addSpeechBubble(150L,
+                                    Component.text("The best way to earn some"),
+                                    Component.text("coin is to sell valueable"),
+                                    Component.text("items to the bank."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Remember this command:"),
+                                    Component.text("/sell", NamedTextColor.YELLOW));
             });
     }
 

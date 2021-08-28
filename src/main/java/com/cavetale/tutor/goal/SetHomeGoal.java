@@ -2,13 +2,14 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
+import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 
 public final class SetHomeGoal implements Goal {
@@ -32,11 +33,11 @@ public final class SetHomeGoal implements Goal {
         Component[] pages = new Component[] {
             Component.text()
             .append(Component.text("Set your primary home via "))
-            .append(Component.text("/sethome", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+            .append(Component.text("/sethome", NamedTextColor.DARK_BLUE))
             .append(Component.text(". You can change it any time with the same command."))
             .append(Component.space())
             .append(Component.text("A home is a place you can visit any time via "))
-            .append(Component.text("/home", NamedTextColor.DARK_BLUE, TextDecoration.BOLD))
+            .append(Component.text("/home", NamedTextColor.DARK_BLUE))
             .append(Component.text("."))
             .append(Component.newline())
             .append(Component.newline())
@@ -44,6 +45,27 @@ public final class SetHomeGoal implements Goal {
         };
         conditions = Arrays.asList(conds);
         additionalBookPages = Arrays.asList(pages);
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(100L,
+                                    Component.text("You can port to your"),
+                                    Component.text("claim, but it's much"),
+                                    Component.text("simpler to set a home!"));
+                pet.addSpeechBubble(100L,
+                                    Component.text("You have one default home"),
+                                    Component.text("and any number of named homes."));
+                pet.addSpeechBubble(100L,
+                                    Component.text("Remember these commands:"),
+                                    Component.text("/sethome", NamedTextColor.YELLOW),
+                                    Component.text("/home", NamedTextColor.YELLOW));
+                pet.addSpeechBubble(100L, TextComponent.ofChildren(new Component[] {
+                            Component.text("This will come up a lot "),
+                            Mytems.WINK.component,
+                        }));
+            });
     }
 
     private void onSkip(PlayerQuest playerQuest) {
