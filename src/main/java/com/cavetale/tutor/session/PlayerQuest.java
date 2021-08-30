@@ -11,9 +11,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -47,8 +48,7 @@ public final class PlayerQuest {
                 .append(currentGoal.getDisplayName())
                 .build();
             player.sendMessage(msg);
-            player.showTitle(Title.title(Component.empty(), msg,
-                                         Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+            player.sendActionBar(msg);
         }
     }
 
@@ -59,6 +59,7 @@ public final class PlayerQuest {
         currentProgress = currentGoal.newProgress();
         row.setGoal(currentGoal.getId());
         row.setProgress(currentProgress.serialize());
+        currentGoal.onBegin(this);
     }
 
     /**
@@ -74,6 +75,9 @@ public final class PlayerQuest {
         }
         currentGoal.getProgress(this);
         currentGoal.onEnable(this);
+        if (currentProgress.isComplete()) {
+            completeQuestReminder(getPlayer());
+        }
     }
 
     public void save() {
@@ -111,7 +115,7 @@ public final class PlayerQuest {
     /**
      * Happens when they click the [Complete] button.
      */
-    public void onGoalComplete() {
+    public void onGoalComplete(Player player) {
         final int index = quest.goalIndex(currentGoal.getId());
         currentGoal.onComplete(this);
         currentGoal.onDisable(this);
@@ -125,24 +129,13 @@ public final class PlayerQuest {
             initializeCurrentGoal();
             currentGoal.onEnable(this);
             save();
-            Player player = getPlayer();
-            if (player != null) {
-                Component msg = Component.text("Goal complete", NamedTextColor.DARK_AQUA);
-                player.showTitle(Title.title(Component.empty(), msg,
-                                             Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
-                player.sendMessage(msg);
-                Bukkit.getScheduler().runTaskLater(session.sessions.plugin, () -> {
-                        if (!player.isOnline()) return;
-                        Component msg2 = Component.text()
-                            .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
-                            .append(newGoal.getDisplayName())
-                            .build();
-                        player.sendMessage(msg2);
-                        player.showTitle(Title.title(Component.empty(), msg2,
-                                                     Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
-                    }, 20L * SECS);
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
-            }
+            Component msg = Component.text()
+                .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
+                .append(newGoal.getDisplayName())
+                .build();
+            player.sendMessage(msg);
+            player.sendActionBar(msg);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
         }
     }
 
@@ -166,8 +159,21 @@ public final class PlayerQuest {
         Player player = getPlayer();
         if (currentProgress.isComplete()) {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
+            completeQuestReminder(player);
         } else {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 1.0f, 0.5f);
         }
+    }
+
+    private void completeQuestReminder(Player player) {
+        player.sendMessage(Component.text().content("You completed a tutorial page!")
+                           .append(Component.newline())
+                           .append(Component.text("Talk to your pet or type "))
+                           .append(Component.text().content("/tutor").color(NamedTextColor.YELLOW)
+                                   .clickEvent(ClickEvent.runCommand("/tutor"))
+                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor", NamedTextColor.YELLOW))))
+                           .append(Component.text(" to continue."))
+                           .color(NamedTextColor.AQUA)
+                           .build());
     }
 }

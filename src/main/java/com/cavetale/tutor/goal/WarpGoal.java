@@ -36,10 +36,15 @@ public final class WarpGoal implements Goal {
         condListVisits = new CheckboxCondition(Component.text("List public homes"),
                                                playerQuest -> getProgress(playerQuest).listVisits,
                                                playerQuest -> getProgress(playerQuest).listVisits = true);
-        condUseVisit = new CheckboxCondition(Component.text("Use a public home"),
+        condUseVisit = new CheckboxCondition(Component.text("Visit a public home"),
                                              playerQuest -> getProgress(playerQuest).useVisit,
                                              playerQuest -> getProgress(playerQuest).useVisit = true,
                                              playerQuest -> getProgress(playerQuest).listVisits);
+        condSpawn.setBookPageIndex(0);
+        condListWarps.setBookPageIndex(1);
+        condUseWarp.setBookPageIndex(1);
+        condListVisits.setBookPageIndex(2);
+        condUseVisit.setBookPageIndex(2);
         this.conditions = Arrays.asList(new Condition[] {
                 condSpawn,
                 condListWarps,
@@ -48,23 +53,23 @@ public final class WarpGoal implements Goal {
                 condUseVisit
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Get back to the place you started any time."
                                        + " There are portals, merchants, and secrets to be discovered."
                                        + "\n\nCommand:\n"),
                         Component.text("/spawn", NamedTextColor.DARK_BLUE),
                         Component.text("\nTeleport to spawn", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Warps can take you to key locations on the server."
-                                       + " They are public places setup by the admins."
+                                       + " They are public places set up by our staff."
                                        + "\n\nCommand:\n"),
                         Component.text("/warp", NamedTextColor.DARK_BLUE),
                         Component.text("\nView the warp list. Click to warp", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Public homes are made by players."
-                                       + " Anyone can turn their named home into a public homes."
+                                       + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),
                         Component.text("/visit", NamedTextColor.DARK_BLUE),
                         Component.text("\nView the public home list. Click to teleport", NamedTextColor.GRAY),
@@ -74,17 +79,19 @@ public final class WarpGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(150L,
-                                    Component.text("Sharing is caring,"),
-                                    Component.text("and we can share our"),
-                                    Component.text("homes with others."));
-                pet.addSpeechBubble(100L,
-                                    Component.text("There are public homes"),
-                                    Component.text("and public warps."));
-                pet.addSpeechBubble(60L,
-                                    Component.text("Let's check them out!"));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 150L,
+                                        Component.text("Sharing is caring,"),
+                                        Component.text("and we can share our"),
+                                        Component.text("homes with others."));
+                    pet.addSpeechBubble(100L,
+                                        Component.text("There are public homes"),
+                                        Component.text("and public warps."));
+                    pet.addSpeechBubble(60L,
+                                        Component.text("Let's check them out!"));
+                });
+        }
     }
 
     @Override

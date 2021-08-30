@@ -54,6 +54,11 @@ public interface Goal {
     default void onDisable(PlayerQuest playerQuest) { }
 
     /**
+     * Called by PlayerQuest when a new goal is started.
+     */
+    default void onBegin(PlayerQuest playerQuest) { }
+
+    /**
      * Called by PlayerQuest when this goal is successfully completed.
      */
     default void onComplete(PlayerQuest playerQuest) { }
@@ -81,7 +86,7 @@ public interface Goal {
                   .build());
         lines.add(Component.text()
                   .append(Component.text("Tutorial ", NamedTextColor.GRAY))
-                  .append(Component.text("[Menu]", NamedTextColor.BLUE))
+                  .append(Component.text("[Back]", NamedTextColor.BLUE))
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
                   .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE)))
                   .build());
@@ -92,7 +97,24 @@ public interface Goal {
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
             if (!condition.isVisible(playerQuest)) continue;
-            lines.add(condition.toComponent(playerQuest, Background.LIGHT));
+            Component conditionComponent = condition.toComponent(playerQuest, Background.LIGHT);
+            if (!(condition instanceof ClickableCondition)) {
+                // Generate tooltip
+                if (condition.hasBookPage()) {
+                    // With book page changer
+                    int toPage = condition.getBookPageIndex() + 2;
+                    conditionComponent = conditionComponent
+                        .hoverEvent(HoverEvent.showText(Component.join(Component.newline(),
+                                                                       condition.toComponent(playerQuest, Background.DARK),
+                                                                       Component.text("Page " + toPage, NamedTextColor.GRAY))))
+                        .clickEvent(ClickEvent.changePage(toPage));
+                } else {
+                    // Without book page changer
+                    conditionComponent = conditionComponent
+                        .hoverEvent(HoverEvent.showText(condition.toComponent(playerQuest, Background.DARK)));
+                }
+            }
+            lines.add(conditionComponent);
         }
         if (playerQuest.getCurrentProgress().isComplete()) {
             lines.add(Component.text()

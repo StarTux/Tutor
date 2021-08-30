@@ -1,8 +1,10 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goals;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
@@ -12,6 +14,7 @@ public enum QuestName {
     ORIENTATION(Component.text("Beginner Tour"), QuestName.BEGINNER),
     MONEY(Component.text("All About Money"), QuestName.BEGINNER),
     MEMBER(Component.text("The Road to Member"), QuestName.MONEY, QuestName.ORIENTATION);
+    public static final List<String> KEY_LIST;
 
     public final String key;
     public final Component displayName;
@@ -23,6 +26,14 @@ public enum QuestName {
         this.displayName = displayName;
         this.autoStartPermission = autoStartPermission;
         this.dependencies = dependencies;
+    }
+
+    static {
+        List<String> keys = new ArrayList<>();
+        for (QuestName it : QuestName.values()) {
+            keys.add(it.key);
+        }
+        KEY_LIST = Collections.unmodifiableList(keys);
     }
 
     private static HashSet<QuestName> setOf(final QuestName dep, final QuestName... deps) {

@@ -22,6 +22,7 @@ public final class MenuGoal implements Goal {
         condMenu = new CheckboxCondition(Component.text("View the Menu"),
                                          playerQuest -> getProgress(playerQuest).menu,
                                          playerQuest -> getProgress(playerQuest).menu = true);
+        condMenu.setBookPageIndex(0);
         this.conditions = Arrays.asList(new Condition[] {
                 condMenu,
             });
@@ -39,12 +40,14 @@ public final class MenuGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100L, Component.text("There's so much more..."));
-                pet.addSpeechBubble(100L,
-                                    Component.text("It's best you explore a"),
-                                    Component.text("little at your own pace."));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 100L, Component.text("There's so much more..."));
+                    pet.addSpeechBubble(100L,
+                                        Component.text("It's best you explore a"),
+                                        Component.text("little at your own pace."));
+                });
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -20,6 +21,7 @@ public final class CheckboxCondition implements Condition {
     @NonNull protected final Function<PlayerQuest, Boolean> checkedGetter;
     @NonNull protected final Consumer<PlayerQuest> checkedSetter;
     protected final Function<PlayerQuest, Boolean> visibleGetter;
+    @Getter @Setter protected int bookPageIndex = -1;
 
     public CheckboxCondition(final Component description,
                              final Function<PlayerQuest, Boolean> checkedGetter,
@@ -33,7 +35,7 @@ public final class CheckboxCondition implements Condition {
         return Component.text()
             .append(checked
                     ? Component.text(Unicode.CHECKED_CHECKBOX.character, background.green)
-                    : Component.text(Unicode.CHECKBOX.character, background.red))
+                    : Component.text(Unicode.CHECKBOX.character, background.gray))
             .append(Component.space())
             .append(description)
             .build();
@@ -67,5 +69,10 @@ public final class CheckboxCondition implements Condition {
         setComplete(playerQuest);
         playerQuest.onProgress();
         return true;
+    }
+
+    @Override
+    public boolean hasBookPage() {
+        return bookPageIndex >= 0;
     }
 }

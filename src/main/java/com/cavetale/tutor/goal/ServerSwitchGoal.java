@@ -29,16 +29,20 @@ public final class ServerSwitchGoal implements Goal {
                                              playerQuest -> getProgress(playerQuest).creative = true);
         condCavetale = new CheckboxCondition(Component.text("Return to Cavetale"),
                                              playerQuest -> getProgress(playerQuest).cavetale,
-                                             playerQuest -> getProgress(playerQuest).cavetale = true);
+                                             playerQuest -> getProgress(playerQuest).cavetale = true,
+                                             playerQuest -> getProgress(playerQuest).readyForCavetale());
         this.conditions = Arrays.asList(new Condition[] {
                 condHub,
                 condCreative,
                 condCavetale,
             });
+        condHub.setBookPageIndex(0);
+        condCreative.setBookPageIndex(0);
+        condCavetale.setBookPageIndex(0);
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
-                        Component.text("Cavetale is the main survival server, but we offer several others"
+                        Component.text("Cavetale is the main server, but we offer several others"
                                        + " with various gamemodes on them."
                                        + " There is also the hub, creative, and many mini games."),
                         Component.text("\n\nCommands:\n"),
@@ -48,20 +52,20 @@ public final class ServerSwitchGoal implements Goal {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Server Commands:\n"),
                         Component.text("/hub", NamedTextColor.DARK_BLUE),
-                        Component.text("\nWhere you spawn when other servers go down\n\n", NamedTextColor.GRAY),
+                        Component.text("\nThe lobby when you disconnect from other servers\n\n", NamedTextColor.GRAY),
                         Component.text("/creative", NamedTextColor.DARK_BLUE),
-                        Component.text("\nBuild in creative mode\n\n", NamedTextColor.GRAY),
+                        Component.text("\nOur creative mode server\n\n", NamedTextColor.GRAY),
                         Component.text("/cavetale", NamedTextColor.DARK_BLUE),
-                        Component.text("\nThe main survival server", NamedTextColor.GRAY),
+                        Component.text("\nThe main server", NamedTextColor.GRAY),
                     }),
             });
     }
 
     @Override
-    public void onEnable(PlayerQuest playerQuest) {
+    public void onBegin(PlayerQuest playerQuest) {
         playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100L,
-                                    Component.text("This is the main"),
+                pet.addSpeechBubble(50L, 100L,
+                                    Component.text("You know the main"),
                                     Component.text("survival server,"),
                                     Component.text("but there are more."));
                 pet.addSpeechBubble(100L,
@@ -112,6 +116,10 @@ public final class ServerSwitchGoal implements Goal {
             return hub
                 && creative
                 && cavetale;
+        }
+
+        protected boolean readyForCavetale() {
+            return hub && creative;
         }
     }
 }

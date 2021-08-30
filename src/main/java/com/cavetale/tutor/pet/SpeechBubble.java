@@ -5,19 +5,24 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 @Getter @RequiredArgsConstructor
 public final class SpeechBubble {
+    protected long created = System.currentTimeMillis();
     private final Pet pet;
     private final List<ArmorStand> armorStands = new ArrayList<>();
     private boolean disabled;
     private List<Component> lines;
     private long lifetime;
+    @Setter private long warmup;
 
     private Location getArmorStandLocation(int index, int total) {
         double offset = (double) (total - index - 1) * 0.24;
@@ -30,16 +35,41 @@ public final class SpeechBubble {
     }
 
     public void enable() {
+        if (warmup > 0) {
+            Bukkit.getScheduler().runTaskLater(pet.pets.plugin, () -> {
+                    if (disabled) return;
+                    enableNow();
+                }, warmup);
+        } else {
+            enableNow();
+        }
+    }
+
+    private void enableNow() {
         if (lines != null) {
             showLines();
-            pet.getOwner().sendMessage(Component.text()
-                                       .append(Component.text().color(NamedTextColor.GRAY)
-                                               .append(pet.getCustomName())
-                                               .append(Component.text(": ")))
-                                       .append(Component.join(Component.space(), lines)));
+            Player target = pet.getOwner();
+            if (target != null) {
+                Component wholeMessage = Component.text()
+                    .append(Component.text().color(NamedTextColor.GRAY)
+                            .append(pet.getCustomName())
+                            .append(Component.text(": ")))
+                    .append(Component.join(Component.space(), lines))
+                    .build();
+                target.sendMessage(wholeMessage);
+            }
             Bukkit.getScheduler().runTaskLater(pet.pets.plugin, () -> {
                     if (!disabled) disable();
                 }, lifetime);
+        }
+        final long noiseInterval = 8L;
+        final long noiseAmount = Math.min(5, lifetime / noiseInterval);
+        for (long i = 0; i < noiseAmount; i += 1) {
+            Bukkit.getScheduler().runTaskLater(pet.pets.plugin, () -> {
+                    if (disabled || !pet.isSpawned()) return;
+                    Player owner = pet.getOwner();
+                    pet.getType().voice.play(owner, pet.entity.getLocation());
+                }, i * noiseInterval);
         }
     }
 
@@ -64,6 +94,7 @@ public final class SpeechBubble {
             Location location = getArmorStandLocation(i, lines.size());
             ArmorStand armorStand = location.getWorld().spawn(location, ArmorStand.class, as -> {
                     pet.pets.armorStandMap.put(as.getEntityId(), pet);
+                    as.setMetadata("nomap", new FixedMetadataValue(pet.pets.plugin, true));
                     as.setVisible(false);
                     as.setPersistent(false);
                     as.setMarker(true);

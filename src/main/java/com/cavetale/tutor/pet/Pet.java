@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Sittable;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Wolf;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.RayTraceResult;
 
 @Getter @RequiredArgsConstructor
@@ -70,8 +71,8 @@ public final class Pet {
         default:
             throw new IllegalStateException("type=" + type);
         }
-        triggerSpeechBubble();
         spawnOnce = false;
+        triggerSpeechBubble();
     }
 
     public void teleport(Location location) {
@@ -106,36 +107,34 @@ public final class Pet {
      * Attempt to trigger the next speech bubble. Do nothing if
      * anything makes this impossible (for now).
      */
-    protected void triggerSpeechBubble() {
+    public void triggerSpeechBubble() {
         if (currentSpeechBubble != null) return;
         if (entity == null) return;
+        long then = System.currentTimeMillis() - 1000L * 60L;
+        speechBubbleQueue.removeIf(b -> b.created < then); // expiry: 1 minutes
         if (speechBubbleQueue.isEmpty()) return;
         final SpeechBubble theSpeechBubble = speechBubbleQueue.remove(0);
         currentSpeechBubble = theSpeechBubble;
         currentSpeechBubble.enable();
-        for (int i = 0; i < 5; i += 1) {
-            Bukkit.getScheduler().runTaskLater(pets.plugin, () -> {
-                    if (!isSpawned() || !isValid()) return;
-                    if (theSpeechBubble.isDisabled()) return;
-                    Player owner = Bukkit.getPlayer(ownerId);
-                    type.voice.play(owner, entity.getLocation());
-                }, (long) i * 8L);
-        }
     }
 
-    public void addSpeechBubble(long lifetime, Component... lines) {
+    public void addSpeechBubble(long warmup, long lifetime, Component... lines) {
         SpeechBubble speechBubble = new SpeechBubble(this);
         speechBubble.setLines(lifetime, lines);
+        speechBubble.setWarmup(warmup);
         speechBubbleQueue.add(speechBubble);
-        if (currentSpeechBubble == null) {
-            triggerSpeechBubble();
-        }
         if (!isSpawned()) {
             if (!autoRespawn) {
                 spawnOnce = true;
             }
             autoRespawnCooldown = 0L;
+        } else {
+            triggerSpeechBubble();
         }
+    }
+
+    public void addSpeechBubble(long lifetime, Component... lines) {
+        addSpeechBubble(0L, lifetime, lines);
     }
 
     public void resetSpeechBubbles() {
@@ -158,6 +157,7 @@ public final class Pet {
 
     private void prepLivingEntity(LivingEntity living) {
         pets.entityPetMap.put(living.getEntityId(), this);
+        living.setMetadata("nomap", new FixedMetadataValue(pets.plugin, true));
         living.setPersistent(false);
         living.setSilent(true);
         living.setCollidable(collidable);
@@ -223,7 +223,7 @@ public final class Pet {
                     return;
                 }
                 if (now >= moveToCooldown) {
-                    if (distance > ownerDistance) {
+                    if (distance > ownerDistance + 1.0) {
                         if (entity instanceof Sittable) {
                             Sittable sittable = (Sittable) entity;
                             sittable.setSitting(false);
@@ -248,6 +248,7 @@ public final class Pet {
                     }
                 }
             }
+            triggerSpeechBubble();
         } else { // if (entity == null) {
             if (autoRespawn || spawnOnce) {
                 if (now < autoRespawnCooldown) return;

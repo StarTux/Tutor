@@ -1,5 +1,6 @@
 package com.cavetale.tutor;
 
+import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.tutor.pet.Pet;
@@ -24,12 +25,19 @@ public final class TutorAdminCommand implements TabExecutor {
     public void enable() {
         rootNode.addChild("start").arguments("<player> <quest>")
             .description("Start tutorial for player")
+            .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::start);
         rootNode.addChild("stop").arguments("<player> <quest>")
             .description("Stop tutorial for player")
+            .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::stop);
+        rootNode.addChild("restart").arguments("<player> <quest>")
+            .description("Restart tutorial for player")
+            .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
+            .senderCaller(this::restart);
         rootNode.addChild("skip").arguments("<player> <quest>")
-            .description("Skip current quest")
+            .description("Skip current goal")
+            .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::skip);
         rootNode.addChild("createpet").arguments("<player> <type>")
             .description("Spawn the player's pet")
@@ -76,7 +84,7 @@ public final class TutorAdminCommand implements TabExecutor {
         session.startQuest(quest);
         sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
                            .append(Component.text(session.getName()))
-                           .append(Component.text(" starting quest: "))
+                           .append(Component.text(" started quest: "))
                            .append(quest.getDisplayName())
                            .build());
         return true;
@@ -97,6 +105,22 @@ public final class TutorAdminCommand implements TabExecutor {
         return true;
     }
 
+    private boolean restart(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        Session session = requireSession(args[0]);
+        Quest quest = requireQuest(args[1]);
+        if (session.removeQuest(quest.name) == null) {
+            throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
+        }
+        session.startQuest(quest);
+        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
+                           .append(Component.text(session.getName()))
+                           .append(Component.text(" restarted quest: "))
+                           .append(quest.getDisplayName())
+                           .build());
+        return true;
+    }
+
     private boolean skip(CommandSender sender, String[] args) {
         if (args.length != 2) return false;
         Session session = requireSession(args[0]);
@@ -112,7 +136,7 @@ public final class TutorAdminCommand implements TabExecutor {
                            .append(Component.text(", "))
                            .append(playerQuest.getCurrentGoal().getDisplayName())
                            .build());
-        playerQuest.onGoalComplete();
+        playerQuest.onGoalComplete(session.getPlayer());
         return true;
     }
 

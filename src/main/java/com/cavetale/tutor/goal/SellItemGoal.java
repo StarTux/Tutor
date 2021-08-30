@@ -17,6 +17,7 @@ public final class SellItemGoal implements Goal {
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Component> additionalBookPages;
     protected final NumberCondition condDiamond;
+    protected final CheckboxCondition condMoney;
     protected static final int DIAMONDS = 3;
 
     public SellItemGoal() {
@@ -25,18 +26,28 @@ public final class SellItemGoal implements Goal {
         condDiamond = new NumberCondition(Component.text("Sell diamonds"), DIAMONDS,
                                           playerQuest -> getProgress(playerQuest).diamond,
                                           (playerQuest, diamond) -> getProgress(playerQuest).diamond = diamond);
+        condMoney = new CheckboxCondition(Component.text("Check your balance"),
+                                          playerQuest -> getProgress(playerQuest).money,
+                                          playerQuest -> getProgress(playerQuest).money = true);
+        condDiamond.setBookPageIndex(0);
+        condMoney.setBookPageIndex(1);
         this.conditions = Arrays.asList(new Condition[] {
                 condDiamond,
+                condMoney,
             });
+        condDiamond.setBookPageIndex(0);
         this.additionalBookPages = Arrays.asList(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."
                                        + " The menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
-                                       + "\n\nCommands:\n"),
+                                       + "\n\nCommand:\n"),
                         Component.text("/sell", NamedTextColor.DARK_BLUE),
                         Component.text("\nOpen the sell menu", NamedTextColor.GRAY),
-                        Component.newline(),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 1
+                        Component.text("Keep an eye on your bank balance."
+                                       + "\n\nCommand:\n"),
                         Component.text("/money", NamedTextColor.DARK_BLUE),
                         Component.text("\nCheck your balance", NamedTextColor.GRAY),
                     }),
@@ -45,17 +56,23 @@ public final class SellItemGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100L,
-                                    Component.text("Time to learn about coins!"));
-                pet.addSpeechBubble(150L,
-                                    Component.text("The best way to earn some"),
-                                    Component.text("coin is to sell valueable"),
-                                    Component.text("items to the bank."));
-                pet.addSpeechBubble(100L,
-                                    Component.text("Remember this command:"),
-                                    Component.text("/sell", NamedTextColor.YELLOW));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 100L,
+                                        Component.text("Time to learn"),
+                                        Component.text("about coins!"));
+                    pet.addSpeechBubble(150L,
+                                        Component.text("The best way to earn"),
+                                        Component.text("some coin is to sell"),
+                                        Component.text("valuable items to"),
+                                        Component.text("the bank."));
+                    pet.addSpeechBubble(200L,
+                                        Component.text("Remember these commands:"),
+                                        Component.text("/sell", NamedTextColor.YELLOW),
+                                        Component.text("and"),
+                                        Component.text("/money", NamedTextColor.YELLOW));
+                });
+        }
     }
 
     @Override
@@ -66,6 +83,8 @@ public final class SellItemGoal implements Goal {
             if (mat == Material.DIAMOND) {
                 condDiamond.progress(playerQuest, amount);
             }
+        } else if (name == PluginPlayerEvent.Name.USE_MONEY) {
+            condMoney.progress(playerQuest);
         }
     }
 
@@ -81,6 +100,7 @@ public final class SellItemGoal implements Goal {
 
     protected static final class SellItemProgress extends GoalProgress {
         int diamond;
+        boolean money;
 
         @Override
         public boolean isComplete() {

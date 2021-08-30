@@ -7,6 +7,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -21,6 +22,7 @@ public final class NumberCondition implements Condition {
     @NonNull protected final Function<PlayerQuest, Integer> progressGetter;
     @NonNull protected final BiConsumer<PlayerQuest, Integer> progressSetter;
     protected final Function<PlayerQuest, Boolean> visibleGetter;
+    @Getter @Setter protected int bookPageIndex = -1;
 
     NumberCondition(final Component description,
                     final int goal,
@@ -35,10 +37,9 @@ public final class NumberCondition implements Condition {
         final boolean completed = has >= goal;
         return Component.text()
             .append(Component.text("[" + has + "/" + goal + "]",
-                                   (completed ? background.green : background.text)))
+                                   (completed ? background.green : background.gray)))
             .append(Component.space())
             .append(description)
-            .color(background.text)
             .build();
     }
 
@@ -66,5 +67,10 @@ public final class NumberCondition implements Condition {
         progressSetter.accept(playerQuest, progress);
         playerQuest.onProgress();
         return true;
+    }
+
+    @Override
+    public boolean hasBookPage() {
+        return bookPageIndex >= 0;
     }
 }

@@ -33,6 +33,8 @@ public final class SetHomeGoal implements Goal {
                                          playerQuest -> getProgress(playerQuest).home,
                                          playerQuest -> getProgress(playerQuest).home = true,
                                          playerQuest -> getProgress(playerQuest).sethome);
+        condSetHome.setBookPageIndex(0);
+        condHome.setBookPageIndex(0);
         conditions = Arrays.asList(new Condition[] {
                 condSetHome,
                 condSkip,
@@ -55,23 +57,25 @@ public final class SetHomeGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100L,
-                                    Component.text("You can port to your"),
-                                    Component.text("claim, but it's much"),
-                                    Component.text("simpler to set a home!"));
-                pet.addSpeechBubble(100L,
-                                    Component.text("You have one default home"),
-                                    Component.text("and any number of named homes."));
-                pet.addSpeechBubble(100L,
-                                    Component.text("Remember these commands:"),
-                                    Component.text("/sethome", NamedTextColor.YELLOW),
-                                    Component.text("/home", NamedTextColor.YELLOW));
-                pet.addSpeechBubble(100L, TextComponent.ofChildren(new Component[] {
-                            Component.text("This will come up a lot "),
-                            Mytems.WINK.component,
-                        }));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 100L,
+                                        Component.text("You can port to your"),
+                                        Component.text("claim, but it's much"),
+                                        Component.text("simpler to set a home!"));
+                    pet.addSpeechBubble(100L,
+                                        Component.text("You have one default home"),
+                                        Component.text("and any number of named homes."));
+                    pet.addSpeechBubble(100L,
+                                        Component.text("Remember these commands:"),
+                                        Component.text("/sethome", NamedTextColor.YELLOW),
+                                        Component.text("/home", NamedTextColor.YELLOW));
+                    pet.addSpeechBubble(100L, TextComponent.ofChildren(new Component[] {
+                                Component.text("This will come up a lot "),
+                                Mytems.WINK.component,
+                            }));
+                });
+        }
     }
 
     private void onSkip(PlayerQuest playerQuest) {

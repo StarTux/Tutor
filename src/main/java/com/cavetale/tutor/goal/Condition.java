@@ -20,4 +20,12 @@ public interface Condition {
     default boolean isOnSidebar(PlayerQuest playerQuest) {
         return true;
     }
+
+    default boolean hasBookPage() {
+        return false;
+    }
+
+    default int getBookPageIndex() {
+        return 0;
+    }
 }

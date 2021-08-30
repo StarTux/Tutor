@@ -232,7 +232,7 @@ public final class Session {
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && canSee(questName)) {
                 if (pet != null) {
-                    pet.addSpeechBubble(150L,
+                    pet.addSpeechBubble(60L, 150L,
                                         Component.text("There are more"),
                                         Component.text("tutorials waiting"),
                                         Component.text("for you!"));
@@ -259,7 +259,7 @@ public final class Session {
         }
         pet.setExclusive(true);
         pet.setAutoRespawn(playerPetRow.isAutoSpawn());
-        pet.setOwnerDistance(3.0);
+        pet.setOwnerDistance(4.0);
         pet.setCustomName(playerPetRow.getNameComponent());
         pet.setOnClick(() -> {
                 clickPet(getPlayer());
@@ -311,7 +311,7 @@ public final class Session {
                 .append(playerPetRow.getNameComponent())
                 .append(Component.text(" despawned. Bring it back via "))
                 .append(Component.text("/tutor", NamedTextColor.YELLOW))
-                .color(NamedTextColor.WHITE)
+                .color(NamedTextColor.GRAY)
                 .clickEvent(ClickEvent.runCommand("/tutor"))
                 .hoverEvent(HoverEvent.showText(Component.text("/tutor", NamedTextColor.YELLOW)))
                 .build();
@@ -329,7 +329,7 @@ public final class Session {
         petItem.editMeta(meta -> {
                 meta.displayName(playerPetRow.getNameComponent());
                 meta.lore(Arrays.asList(new Component[] {
-                            Component.text("Access pet options", NamedTextColor.GRAY),
+                            Component.text("Access Pet Options", NamedTextColor.GRAY),
                         }));
             });
         gui.setItem(9 + 5, petItem, click -> {
@@ -350,6 +350,10 @@ public final class Session {
                 if (!click.isLeftClick()) return;
                 Noise.CLICK.play(player);
                 openQuestsMenu(player);
+            });
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                Noise.CLICK.play(player);
+                player.closeInventory();
             });
         gui.open(player);
     }
@@ -474,5 +478,9 @@ public final class Session {
                 openPetMenu(player);
             });
         gui.open(player);
+    }
+
+    public boolean hasPet() {
+        return pet != null;
     }
 }

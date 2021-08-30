@@ -60,6 +60,8 @@ public final class MineGoal implements Goal, Listener {
                                             playerQuest -> getProgress(playerQuest).dungeon,
                                             playerQuest -> getProgress(playerQuest).dungeon = true,
                                             playerQuest -> getProgress(playerQuest).mine);
+        condMine.setBookPageIndex(0);
+        condDungeon.setBookPageIndex(2);
         this.conditions = Arrays.asList(new Condition[] {
                 condMine,
                 condIron,
@@ -68,13 +70,13 @@ public final class MineGoal implements Goal, Listener {
             });
         this.additionalBookPages = Arrays.asList(new Component[] {
                 // Mine World
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The mining world is there for you to get your resources from."
                                        + " Not only do you keep the home worlds pristine by using this to harvest:"
                                        + " There are also way more ores to be found here!"
                                        + " This world is reset once a week."),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Mining World Commands:"),
                         Component.text("\n/mine", NamedTextColor.DARK_BLUE),
                         Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
@@ -83,20 +85,22 @@ public final class MineGoal implements Goal, Listener {
                         Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
                     }),
                 // Dungeons
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Not only are there custom caves with bonus ores in the mining world,"
-                                       + " it also offers custom dungeons, built by players just like you!"
+                                       + " it also offers custom dungeons,"
+                                       + " built in the past by players just like you!"
                                        + "\nDungeon chests contain special loot."
                                        + " Make sure to pick it up!"),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 3
                         Component.text("Locating a dungeon:\n"),
                         Component.text("right-click", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
                         Component.text(" a "),
                         VanillaItems.componentOf(Material.COMPASS),
                         Component.text("compass", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
                         Component.text("\nFollow its directions."
-                                       + " You have to be deep enough underground for this to work.", NamedTextColor.GRAY),
+                                       + " You have to be deep enough underground"
+                                       + " in the mining world for this to work", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -108,20 +112,23 @@ public final class MineGoal implements Goal, Listener {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100, new Component[] {
-                        Component.text("Have you heard of"),
-                        Component.text("the mining world?"),
-                    });
-                pet.addSpeechBubble(100, new Component[] {
-                        Component.text("This is where we gather"),
-                        Component.text("most of our resources."),
-                    });
-                pet.addSpeechBubble(100, new Component[] {
-                        Component.text("The world resets weekly,"),
-                        Component.text("so there's always more stuff."),
-                    });
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 100, new Component[] {
+                            Component.text("Have you heard of"),
+                            Component.text("the mining world?"),
+                        });
+                    pet.addSpeechBubble(100, new Component[] {
+                            Component.text("This is where we gather"),
+                            Component.text("most of our resources."),
+                        });
+                    pet.addSpeechBubble(100, new Component[] {
+                            Component.text("The world resets"),
+                            Component.text("weekly, so there's."),
+                            Component.text("always more stuff."),
+                        });
+                });
+        }
     }
 
     @Override

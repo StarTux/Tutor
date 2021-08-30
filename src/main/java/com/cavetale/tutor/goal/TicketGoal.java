@@ -3,7 +3,9 @@ package com.cavetale.tutor.goal;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
+import com.winthier.ticket.TicketPlugin;
 import com.winthier.ticket.event.TicketEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -43,6 +45,10 @@ public final class TicketGoal implements Goal, Listener {
                                           playerQuest -> getProgress(playerQuest).close,
                                           playerQuest -> getProgress(playerQuest).close = true,
                                           playerQuest -> getProgress(playerQuest).isReadyToClose());
+        condCreate.setBookPageIndex(0);
+        condView.setBookPageIndex(0);
+        condComment.setBookPageIndex(0);
+        condClose.setBookPageIndex(0);
         this.conditions = Arrays.asList(new Condition[] {
                 condCreate,
                 condView,
@@ -76,15 +82,23 @@ public final class TicketGoal implements Goal, Listener {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(60L, Component.text("Need help?"));
-                pet.addSpeechBubble(60L, Component.text("Something to report?"));
-                pet.addSpeechBubble(60L, Component.text("Report somebody?"));
-                pet.addSpeechBubble(60L, Component.text("Found a bug?"));
-                pet.addSpeechBubble(150L,
-                                    Component.text("Make a ticket and we"),
-                                    Component.text("will look into it."));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 60L, Component.text("Need help?"));
+                    pet.addSpeechBubble(60L, Component.text("Someone bothering you?"));
+                    pet.addSpeechBubble(60L, Component.text("Found a bug?"));
+                    pet.addSpeechBubble(150L,
+                                        Component.text("Make a ticket and we"),
+                                        Component.text("will look into it."));
+                });
+        }
+    }
+
+    @Override
+    public void onComplete(PlayerQuest playerQuest) {
+        for (int ticketId : getProgress(playerQuest).tickets) {
+            TicketPlugin.deleteTicket(ticketId);
+        }
     }
 
     @EventHandler
@@ -98,20 +112,16 @@ public final class TicketGoal implements Goal, Listener {
         session.applyGoals((playerQuest, goal) -> {
                 if (goal != this) return;
                 switch (event.getAction()) {
-                case CREATE:
-                    condCreate.progress(playerQuest);
-                    break;
                 case CREATED:
-                    TicketProgress progress = getProgress(playerQuest);
-                    if (progress.ticketId == 0) {
-                        event.getTicket().setSilent(true);
-                        final int ticketId = event.getTicket().getId();
-                        progress.ticketId = ticketId;
+                    event.getTicket().setSilent(true);
+                    final int ticketId = event.getTicket().getId();
+                    Bukkit.getScheduler().runTaskLater(TutorPlugin.getInstance(), () -> {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                                   "ticket comment " + ticketId + " Good job, keep it up! :)");
+                        }, 80L);
+                    getProgress(playerQuest).tickets.add(ticketId);
+                    if (!condCreate.progress(playerQuest)) {
                         playerQuest.save();
-                        Bukkit.getScheduler().runTaskLater(TutorPlugin.getInstance(), () -> {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                                       "ticket comment " + ticketId + " Good job, keep it up! :)");
-                            }, 80L);
                     }
                     break;
                 case VIEW:
@@ -139,7 +149,7 @@ public final class TicketGoal implements Goal, Listener {
     }
 
     protected static final class TicketProgress extends GoalProgress {
-        protected int ticketId;
+        protected List<Integer> tickets = new ArrayList<>();
         protected boolean create;
         protected boolean view;
         protected boolean comment;

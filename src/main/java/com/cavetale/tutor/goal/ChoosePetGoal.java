@@ -25,6 +25,7 @@ public final class ChoosePetGoal implements Goal {
     protected final CheckboxCondition condClick;
     protected final CheckboxCondition condChoose;
     protected final CheckboxCondition condRename;
+    protected static final PetType[] PET_TYPES = {PetType.CAT, PetType.DOG};
 
     public ChoosePetGoal() {
         this.id = "choose_pet";
@@ -38,24 +39,30 @@ public final class ChoosePetGoal implements Goal {
         condRename = new CheckboxCondition(Component.text("Give your pet a name"),
                                            playerQuest -> getProgress(playerQuest).rename,
                                            playerQuest -> getProgress(playerQuest).rename = true);
+        condClick.setBookPageIndex(0);
+        condChoose.setBookPageIndex(0);
+        condRename.setBookPageIndex(1);
         Condition[] conds = new Condition[] {
             condClick,
             condChoose,
             condRename,
         };
         Component[] pages = new Component[] {
-            TextComponent.ofChildren(new Component[] {
+            TextComponent.ofChildren(new Component[] {// 0
                     Component.text("You have arrived at a strange place."
                                    + " Why not choose a pet to keep you company!"
                                    + "\n\nWe hope you enjoy your stay. "),
                     Mytems.SMILE.component,
                 }),
-            TextComponent.ofChildren(new Component[] {
+            TextComponent.ofChildren(new Component[] {// 1
                     Component.text("Naming your Pet:"),
                     Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
-                    Component.text("\n" + Unicode.BULLET_POINT.character + " [Menu]"),
-                    Component.text("\n" + Unicode.BULLET_POINT.character + " Pet Options"),
-                    Component.text("\n" + Unicode.BULLET_POINT.character + " Change Name"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Menu] in the book"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click Your Pet to access Pet Options"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click \"Change Name\""),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click the prompt in chat"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Fill in the new name"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Hit ENTER"),
                 }),
         };
         this.conditions = Arrays.asList(conds);
@@ -64,22 +71,21 @@ public final class ChoosePetGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        if (!condChoose.isComplete(playerQuest)) {
+        if (playerQuest.getSession().hasPet()) {
+            getProgress(playerQuest).click = true;
+            getProgress(playerQuest).choose = true;
+        } else {
             Player player = playerQuest.getPlayer();
-            Pet cat = playerQuest.getPlugin().getPets().createPet(player, PetType.CAT);
-            Pet dog = playerQuest.getPlugin().getPets().createPet(player, PetType.DOG);
-            cat.setTag(id);
-            cat.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
-            cat.setOnClick(() -> onClick(playerQuest));
-            cat.setExclusive(true);
-            cat.setCollidable(true);
-            cat.setAutoRespawn(true);
-            dog.setTag(id);
-            dog.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
-            dog.setOnClick(() -> onClick(playerQuest));
-            dog.setExclusive(true);
-            dog.setCollidable(true);
-            dog.setAutoRespawn(true);
+            for (PetType petType : PET_TYPES) {
+                Pet pet = playerQuest.getPlugin().getPets().createPet(player, petType);
+                pet.setTag(id);
+                pet.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
+                pet.setOnClick(() -> onClick(playerQuest));
+                pet.setExclusive(true);
+                pet.setCollidable(true);
+                pet.setAutoRespawn(true);
+                pet.setOwnerDistance(2.0);
+            }
         }
     }
 
@@ -120,10 +126,10 @@ public final class ChoosePetGoal implements Goal {
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
         playerQuest.getSession().setPet(petType, true);
         Pet pet = playerQuest.getSession().spawnPet();
-        pet.addSpeechBubble(100, new Component[] {
+        pet.addSpeechBubble(50L, 100L, new Component[] {
                 Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
             });
-        pet.addSpeechBubble(100, new Component[] {
+        pet.addSpeechBubble(100L, new Component[] {
                 Component.text("I will be your personal assistant."),
                 Component.text("Please give me a name, " + petType.speechGimmick + "."),
             });
@@ -134,13 +140,16 @@ public final class ChoosePetGoal implements Goal {
         if (tutorEvent == TutorEvent.RENAME_PET) {
             if (condRename.progress(playerQuest)) {
                 playerQuest.getSession().applyPet(pet -> {
-                        pet.addSpeechBubble(400L,
-                                            Component.text("When the ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
+                        pet.addSpeechBubble(50L, 200L,
+                                            Component.text("When ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
                                             Component.text("appears, open the"),
                                             Component.text("tutorial menu and"),
-                                            Component.text("click it."),
-                                            Component.text("You can just click"),
-                                            Component.text("me to open it!"));
+                                            Component.text("click it."));
+                        pet.addSpeechBubble(150L,
+                                            Component.text("Or you can just"),
+                                            Component.text().content("click me ")
+                                            .append(Mytems.HAPPY.component)
+                                            .build());
                     });
             }
         }
