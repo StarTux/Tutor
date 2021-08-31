@@ -57,7 +57,7 @@ public final class ChoosePetGoal implements Goal {
             TextComponent.ofChildren(new Component[] {// 1
                     Component.text("Naming your Pet:"),
                     Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
-                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Menu] in the book"),
+                    Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Back] in the book"),
                     Component.text("\n" + Unicode.BULLET_POINT.character + " Click Your Pet to access Pet Options"),
                     Component.text("\n" + Unicode.BULLET_POINT.character + " Click \"Change Name\""),
                     Component.text("\n" + Unicode.BULLET_POINT.character + " Click the prompt in chat"),
