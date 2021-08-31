@@ -1,5 +1,6 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.function.BiConsumer;
@@ -36,7 +37,7 @@ public final class NumberCondition implements Condition {
         final int has = progressGetter.apply(playerQuest);
         final boolean completed = has >= goal;
         return Component.text()
-            .append(Component.text("[" + has + "/" + goal + "]",
+            .append(Component.text("(" + Unicode.superscript(has) + "/" + Unicode.subscript(goal) + ")",
                                    (completed ? background.green : background.gray)))
             .append(Component.space())
             .append(description)
