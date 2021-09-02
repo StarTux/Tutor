@@ -124,7 +124,7 @@ public final class MineGoal implements Goal, Listener {
                         });
                     pet.addSpeechBubble(100, new Component[] {
                             Component.text("The world resets"),
-                            Component.text("weekly, so there's."),
+                            Component.text("weekly, so there's"),
                             Component.text("always more stuff."),
                         });
                 });

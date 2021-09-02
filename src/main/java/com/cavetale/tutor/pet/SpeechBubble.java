@@ -52,6 +52,7 @@ public final class SpeechBubble {
             if (target != null) {
                 Component wholeMessage = Component.text()
                     .append(Component.text().color(NamedTextColor.GRAY)
+                            .append(pet.getType().icon.component)
                             .append(pet.getCustomName())
                             .append(Component.text(": ")))
                     .append(Component.join(Component.space(), lines))
