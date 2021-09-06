@@ -70,6 +70,10 @@ public final class NumberCondition implements Condition {
         return true;
     }
 
+    public boolean progress(PlayerQuest playerQuest) {
+        return progress(playerQuest, 1);
+    }
+
     @Override
     public boolean hasBookPage() {
         return bookPageIndex >= 0;

@@ -25,6 +25,7 @@ public final class Goals {
             });
         case MONEY: return Arrays.asList(new Goal[] {
                 new MineGoal(),
+                new MiningGoal(),
                 new StorageGoal(),
                 new SellItemGoal(),
                 new BuyGoal(),
