@@ -41,7 +41,7 @@ public final class SellItemGoal implements Goal {
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."
-                                       + " The menu lists all the sellable items you currently have."
+                                       + " The sell menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
                                        + "\n\nCommand:\n"),
                         Component.text("/sell", NamedTextColor.DARK_BLUE),
