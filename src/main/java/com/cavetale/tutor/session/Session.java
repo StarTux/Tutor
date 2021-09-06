@@ -13,6 +13,7 @@ import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -24,6 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -51,6 +53,7 @@ public final class Session {
     protected boolean disabled;
     private final List<Runnable> deferredCallbacks = new ArrayList<>();
     protected Pet pet;
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
 
     protected Session(final Sessions sessions, final Player player) {
         this.plugin = sessions.plugin;
@@ -189,8 +192,24 @@ public final class Session {
         player.openBook(itemStack);
     }
 
-    public void openCompletedQuestBook(Player player, Quest quest) {
+    public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
         List<Component> pages = new ArrayList<>();
+        pages.add(TextComponent.ofChildren(new Component[] {
+                    (Component.text()
+                     .append(quest.getDisplayName())
+                     .color(NamedTextColor.DARK_AQUA)
+                     .decorate(TextDecoration.BOLD)
+                     .build()),
+                    Component.newline(),
+                    Component.text("Tutorial ", NamedTextColor.GRAY),
+                    (Component.text().content("[Back]")
+                     .color(NamedTextColor.BLUE)
+                     .clickEvent(ClickEvent.runCommand("/tutor menu"))
+                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE)))
+                     .build()),
+                    Component.text("\n\nCompleted\n", NamedTextColor.GRAY),
+                    Component.text(dateFormat.format(row.getTime()), NamedTextColor.DARK_AQUA),
+                }));
         for (Goal goal : quest.getGoals()) {
             pages.addAll(goal.getAdditionalBookPages());
         }
@@ -374,9 +393,13 @@ public final class Session {
         gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
         // Current Quest
         if (!currentQuests.isEmpty()) {
+            PlayerQuest playerQuest = currentQuests.values().iterator().next();
             ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
             currentQuestIcon.editMeta(meta -> {
-                    meta.displayName(Component.text("Current Tutorial", NamedTextColor.YELLOW));
+                    meta.displayName(playerQuest.getQuest().getDisplayName());
+                    meta.lore(Arrays.asList(new Component[] {
+                                Component.text("Current Tutorial", NamedTextColor.YELLOW),
+                            }));
                     meta.addItemFlags(ItemFlag.values());
                 });
             gui.setItem(0 + 4, currentQuestIcon, click -> {
@@ -403,7 +426,7 @@ public final class Session {
                 gui.setItem(9 + index++, item, click -> {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
-                        openCompletedQuestBook(player, quest);
+                        openCompletedQuestBook(player, quest, completedQuests.get(questName));
                     });
             } else if (canSee(questName)) {
                 Quest quest = plugin.getQuests().get(questName);
@@ -418,7 +441,7 @@ public final class Session {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
                         if (!currentQuests.isEmpty()) {
-                            player.sendMessage(Component.text("You already have a quest!"));
+                            player.sendMessage(Component.text("You already have a tutorial!", NamedTextColor.RED));
                             return;
                         }
                         if (!currentQuests.containsKey(questName)) {

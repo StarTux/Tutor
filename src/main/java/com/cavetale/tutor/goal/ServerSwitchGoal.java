@@ -2,7 +2,9 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
+import com.winthier.connect.Connect;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +12,13 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-public final class ServerSwitchGoal implements Goal {
+public final class ServerSwitchGoal implements Goal, Listener {
     @Getter private final String id;
     @Getter private final Component displayName;
     @Getter private final List<Condition> conditions;
@@ -55,13 +62,18 @@ public final class ServerSwitchGoal implements Goal {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Server Commands:\n"),
                         Component.text("/hub", NamedTextColor.DARK_BLUE),
-                        Component.text("\nThe lobby when you disconnect from other servers\n\n", NamedTextColor.GRAY),
+                        Component.text("\nThe lobby between our servers\n\n", NamedTextColor.GRAY),
                         Component.text("/creative", NamedTextColor.DARK_BLUE),
                         Component.text("\nOur creative mode server\n\n", NamedTextColor.GRAY),
                         Component.text("/cavetale", NamedTextColor.DARK_BLUE),
                         Component.text("\nThe main server", NamedTextColor.GRAY),
                     }),
             });
+    }
+
+    @Override
+    public void enable() {
+        Bukkit.getPluginManager().registerEvents(this, TutorPlugin.getInstance());
     }
 
     @Override
@@ -106,6 +118,28 @@ public final class ServerSwitchGoal implements Goal {
                 break;
             default: break;
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    void onPlayerJoin(PlayerJoinEvent event) {
+        switch (Connect.getInstance().getServerName()) {
+            case "hub":
+                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                        if (goal == this) condHub.progress(playerQuest);
+                    });
+                break;
+            case "creative":
+                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                        if (goal == this) condCreative.progress(playerQuest);
+                    });
+                break;
+            case "cavetale":
+                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                        if (goal == this) condCavetale.progress(playerQuest);
+                    });
+                break;
+        default: break;
         }
     }
 

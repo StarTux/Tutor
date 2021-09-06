@@ -48,9 +48,9 @@ public final class TicketGoal implements Goal, Listener {
                                           playerQuest -> getProgress(playerQuest).close = true,
                                           playerQuest -> getProgress(playerQuest).isReadyToClose());
         condCreate.setBookPageIndex(0);
-        condView.setBookPageIndex(0);
-        condComment.setBookPageIndex(0);
-        condClose.setBookPageIndex(0);
+        condView.setBookPageIndex(2);
+        condComment.setBookPageIndex(2);
+        condClose.setBookPageIndex(2);
         this.conditions = Arrays.asList(new Condition[] {
                 condCreate,
                 condView,
@@ -59,7 +59,7 @@ public final class TicketGoal implements Goal, Listener {
             });
         this.constraints = Collections.emptyList();
         this.additionalBookPages = Arrays.asList(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Whenever you need staff assistance, make a ticket."
                                        + " This is the best way to reach out to staff."
                                        + "\n\nCommand:\n"),
@@ -68,12 +68,18 @@ public final class TicketGoal implements Goal, Listener {
                                        + " click the buttons in chat for more.",
                                        NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                TextComponent.ofChildren(new Component[] {// 1
                         Component.text("For the purpose of this tutorial, write any message in the ticket."
                                        + " When you make a ticket for real, try to provide as much information"
                                        + " as possible."
                                        + " Tickets remember where they were made."
                                        + " Our staff will be able to teleport there."),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 2
+                        Component.text("You will be notified when an admin or"
+                                       + " moderator responds to your ticket."
+                                       + "\n\nJust click the line in chat to view it."
+                                       + "\n\nClick one of the buttons in chat for further actions."),
                     }),
             });
     }
@@ -87,9 +93,10 @@ public final class TicketGoal implements Goal, Listener {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 60L, Component.text("Need help?"));
-                    pet.addSpeechBubble(60L, Component.text("Someone bothering you?"));
-                    pet.addSpeechBubble(60L, Component.text("Found a bug?"));
+                    pet.addSpeechBubble(180L, 60L,
+                                        Component.text("Is there a problem?"),
+                                        Component.text("Someone bothering you?"),
+                                        Component.text("Found a bug?"));
                     pet.addSpeechBubble(150L,
                                         Component.text("Make a ticket and we"),
                                         Component.text("will look into it."));

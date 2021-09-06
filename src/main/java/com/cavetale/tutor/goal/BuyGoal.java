@@ -52,11 +52,11 @@ public final class BuyGoal implements Goal {
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The market contains player created shops."
-                                       + " Starting with a certain rank,"
-                                       + " you can claim market plots and set up shop chests there."
+                                       + " Starting with the Member rank,"
+                                       + " you can claim market a plot and set up shop chests there."
                                        + "\n\nCommand:\n"),
                         Component.text("/market", NamedTextColor.DARK_BLUE),
-                        Component.text("\nWarp to the public market\n", NamedTextColor.GRAY),
+                        Component.text("\nWarp to the market world\n", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("You can search the market for specific items:\n\n"),
@@ -65,12 +65,12 @@ public final class BuyGoal implements Goal {
                         Component.text("/shop search oak", NamedTextColor.DARK_BLUE),
                         Component.text("\nSearch the shops for an item. Click the ", NamedTextColor.GRAY),
                         Component.text("[Port]", NamedTextColor.DARK_BLUE),
-                        Component.text(" button to port to the chest", NamedTextColor.GRAY),
+                        Component.text(" button in chat to port to the chest", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
                         Component.text("To grow your claim, buy more claim blocks first."
                                        + " It will grow automatically in all directions"
-                                       + " unless configured otherwise."
+                                       + " unless the claim settings are changed."
                                        + "\n\nCommand:\n"),
                         Component.text("/claim buy <amount>", NamedTextColor.DARK_BLUE),
                         Component.text("\nEach block costs 10 Cents", NamedTextColor.GRAY),
@@ -80,12 +80,14 @@ public final class BuyGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(50L, 200L,
-                                    Component.text("Now that we have some"),
-                                    Component.text("coins, let's find out"),
-                                    Component.text("how they can be spent!"));
-            });
+        if (!getProgress(playerQuest).isComplete()) {
+            playerQuest.getSession().applyPet(pet -> {
+                    pet.addSpeechBubble(50L, 200L,
+                                        Component.text("Now that we have some"),
+                                        Component.text("coins, let's find out"),
+                                        Component.text("how they can be spent!"));
+                });
+        }
     }
 
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {

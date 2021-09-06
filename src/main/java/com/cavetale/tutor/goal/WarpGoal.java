@@ -74,7 +74,7 @@ public final class WarpGoal implements Goal {
                                        + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),
                         Component.text("/visit", NamedTextColor.DARK_BLUE),
-                        Component.text("\nView the public home list. Click to teleport", NamedTextColor.GRAY),
+                        Component.text("\nView the public home list. Click to warp", NamedTextColor.GRAY),
                     }),
             });
     }

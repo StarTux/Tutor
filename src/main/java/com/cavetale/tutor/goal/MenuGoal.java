@@ -36,7 +36,7 @@ public final class MenuGoal implements Goal {
                                        + " We prepared a menu to help you with that."
                                        + "\n\nCommand:\n"),
                         Component.text("/menu", NamedTextColor.DARK_BLUE),
-                        Component.text("\nView the menu", NamedTextColor.GRAY),
+                        Component.text("\nView the main menu", NamedTextColor.GRAY),
                     }),
             });
     }

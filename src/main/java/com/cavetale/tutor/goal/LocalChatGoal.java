@@ -106,7 +106,7 @@ public final class LocalChatGoal implements Goal {
                                         Component.text("online, we must learn"),
                                         Component.text("about channels."));
                     pet.addSpeechBubble(180L,
-                                        Component.text("Long conversations"),
+                                        Component.text("Personal conversations"),
                                         Component.text("should be kept in"),
                                         Component.text("local, private, or"),
                                         Component.text("party chat."));
