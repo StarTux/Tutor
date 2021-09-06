@@ -213,9 +213,9 @@ public final class Session {
     }
 
     private void applyGoalsNow(BiConsumer<PlayerQuest, Goal> callback) {
-        for (PlayerQuest playerQuest : currentQuests.values()) {
+        QUESTS: for (PlayerQuest playerQuest : currentQuests.values()) {
             for (Constraint constraint : playerQuest.getCurrentGoal().getConstraints()) {
-                if (!constraint.doesMeet(playerQuest)) continue;
+                if (!constraint.doesMeet(playerQuest)) continue QUESTS;
             }
             callback.accept(playerQuest, playerQuest.getCurrentGoal());
         }
