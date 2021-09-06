@@ -16,13 +16,14 @@ public final class SetHomeGoal implements Goal {
     @Getter protected final String id = "sethome";
     @Getter private final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
     protected final CheckboxCondition condSetHome;
     protected final ClickableCondition condSkip;
     protected final CheckboxCondition condHome;
 
     public SetHomeGoal() {
-        displayName = Component.text("Set your home");
+        this.displayName = Component.text("Set your home");
         condSetHome = new CheckboxCondition(Component.text("Set your home"),
                                             playerQuest -> getProgress(playerQuest).sethome,
                                             playerQuest -> getProgress(playerQuest).sethome = true);
@@ -35,12 +36,13 @@ public final class SetHomeGoal implements Goal {
                                          playerQuest -> getProgress(playerQuest).sethome);
         condSetHome.setBookPageIndex(0);
         condHome.setBookPageIndex(0);
-        conditions = Arrays.asList(new Condition[] {
+        this.conditions = Arrays.asList(new Condition[] {
                 condSetHome,
                 condSkip,
                 condHome,
             });
-        additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = Arrays.asList(new MainServerConstraint());
+        this.additionalBookPages = Arrays.asList(new Component[] {
                 Component.text()
                 .append(Component.text("Set your primary home via "))
                 .append(Component.text("/sethome", NamedTextColor.DARK_BLUE))

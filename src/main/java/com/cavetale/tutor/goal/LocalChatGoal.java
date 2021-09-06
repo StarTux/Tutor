@@ -3,6 +3,7 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -14,6 +15,7 @@ public final class LocalChatGoal implements Goal {
     @Getter private final String id;
     @Getter private Component displayName;
     @Getter private final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
     protected final CheckboxCondition condList;
     protected final CheckboxCondition condFocusLocal;
@@ -43,6 +45,11 @@ public final class LocalChatGoal implements Goal {
                                         playerQuest -> getProgress(playerQuest).use,
                                         playerQuest -> getProgress(playerQuest).use = true,
                                         playerQuest -> getProgress(playerQuest).focusLocal);
+        condList.setBookPageIndex(0);
+        condFocusLocal.setBookPageIndex(1);
+        condFocusGlobal.setBookPageIndex(1);
+        condSettings.setBookPageIndex(2);
+        condUse.setBookPageIndex(3);
         this.conditions = Arrays.asList(new Condition[] {
                 condList,
                 condFocusLocal,
@@ -50,11 +57,7 @@ public final class LocalChatGoal implements Goal {
                 condSettings,
                 condUse,
             });
-        condList.setBookPageIndex(0);
-        condFocusLocal.setBookPageIndex(1);
-        condFocusGlobal.setBookPageIndex(1);
-        condSettings.setBookPageIndex(2);
-        condUse.setBookPageIndex(3);
+        this.constraints = Collections.emptyList();
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Chat has several channels."

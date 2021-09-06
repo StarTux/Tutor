@@ -13,6 +13,7 @@ public final class WarpGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     protected final CheckboxCondition condSpawn;
     protected final CheckboxCondition condListWarps;
@@ -52,6 +53,7 @@ public final class WarpGoal implements Goal {
                 condListVisits,
                 condUseVisit
             });
+        this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Get back to the place you started any time."

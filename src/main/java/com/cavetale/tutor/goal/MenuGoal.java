@@ -3,6 +3,7 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -13,6 +14,7 @@ public final class MenuGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     protected final CheckboxCondition condMenu;
 
@@ -26,6 +28,7 @@ public final class MenuGoal implements Goal {
         this.conditions = Arrays.asList(new Condition[] {
                 condMenu,
             });
+        this.constraints = Collections.emptyList();
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("There are many more plugins and commands on Cavetale."

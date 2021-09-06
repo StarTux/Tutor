@@ -4,6 +4,7 @@ import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -12,8 +13,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class ServerSwitchGoal implements Goal {
     @Getter private final String id;
-    @Getter private final List<Condition> conditions;
     @Getter private final Component displayName;
+    @Getter private final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
     protected final CheckboxCondition condHub;
     protected final CheckboxCondition condCreative;
@@ -31,14 +33,15 @@ public final class ServerSwitchGoal implements Goal {
                                              playerQuest -> getProgress(playerQuest).cavetale,
                                              playerQuest -> getProgress(playerQuest).cavetale = true,
                                              playerQuest -> getProgress(playerQuest).readyForCavetale());
+        condHub.setBookPageIndex(0);
+        condCreative.setBookPageIndex(0);
+        condCavetale.setBookPageIndex(0);
         this.conditions = Arrays.asList(new Condition[] {
                 condHub,
                 condCreative,
                 condCavetale,
             });
-        condHub.setBookPageIndex(0);
-        condCreative.setBookPageIndex(0);
-        condCavetale.setBookPageIndex(0);
+        this.constraints = Collections.emptyList();
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {

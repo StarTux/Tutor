@@ -35,7 +35,7 @@ public final class CheckboxCondition implements Condition {
         return Component.text()
             .append(checked
                     ? Component.text(Unicode.CHECKED_CHECKBOX.character, background.green)
-                    : Component.text(Unicode.CHECKBOX.character, background.gray))
+                    : Component.text(Unicode.CHECKBOX.character, background.blue))
             .append(Component.space())
             .append(description)
             .build();

@@ -129,6 +129,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Connect -->
+    <dependency>
+      <groupId>com.winthier.connect</groupId>
+      <artifactId>connect</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- ProtocolLib -->
     <dependency>
       <groupId>com.comphenix.protocol</groupId>

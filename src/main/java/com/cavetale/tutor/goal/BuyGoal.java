@@ -14,6 +14,7 @@ public final class BuyGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     private static final int CLAIM_BLOCKS = 2000;
     protected final CheckboxCondition condMarket;
@@ -47,6 +48,7 @@ public final class BuyGoal implements Goal {
                 condShopPort,
                 condBuyClaimBlocks,
             });
+        this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The market contains player created shops."

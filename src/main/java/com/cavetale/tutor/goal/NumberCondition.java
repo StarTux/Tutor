@@ -38,7 +38,7 @@ public final class NumberCondition implements Condition {
         final boolean completed = has >= goal;
         return Component.text()
             .append(Component.text("(" + Unicode.superscript(has) + "/" + Unicode.subscript(goal) + ")",
-                                   (completed ? background.green : background.gray)))
+                                   (completed ? background.green : background.blue)))
             .append(Component.space())
             .append(description)
             .build();

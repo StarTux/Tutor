@@ -34,6 +34,7 @@ public final class MineGoal implements Goal, Listener {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     private static final int IRON = 24;
     private static final int DIAMOND = 9;
@@ -68,6 +69,7 @@ public final class MineGoal implements Goal, Listener {
                 condDiamond,
                 condDungeon,
             });
+        this.constraints = Arrays.asList(new MiningWorldConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 // Mine World
                 TextComponent.ofChildren(new Component[] {// 0
@@ -174,8 +176,6 @@ public final class MineGoal implements Goal, Listener {
     }
 
     private void onBlockBreak(Player player, Block block) {
-        String worldName = block.getWorld().getName();
-        if (!worldName.equals("mine") && !worldName.startsWith("mine_")) return;
         final Material blockMat = block.getType();
         final Material mat;
         if (Tag.IRON_ORES.isTagged(blockMat)) {

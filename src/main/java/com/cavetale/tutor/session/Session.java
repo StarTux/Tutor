@@ -4,6 +4,7 @@ import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.TutorPlugin;
+import com.cavetale.tutor.goal.Constraint;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Noise;
 import com.cavetale.tutor.pet.Pet;
@@ -213,6 +214,9 @@ public final class Session {
 
     private void applyGoalsNow(BiConsumer<PlayerQuest, Goal> callback) {
         for (PlayerQuest playerQuest : currentQuests.values()) {
+            for (Constraint constraint : playerQuest.getCurrentGoal().getConstraints()) {
+                if (!constraint.doesMeet(playerQuest)) continue;
+            }
             callback.accept(playerQuest, playerQuest.getCurrentGoal());
         }
     }

@@ -15,6 +15,7 @@ public final class StorageGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     protected final CheckboxCondition condMs;
     protected final CheckboxCondition condDiamonds;
@@ -46,6 +47,7 @@ public final class StorageGoal implements Goal {
                 condSearch,
                 condStash,
             });
+        this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Mass Storage is an infinite store for simple items,"

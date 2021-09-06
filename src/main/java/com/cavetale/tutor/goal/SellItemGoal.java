@@ -15,6 +15,7 @@ public final class SellItemGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     protected final NumberCondition condDiamond;
     protected final CheckboxCondition condMoney;
@@ -31,11 +32,12 @@ public final class SellItemGoal implements Goal {
                                           playerQuest -> getProgress(playerQuest).money = true);
         condDiamond.setBookPageIndex(0);
         condMoney.setBookPageIndex(1);
+        condDiamond.setBookPageIndex(0);
         this.conditions = Arrays.asList(new Condition[] {
                 condDiamond,
                 condMoney,
             });
-        condDiamond.setBookPageIndex(0);
+        this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."

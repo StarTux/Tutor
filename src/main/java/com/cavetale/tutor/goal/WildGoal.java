@@ -16,6 +16,7 @@ public final class WildGoal implements Goal {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
     protected final CheckboxCondition condWild;
     protected final CheckboxCondition condClaim;
@@ -43,6 +44,7 @@ public final class WildGoal implements Goal {
                 condSkipShare,
                 condClaim,
             });
+        this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("You can type "),

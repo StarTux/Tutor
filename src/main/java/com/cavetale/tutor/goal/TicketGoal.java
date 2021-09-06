@@ -7,6 +7,7 @@ import com.winthier.ticket.TicketPlugin;
 import com.winthier.ticket.event.TicketEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -21,6 +22,7 @@ public final class TicketGoal implements Goal, Listener {
     @Getter protected final String id;
     @Getter private final Component displayName;
     @Getter protected final List<Condition> conditions;
+    @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
     private final CheckboxCondition condCreate;
     private final CheckboxCondition condView;
@@ -55,6 +57,7 @@ public final class TicketGoal implements Goal, Listener {
                 condComment,
                 condClose,
             });
+        this.constraints = Collections.emptyList();
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Whenever you need staff assistance, make a ticket."

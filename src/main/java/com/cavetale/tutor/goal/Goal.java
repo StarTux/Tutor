@@ -26,6 +26,8 @@ public interface Goal {
      */
     String getId();
 
+    Component getDisplayName();
+
     /**
      * Return a list of conditions to complete this goal. They're
      * primarily informal; completing all of them does not necessarily
@@ -33,7 +35,12 @@ public interface Goal {
      */
     List<Condition> getConditions();
 
-    Component getDisplayName();
+    /**
+     * Constraints can limit the applicability of any goal in a
+     * normalized way, without requiring any additional logic inside
+     * the goal.
+     */
+    List<Constraint> getConstraints();
 
     /**
      * Called once per instance, as opposed to onEnable, which is
@@ -116,6 +123,10 @@ public interface Goal {
             }
             lines.add(conditionComponent);
         }
+        for (Constraint constraint : getConstraints()) {
+            if (constraint.doesMeet(playerQuest)) continue;
+            lines.add(constraint.getMissedMessage(playerQuest, Background.LIGHT));
+        }
         if (playerQuest.getCurrentProgress().isComplete()) {
             lines.add(Component.text()
                       .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
@@ -140,6 +151,11 @@ public interface Goal {
                      .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
                      .color(NamedTextColor.AQUA)
                      .build());
+        } else {
+            for (Constraint constraint : getConstraints()) {
+                if (constraint.doesMeet(playerQuest)) continue;
+                list.add(constraint.getMissedMessage(playerQuest, Background.DARK));
+            }
         }
         return list;
     }
