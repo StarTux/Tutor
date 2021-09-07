@@ -24,15 +24,15 @@ public final class TutorAdminCommand implements TabExecutor {
 
     public void enable() {
         rootNode.addChild("start").arguments("<player> <quest>")
-            .description("Start tutorial for player")
+            .description("Start quest for player")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::start);
         rootNode.addChild("stop").arguments("<player> <quest>")
-            .description("Stop tutorial for player")
+            .description("Stop quest for player")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::stop);
         rootNode.addChild("restart").arguments("<player> <quest>")
-            .description("Restart tutorial for player")
+            .description("Restart quest for player")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::restart);
         rootNode.addChild("skip").arguments("<player> <quest>")

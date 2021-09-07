@@ -122,7 +122,7 @@ public final class PlayerQuest {
         currentGoal = null;
         final int newIndex = index + 1;
         if (newIndex >= quest.getGoals().size()) {
-            onQuestComplete();
+            onQuestComplete(player);
         } else {
             Goal newGoal = quest.getGoals().get(newIndex);
             currentGoal = newGoal;
@@ -139,19 +139,16 @@ public final class PlayerQuest {
         }
     }
 
-    public void onQuestComplete() {
-        session.questComplete(quest.getName());
-        Player player = getPlayer();
-        if (player != null) {
-            Component msg = TextComponent.ofChildren(new Component[] {
-                    Component.text("Tutorial complete: ", NamedTextColor.DARK_AQUA),
-                    quest.getDisplayName(),
-                });
-            player.sendMessage(msg);
-            player.showTitle(Title.title(Component.empty(), msg,
-                                         Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
-        }
+    public void onQuestComplete(Player player) {
+        session.questComplete(quest.getName(), player);
+        Component msg = TextComponent.ofChildren(new Component[] {
+                Component.text(quest.getName().type.upper + " complete: ", NamedTextColor.DARK_AQUA),
+                quest.getDisplayName(),
+            });
+        player.sendMessage(msg);
+        player.showTitle(Title.title(Component.empty(), msg,
+                                     Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
     }
 
     public void onProgress() {
@@ -166,7 +163,7 @@ public final class PlayerQuest {
     }
 
     private void completeQuestReminder(Player player) {
-        player.sendMessage(Component.text().content("You completed a tutorial page!")
+        player.sendMessage(Component.text().content("You completed a " + quest.getName().type.upper + " page!")
                            .append(Component.newline())
                            .append(Component.text("Talk to your pet or type "))
                            .append(Component.text().content("/tutor").color(NamedTextColor.YELLOW)

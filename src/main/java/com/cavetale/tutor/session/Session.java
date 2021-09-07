@@ -145,12 +145,13 @@ public final class Session {
         return playerQuest;
     }
 
-    public void questComplete(QuestName questName) {
+    public void questComplete(QuestName questName, Player player) {
         removeQuest(questName);
         if (!completedQuests.containsKey(questName)) {
             SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
             completedQuests.put(questName, newRow);
             plugin.getDatabase().insertAsync(newRow, null);
+            questName.deliverQuestReward(player);
         }
         triggerAutomaticQuests();
     }
@@ -201,21 +202,31 @@ public final class Session {
                      .decorate(TextDecoration.BOLD)
                      .build()),
                     Component.newline(),
-                    Component.text("Tutorial ", NamedTextColor.GRAY),
+                    Component.text(quest.getName().type.upper + " ", NamedTextColor.GRAY),
                     (Component.text().content("[Back]")
                      .color(NamedTextColor.BLUE)
                      .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE)))
+                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
                      .build()),
                     Component.text("\n\nCompleted\n", NamedTextColor.GRAY),
                     Component.text(dateFormat.format(row.getTime()), NamedTextColor.DARK_AQUA),
+                    Component.text("\n\n"),
+                    (Component.text().content("[Repeat]")
+                     .color(NamedTextColor.BLUE)
+                     .clickEvent(ClickEvent.runCommand("/tutor redo " + quest.getName().key))
+                     .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
+                                     Component.text("Repeat this " + quest.getName().type.lower, NamedTextColor.BLUE),
+                                     Component.text("\nThere will not be", NamedTextColor.GRAY),
+                                     Component.text("\nany extra rewards.", NamedTextColor.GRAY),
+                             })))
+                     .build()),
                 }));
         for (Goal goal : quest.getGoals()) {
             pages.addAll(goal.getAdditionalBookPages());
         }
         BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
         meta.addPages(pages.toArray(new Component[0]));
-        meta.setTitle("Tutorial");
+        meta.setTitle("Tutor");
         meta.author(Component.text("Cavetale"));
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
@@ -257,7 +268,7 @@ public final class Session {
                 if (pet != null) {
                     pet.addSpeechBubble(60L, 150L,
                                         Component.text("There are more"),
-                                        Component.text("tutorials waiting"),
+                                        Component.text(questName.type.lower + "s waiting"),
                                         Component.text("for you!"));
                     pet.addSpeechBubble(150L,
                                         Component.text("Click me or type"),
@@ -398,7 +409,7 @@ public final class Session {
             currentQuestIcon.editMeta(meta -> {
                     meta.displayName(playerQuest.getQuest().getDisplayName());
                     meta.lore(Arrays.asList(new Component[] {
-                                Component.text("Current Tutorial", NamedTextColor.YELLOW),
+                                Component.text("Current " + playerQuest.getQuest().getName().type.upper, NamedTextColor.YELLOW),
                             }));
                     meta.addItemFlags(ItemFlag.values());
                 });
@@ -434,14 +445,15 @@ public final class Session {
                 item.editMeta(meta -> {
                         meta.displayName(quest.getDisplayName());
                         meta.lore(Arrays.asList(new Component[] {
-                                    Component.text("Start this tutorial?", NamedTextColor.GRAY),
+                                    Component.text("Start this " + questName.type.lower + "?", NamedTextColor.GRAY),
                                 }));
                     });
                 gui.setItem(9 + index++, item, click -> {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
                         if (!currentQuests.isEmpty()) {
-                            player.sendMessage(Component.text("You already have a tutorial!", NamedTextColor.RED));
+                            QuestName active = currentQuests.keySet().iterator().next();
+                            player.sendMessage(Component.text("You already have an active " + active.type.lower + "!", NamedTextColor.RED));
                             return;
                         }
                         if (!currentQuests.containsKey(questName)) {

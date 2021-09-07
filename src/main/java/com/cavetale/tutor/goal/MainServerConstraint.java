@@ -11,6 +11,10 @@ public final class MainServerConstraint implements Constraint.Simple {
 
     @Override
     public boolean doesMeet(PlayerQuest playerQuest) {
+        return isTrue();
+    }
+
+    public static boolean isTrue() {
         return Connect.getInstance().getServerName().equals("cavetale");
     }
 }

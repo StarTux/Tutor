@@ -143,7 +143,7 @@ public final class ChoosePetGoal implements Goal {
                         pet.addSpeechBubble(50L, 200L,
                                             Component.text("When ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
                                             Component.text("appears, open the"),
-                                            Component.text("tutorial menu and"),
+                                            Component.text("tutor menu and"),
                                             Component.text("click it."));
                         pet.addSpeechBubble(150L,
                                             Component.text("Or you can just"),

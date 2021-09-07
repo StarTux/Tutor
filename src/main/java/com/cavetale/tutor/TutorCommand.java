@@ -6,6 +6,8 @@ import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,12 +19,12 @@ public final class TutorCommand implements TabExecutor {
     private CommandNode rootNode = new CommandNode("tutor");
 
     public void enable() {
-        rootNode.description("Tutorial Menu")
+        rootNode.description("Tutor Menu")
             .playerCaller(this::tutor);
         rootNode.addChild("click").hidden(true)
             .playerCaller(this::click);
         rootNode.addChild("menu").denyTabCompletion()
-            .description("Open the tutorial menu")
+            .description("Open the tutor menu")
             .playerCaller(this::menu);
         rootNode.addChild("rename").denyTabCompletion()
             .description("Rename your pet")
@@ -53,14 +55,46 @@ public final class TutorCommand implements TabExecutor {
         if (args.length == 1) {
             plugin.sessions.applyClick(player, args[0]);
         } else if (args.length == 2) {
-            if (args[0].equals("complete")) {
+            switch (args[0]) {
+            case "complete": {
                 QuestName questName = QuestName.of(args[1]);
                 if (questName == null) return true;
                 Session session = plugin.sessions.find(player);
                 if (session == null) return true;
                 PlayerQuest playerQuest = session.getCurrentQuests().get(questName);
+                if (playerQuest == null) return true;
                 if (!playerQuest.getCurrentProgress().isComplete()) return true;
                 playerQuest.onGoalComplete(player);
+                return true;
+            }
+            case "redo": {
+                QuestName questName = QuestName.of(args[1]);
+                if (questName == null) return true;
+                Session session = plugin.sessions.find(player);
+                if (session == null) return true;
+                if (!session.getCurrentQuests().isEmpty()) {
+                    throw new CommandWarn("You already have an active quest");
+                }
+                session.startQuest(questName);
+                return true;
+            }
+            case "quit": {
+                QuestName questName = QuestName.of(args[1]);
+                if (questName == null) return true;
+                Session session = plugin.sessions.find(player);
+                if (session == null) return true;
+                PlayerQuest playerQuest = session.getCurrentQuests().get(questName);
+                if (playerQuest == null) return true;
+                if (!session.getCompletedQuests().containsKey(questName) && !questName.isQuittable()) {
+                    throw new CommandWarn("You cannot abandon this " + questName.type.lower);
+                }
+                session.removeQuest(questName);
+                player.sendMessage(Component.text().content(questName.type.upper + " abandoned: ")
+                                   .color(NamedTextColor.YELLOW)
+                                   .append(playerQuest.getQuest().getDisplayName()));
+                return true;
+            }
+            default: return true;
             }
         }
         return true;

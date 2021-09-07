@@ -22,7 +22,7 @@ import net.kyori.adventure.text.format.TextDecoration;
  */
 public interface Goal {
     /**
-     * The id must be unique within the tutorial.
+     * The id must be unique within the quest.
      */
     String getId();
 
@@ -92,10 +92,10 @@ public interface Goal {
                   .decorate(TextDecoration.BOLD)
                   .build());
         lines.add(Component.text()
-                  .append(Component.text("Tutorial ", NamedTextColor.GRAY))
+                  .append(Component.text(playerQuest.getQuest().getName().type.upper + " ", NamedTextColor.GRAY))
                   .append(Component.text("[Back]", NamedTextColor.BLUE))
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutorial Menu", NamedTextColor.BLUE)))
+                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
                   .build());
         lines.add(Component.text()
                   .append(getDisplayName())
@@ -131,8 +131,17 @@ public interface Goal {
             lines.add(Component.text()
                       .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
                       .color(NamedTextColor.DARK_AQUA)
-                      .hoverEvent(HoverEvent.showText(Component.text("Complete this Part", NamedTextColor.AQUA)))
+                      .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.AQUA)))
                       .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key))
+                      .build());
+        } else if (playerQuest.getQuest().getName().isQuittable()) {
+            lines.add(Component.empty());
+            lines.add(Component.text()
+                      .content("[Abandon]")
+                      .color(NamedTextColor.DARK_RED)
+                      .hoverEvent(HoverEvent.showText(Component.text("Abandon this " + playerQuest.getQuest().getName().type.lower,
+                                                                     NamedTextColor.AQUA)))
+                      .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key))
                       .build());
         }
         pages.add(Component.join(Component.newline(), lines));

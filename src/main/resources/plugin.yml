@@ -14,6 +14,7 @@ softdepend: []
 commands:
 
   tutor:
+    aliases: [quest]
     description: Tutor Command
     permission: tutor.tutor
     usage: |-
