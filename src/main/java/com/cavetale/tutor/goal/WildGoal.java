@@ -66,15 +66,15 @@ public final class WildGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100L,
+                    pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("Let's find a place to"),
                                         TextComponent.ofChildren(Component.text("call our home! "),
                                                                  Mytems.SMILE.component));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("Then make a claim"),
                                         Component.text("there so nobody"),
                                         Component.text("else can build."));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("You can share your"),
                                         Component.text("claim with friends,"),
                                         Component.text("of course."));

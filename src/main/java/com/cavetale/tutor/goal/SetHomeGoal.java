@@ -61,18 +61,18 @@ public final class SetHomeGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100L,
+                    pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("You can port to your"),
                                         Component.text("claim, but it's much"),
                                         Component.text("simpler to set a home!"));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("You have one default home"),
                                         Component.text("and any number of named homes."));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("Remember these commands:"),
                                         Component.text("/sethome", NamedTextColor.YELLOW),
                                         Component.text("/home", NamedTextColor.YELLOW));
-                    pet.addSpeechBubble(100L, TextComponent.ofChildren(new Component[] {
+                    pet.addSpeechBubble(id, 0L, 100L, TextComponent.ofChildren(new Component[] {
                                 Component.text("This will come up a lot "),
                                 Mytems.WINK.component,
                             }));

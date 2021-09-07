@@ -54,15 +54,15 @@ public final class MineGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100, new Component[] {
+                    pet.addSpeechBubble(id, 50L, 100, new Component[] {
                             Component.text("Have you heard of"),
                             Component.text("the mining world?"),
                         });
-                    pet.addSpeechBubble(100, new Component[] {
+                    pet.addSpeechBubble(id, 0L, 100, new Component[] {
                             Component.text("This is where we gather"),
                             Component.text("most of our resources."),
                         });
-                    pet.addSpeechBubble(100, new Component[] {
+                    pet.addSpeechBubble(id, 0L, 100, new Component[] {
                             Component.text("The world resets"),
                             Component.text("weekly, so there's"),
                             Component.text("always more stuff."),
@@ -85,18 +85,7 @@ public final class MineGoal implements Goal {
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
         switch (name) {
         case USE_MINE:
-            if (condMine.progress(playerQuest)) {
-                playerQuest.getSession().applyPet(pet -> {
-                        pet.addSpeechBubble(100, new Component[] {
-                                Component.text("Here we are in the"),
-                                Component.text("mining world..."),
-                            });
-                        pet.addSpeechBubble(100, new Component[] {
-                                Component.text("Let's find some"),
-                                Component.text("stuff, " + pet.getType().speechGimmick + "!"),
-                            });
-                    });
-            }
+            condMine.progress(playerQuest);
             break;
         default: break;
         }

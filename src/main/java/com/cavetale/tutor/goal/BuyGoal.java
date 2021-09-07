@@ -82,7 +82,7 @@ public final class BuyGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 200L,
+                    pet.addSpeechBubble(id, 50L, 200L,
                                         Component.text("Now that we have some"),
                                         Component.text("coins, let's find out"),
                                         Component.text("how they can be spent!"));

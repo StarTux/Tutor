@@ -126,10 +126,10 @@ public final class ChoosePetGoal implements Goal {
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
         playerQuest.getSession().setPet(petType, true);
         Pet pet = playerQuest.getSession().spawnPet();
-        pet.addSpeechBubble(50L, 100L, new Component[] {
+        pet.addSpeechBubble(id, 50L, 100L, new Component[] {
                 Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
             });
-        pet.addSpeechBubble(100L, new Component[] {
+        pet.addSpeechBubble(id, 0L, 100L, new Component[] {
                 Component.text("I will be your personal assistant."),
                 Component.text("Please give me a name, " + petType.speechGimmick + "."),
             });
@@ -140,12 +140,12 @@ public final class ChoosePetGoal implements Goal {
         if (tutorEvent == TutorEvent.RENAME_PET) {
             if (condRename.progress(playerQuest)) {
                 playerQuest.getSession().applyPet(pet -> {
-                        pet.addSpeechBubble(50L, 200L,
+                        pet.addSpeechBubble(id, 50L, 200L,
                                             Component.text("When ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
                                             Component.text("appears, open the"),
                                             Component.text("tutor menu and"),
                                             Component.text("click it."));
-                        pet.addSpeechBubble(150L,
+                        pet.addSpeechBubble(id, 0L, 150L,
                                             Component.text("Or you can just"),
                                             Component.text().content("click me ")
                                             .append(Mytems.HAPPY.component)

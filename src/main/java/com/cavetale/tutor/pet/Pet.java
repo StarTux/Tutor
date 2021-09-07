@@ -118,10 +118,11 @@ public final class Pet {
         currentSpeechBubble.enable();
     }
 
-    public void addSpeechBubble(long warmup, long lifetime, Component... lines) {
+    public void addSpeechBubble(String theTag, long warmup, long lifetime, Component... lines) {
         SpeechBubble speechBubble = new SpeechBubble(this);
         speechBubble.setLines(lifetime, lines);
         speechBubble.setWarmup(warmup);
+        speechBubble.setTag(theTag);
         speechBubbleQueue.add(speechBubble);
         if (!isSpawned()) {
             if (!autoRespawn) {
@@ -133,8 +134,8 @@ public final class Pet {
         }
     }
 
-    public void addSpeechBubble(long lifetime, Component... lines) {
-        addSpeechBubble(0L, lifetime, lines);
+    public void removeSpeechBubblesTagged(String theTag) {
+        speechBubbleQueue.removeIf(b -> theTag.equals(b.getTag()));
     }
 
     public void resetSpeechBubbles() {

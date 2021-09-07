@@ -100,17 +100,17 @@ public final class LocalChatGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 180L,
+                    pet.addSpeechBubble(id, 50L, 180L,
                                         Component.text("Chatting is simple"),
                                         Component.text("but with many players"),
                                         Component.text("online, we must learn"),
                                         Component.text("about channels."));
-                    pet.addSpeechBubble(180L,
+                    pet.addSpeechBubble(id, 0L, 180L,
                                         Component.text("Personal conversations"),
                                         Component.text("should be kept in"),
                                         Component.text("local, private, or"),
                                         Component.text("party chat."));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("Remember this command:"),
                                         Component.text("/ch", NamedTextColor.YELLOW));
                 });

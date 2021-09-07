@@ -79,13 +79,13 @@ public final class StorageGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100,
+                    pet.addSpeechBubble(id, 50L, 100,
                                         Component.text("Need a place to store"),
                                         Component.text("all your items?"));
-                    pet.addSpeechBubble(100,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("No need for a massive"),
                                         Component.text("storage room!"));
-                    pet.addSpeechBubble(100,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("Mass Storage and the"),
                                         Component.text("Stash have you covered!"));
                 });

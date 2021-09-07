@@ -45,8 +45,9 @@ public final class MenuGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100L, Component.text("There's so much more..."));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 50L, 100L,
+                                        Component.text("There's so much more..."));
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("It's best you explore a"),
                                         Component.text("little at your own pace."));
                 });
@@ -56,7 +57,8 @@ public final class MenuGoal implements Goal {
     @Override
     public void onComplete(PlayerQuest playerQuest) {
         playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(100L, Component.text("Have a lot of fun, " + pet.getType().speechGimmick + "!"));
+                pet.addSpeechBubble("", 0L, 100L, // empty tag!
+                                    Component.text("Have a lot of fun, " + pet.getType().speechGimmick + "!"));
             });
     }
 

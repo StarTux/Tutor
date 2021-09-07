@@ -79,15 +79,15 @@ public final class ServerSwitchGoal implements Goal, Listener {
     @Override
     public void onBegin(PlayerQuest playerQuest) {
         playerQuest.getSession().applyPet(pet -> {
-                pet.addSpeechBubble(50L, 100L,
+                pet.addSpeechBubble(id, 50L, 100L,
                                     Component.text("You know the main"),
                                     Component.text("survival server,"),
                                     Component.text("but there are more."));
-                pet.addSpeechBubble(100L,
+                pet.addSpeechBubble(id, 0L, 100L,
                                     Component.text("Just like warps, you"),
                                     Component.text("should know how to"),
                                     Component.text("get to each one."));
-                pet.addSpeechBubble(100L,
+                pet.addSpeechBubble(id, 0L, 100L,
                                     Component.text("Remember this command:"),
                                     Component.text("/server", NamedTextColor.YELLOW));
             });

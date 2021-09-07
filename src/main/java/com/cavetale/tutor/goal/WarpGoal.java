@@ -83,14 +83,14 @@ public final class WarpGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 150L,
+                    pet.addSpeechBubble(id, 50L, 150L,
                                         Component.text("Sharing is caring,"),
                                         Component.text("and we can share our"),
                                         Component.text("homes with others."));
-                    pet.addSpeechBubble(100L,
+                    pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("There are public homes"),
                                         Component.text("and public warps."));
-                    pet.addSpeechBubble(60L,
+                    pet.addSpeechBubble(id, 0L, 60L,
                                         Component.text("Let's check them out!"));
                 });
         }

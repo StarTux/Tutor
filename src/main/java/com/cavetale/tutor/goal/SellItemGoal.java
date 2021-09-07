@@ -60,15 +60,15 @@ public final class SellItemGoal implements Goal {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(50L, 100L,
+                    pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("Time to learn"),
                                         Component.text("about coins!"));
-                    pet.addSpeechBubble(150L,
+                    pet.addSpeechBubble(id, 0L, 150L,
                                         Component.text("The best way to earn"),
                                         Component.text("some coin is to sell"),
                                         Component.text("valuable items to"),
                                         Component.text("the bank."));
-                    pet.addSpeechBubble(200L,
+                    pet.addSpeechBubble(id, 0L, 200L,
                                         Component.text("Remember these commands:"),
                                         Component.text("/sell", NamedTextColor.YELLOW),
                                         Component.text("and"),

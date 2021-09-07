@@ -22,6 +22,9 @@ public final class SpeechBubble {
     private boolean disabled;
     private List<Component> lines;
     private long lifetime;
+    /** The tag exists so we remember who created the speech bubble,
+        in case it must be removed. */
+    @Setter private String tag;
     @Setter private long warmup;
 
     private Location getArmorStandLocation(int index, int total) {

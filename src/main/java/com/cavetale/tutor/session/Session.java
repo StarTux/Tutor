@@ -302,11 +302,11 @@ public final class Session {
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && canSee(questName)) {
                 if (pet != null) {
-                    pet.addSpeechBubble(60L, 150L,
+                    pet.addSpeechBubble("session", 60L, 150L,
                                         Component.text("There are more"),
                                         Component.text(questName.type.lower + "s waiting"),
                                         Component.text("for you!"));
-                    pet.addSpeechBubble(150L,
+                    pet.addSpeechBubble("session", 0L, 150L,
                                         Component.text("Click me or type"),
                                         Component.text("/tutor", NamedTextColor.YELLOW));
                 }

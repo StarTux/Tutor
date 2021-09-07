@@ -30,6 +30,7 @@ public final class PlayerQuest {
 
     protected void disable() {
         if (currentGoal != null) {
+            session.applyPet(pet -> pet.removeSpeechBubblesTagged(currentGoal.getId()));
             currentGoal.onDisable(this);
         }
     }
@@ -117,6 +118,7 @@ public final class PlayerQuest {
      */
     public void onGoalComplete(Player player) {
         final int index = quest.goalIndex(currentGoal.getId());
+        session.applyPet(pet -> pet.removeSpeechBubblesTagged(currentGoal.getId()));
         currentGoal.onComplete(this);
         currentGoal.onDisable(this);
         currentGoal = null;
