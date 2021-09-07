@@ -13,6 +13,7 @@ import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
+import com.winthier.playercache.PlayerCache;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +55,12 @@ public final class Session {
     private final List<Runnable> deferredCallbacks = new ArrayList<>();
     protected Pet pet;
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
+    private Cache cache;
 
+    /**
+     * This is the constructor for a regular session which will be
+     * used to hold the state of a player's quest progress.
+     */
     protected Session(final Sessions sessions, final Player player) {
         this.plugin = sessions.plugin;
         this.sessions = sessions;
@@ -62,26 +68,47 @@ public final class Session {
         this.name = player.getName();
     }
 
-    protected void load() {
+    /**
+     * This is the constructor for a temporary session which was
+     * requirested by an admin command.
+     * It will call loadAsync(), but not enable().
+     */
+    protected Session(final Sessions sessions, final PlayerCache playerCache) {
+        this.plugin = sessions.plugin;
+        this.sessions = sessions;
+        this.uuid = playerCache.uuid;
+        this.name = playerCache.name;
+    }
+
+    private final class Cache {
+        List<SQLPlayerQuest> playerQuestRows;
+        List<SQLCompletedQuest> completedQuestRows;
+    }
+
+    protected void loadAsync(Runnable callback) {
         plugin.getDatabase().scheduleAsyncTask(() -> {
-                List<SQLPlayerQuest> playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
+                this.cache = new Cache();
+                cache.playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
                     .eq("player", uuid).findList();
-                List<SQLCompletedQuest> completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
+                cache.completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
                     .eq("player", uuid).findList();
-                playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
+                this.playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
                 if (playerPetRow == null) {
                     playerPetRow = new SQLPlayerPet(uuid);
                     playerPetRow.setAutoSpawn(true);
                     plugin.getDatabase().insert(playerPetRow);
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> enable(playerQuestRows, completedQuestRows));
+                if (callback != null) {
+                    Bukkit.getScheduler().runTask(plugin, callback);
+                }
             });
     }
 
-    private void enable(List<SQLPlayerQuest> playerQuestRows, List<SQLCompletedQuest> completedQuestRows) {
+    protected void enable() {
+        Objects.requireNonNull(cache, "cache=null");
         if (!sessions.enabled || disabled) return;
         spawnPet();
-        for (SQLPlayerQuest row : playerQuestRows) {
+        for (SQLPlayerQuest row : cache.playerQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
             if (questName == null) {
                 plugin.getLogger().warning("Quest not found: " + row);
@@ -92,7 +119,7 @@ public final class Session {
             currentQuests.put(playerQuest.quest.getName(), playerQuest);
             playerQuest.loadRow(); // enable
         }
-        for (SQLCompletedQuest row : completedQuestRows) {
+        for (SQLCompletedQuest row : cache.completedQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
             if (questName == null) {
                 plugin.getLogger().warning("Quest not found: " + row);
@@ -100,6 +127,7 @@ public final class Session {
             }
             completedQuests.put(questName, row);
         }
+        cache = null;
         ready = true;
         for (Runnable callback : deferredCallbacks) {
             callback.run();
@@ -232,6 +260,14 @@ public final class Session {
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         itemStack.setItemMeta(meta);
         player.openBook(itemStack);
+    }
+
+    public void apply(Consumer<Session> callback) {
+        if (ready) {
+            callback.accept(this);
+        } else {
+            deferredCallbacks.add(() -> callback.accept(this));
+        }
     }
 
     public void applyGoals(BiConsumer<PlayerQuest, Goal> callback) {

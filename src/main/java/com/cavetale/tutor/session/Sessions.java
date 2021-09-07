@@ -10,6 +10,7 @@ import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pet;
 import com.winthier.perm.event.PlayerPermissionUpdateEvent;
+import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +73,16 @@ public final class Sessions implements Listener {
         return session != null && session.ready ? session : null;
     }
 
+    public void findOrLoad(PlayerCache playerCache, Consumer<Session> callback) {
+        Session session = sessionsMap.get(playerCache.uuid);
+        if (session != null) {
+            session.apply(callback);
+            return;
+        }
+        Session tempSession = new Session(this, playerCache);
+        tempSession.loadAsync(() -> callback.accept(tempSession));
+    }
+
     public boolean apply(Player player, Consumer<Session> callback) {
         Session session = sessionsMap.get(player.getUniqueId());
         if (session != null && session.ready) {
@@ -122,7 +133,7 @@ public final class Sessions implements Listener {
         }
         Session session = new Session(this, player);
         sessionsMap.put(session.uuid, session);
-        session.load();
+        session.loadAsync(session::enable);
     }
 
     /**
