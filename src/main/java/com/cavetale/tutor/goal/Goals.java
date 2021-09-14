@@ -34,6 +34,12 @@ public final class Goals {
                 new TicketGoal(),
                 new MenuGoal(),
             });
+        case FRIEND: return Arrays.asList(new Goal[] {
+                new LocalChatGoal(),
+                new TitleGoal(),
+                new MailGoal(),
+                new FriendGoal(),
+            });
         default:
             throw new IllegalStateException("Quest not defined: " + name);
         }

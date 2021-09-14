@@ -19,7 +19,6 @@ public final class SetHomeGoal implements Goal {
     @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
     protected final CheckboxCondition condSetHome;
-    protected final ClickableCondition condSkip;
     protected final CheckboxCondition condHome;
 
     public SetHomeGoal() {
@@ -27,9 +26,6 @@ public final class SetHomeGoal implements Goal {
         condSetHome = new CheckboxCondition(Component.text("Set your home"),
                                             playerQuest -> getProgress(playerQuest).sethome,
                                             playerQuest -> getProgress(playerQuest).sethome = true);
-        condSkip = new ClickableCondition(Component.text("I already have a home"), "AlreadyHaveAHome",
-                                          this::onSkip,
-                                          playerQuest -> !getProgress(playerQuest).sethome);
         condHome = new CheckboxCondition(Component.text("Use your home"),
                                          playerQuest -> getProgress(playerQuest).home,
                                          playerQuest -> getProgress(playerQuest).home = true,
@@ -38,18 +34,17 @@ public final class SetHomeGoal implements Goal {
         condHome.setBookPageIndex(0);
         this.conditions = Arrays.asList(new Condition[] {
                 condSetHome,
-                condSkip,
                 condHome,
             });
         this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 Component.text()
                 .append(Component.text("Set your primary home via "))
-                .append(Component.text("/sethome", NamedTextColor.DARK_BLUE))
+                .append(Component.text("/sethome", NamedTextColor.BLUE))
                 .append(Component.text(". You can change it any time with the same command."))
                 .append(Component.space())
                 .append(Component.text("A home is a place you can visit any time via "))
-                .append(Component.text("/home", NamedTextColor.DARK_BLUE))
+                .append(Component.text("/home", NamedTextColor.BLUE))
                 .append(Component.text("."))
                 .append(Component.newline())
                 .append(Component.newline())
@@ -59,7 +54,12 @@ public final class SetHomeGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        if (!getProgress(playerQuest).isComplete()) {
+        SetHomeProgress progress = getProgress(playerQuest);
+        if (!progress.sethome && PluginPlayerQuery.Name.PRIMARY_HOME_IS_SET.call(playerQuest.getPlugin(), playerQuest.getPlayer(), false)) {
+            progress.sethome = true;
+            playerQuest.onProgress();
+        }
+        if (!progress.isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("You can port to your"),
@@ -92,10 +92,10 @@ public final class SetHomeGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        if (name == PluginPlayerEvent.Name.SET_PRIMARY_HOME) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        if (event.getName() == PluginPlayerEvent.Name.SET_PRIMARY_HOME) {
             condSetHome.progress(playerQuest);
-        } else if (name == PluginPlayerEvent.Name.USE_PRIMARY_HOME) {
+        } else if (event.getName() == PluginPlayerEvent.Name.USE_PRIMARY_HOME) {
             condHome.progress(playerQuest);
         }
     }

@@ -81,10 +81,10 @@ public final class MiningGoal implements Goal, Listener {
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Locating a dungeon:\n"),
-                        Component.text("right-click", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
+                        Component.text("right-click", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
                         Component.text(" a "),
                         VanillaItems.componentOf(Material.COMPASS),
-                        Component.text("compass", NamedTextColor.DARK_BLUE, TextDecoration.UNDERLINED),
+                        Component.text("compass", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
                         Component.text("\nFollow its directions."
                                        + " You have to be deep enough underground"
                                        + " in the mining world for this to work", NamedTextColor.GRAY),
@@ -124,8 +124,8 @@ public final class MiningGoal implements Goal, Listener {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case DUNGEON_LOOT:
             condDungeon.progress(playerQuest);
             break;

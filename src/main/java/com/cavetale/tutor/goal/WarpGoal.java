@@ -59,21 +59,21 @@ public final class WarpGoal implements Goal {
                         Component.text("Get back to the place you started any time."
                                        + " There are portals, merchants, and secrets to be discovered."
                                        + "\n\nCommand:\n"),
-                        Component.text("/spawn", NamedTextColor.DARK_BLUE),
+                        Component.text("/spawn", NamedTextColor.BLUE),
                         Component.text("\nTeleport to spawn", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Warps can take you to key locations on the server."
                                        + " They are public places set up by our staff."
                                        + "\n\nCommand:\n"),
-                        Component.text("/warp", NamedTextColor.DARK_BLUE),
+                        Component.text("/warp", NamedTextColor.BLUE),
                         Component.text("\nView the warp list. Click to warp", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Public homes are made by players."
                                        + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),
-                        Component.text("/visit", NamedTextColor.DARK_BLUE),
+                        Component.text("/visit", NamedTextColor.BLUE),
                         Component.text("\nView the public home list. Click to warp", NamedTextColor.GRAY),
                     }),
             });
@@ -97,8 +97,8 @@ public final class WarpGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case USE_SPAWN:
             condSpawn.progress(playerQuest);
             break;

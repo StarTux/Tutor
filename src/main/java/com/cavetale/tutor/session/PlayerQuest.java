@@ -41,16 +41,14 @@ public final class PlayerQuest {
     protected void onQuestStart() {
         currentGoal = quest.getGoals().get(0);
         initializeCurrentGoal();
-        currentGoal.onEnable(this);
         Player player = getPlayer();
-        if (player != null) {
-            Component msg = Component.text()
-                .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
-                .append(currentGoal.getDisplayName())
-                .build();
-            player.sendMessage(msg);
-            player.sendActionBar(msg);
-        }
+        Component msg = Component.text()
+            .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
+            .append(currentGoal.getDisplayName())
+            .build();
+        player.sendMessage(msg);
+        player.sendActionBar(msg);
+        currentGoal.onEnable(this);
     }
 
     /**
@@ -129,7 +127,6 @@ public final class PlayerQuest {
             Goal newGoal = quest.getGoals().get(newIndex);
             currentGoal = newGoal;
             initializeCurrentGoal();
-            currentGoal.onEnable(this);
             save();
             Component msg = Component.text()
                 .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
@@ -138,6 +135,7 @@ public final class PlayerQuest {
             player.sendMessage(msg);
             player.sendActionBar(msg);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
+            currentGoal.onEnable(this);
         }
     }
 

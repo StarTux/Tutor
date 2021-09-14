@@ -44,13 +44,13 @@ public final class SellItemGoal implements Goal {
                                        + " The sell menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
                                        + "\n\nCommand:\n"),
-                        Component.text("/sell", NamedTextColor.DARK_BLUE),
+                        Component.text("/sell", NamedTextColor.BLUE),
                         Component.text("\nOpen the sell menu", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Keep an eye on your bank balance."
                                        + "\n\nCommand:\n"),
-                        Component.text("/money", NamedTextColor.DARK_BLUE),
+                        Component.text("/money", NamedTextColor.BLUE),
                         Component.text("\nCheck your balance", NamedTextColor.GRAY),
                     }),
             });
@@ -78,14 +78,14 @@ public final class SellItemGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        if (name == PluginPlayerEvent.Name.SELL_ITEM) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        if (event.getName() == PluginPlayerEvent.Name.SELL_ITEM) {
             Material mat = event.getDetail(Detail.MATERIAL, null);
             int amount = event.getDetail(Detail.COUNT, 0);
             if (mat == Material.DIAMOND) {
                 condDiamond.progress(playerQuest, amount);
             }
-        } else if (name == PluginPlayerEvent.Name.USE_MONEY) {
+        } else if (event.getName() == PluginPlayerEvent.Name.USE_MONEY) {
             condMoney.progress(playerQuest);
         }
     }

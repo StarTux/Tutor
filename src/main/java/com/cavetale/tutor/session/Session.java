@@ -368,7 +368,7 @@ public final class Session {
         if (!currentQuests.isEmpty()) {
             openQuestBook(player);
         } else {
-            openPetMenu(player);
+            overviewMenu(player);
         }
     }
 
@@ -389,7 +389,7 @@ public final class Session {
         }
     }
 
-    public void openPetMenu(Player player) {
+    public void overviewMenu(Player player) {
         if (pet == null) return;
         int size = 3 * 9;
         Gui gui = new Gui();
@@ -502,7 +502,7 @@ public final class Session {
         //
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 Noise.CLICK.play(player);
-                openPetMenu(player);
+                overviewMenu(player);
             });
         gui.open(player);
     }
@@ -550,7 +550,7 @@ public final class Session {
         //
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 Noise.CLICK.play(player);
-                openPetMenu(player);
+                overviewMenu(player);
             });
         gui.open(player);
     }

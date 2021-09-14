@@ -56,16 +56,16 @@ public final class ServerSwitchGoal implements Goal, Listener {
                                        + " with various gamemodes on them."
                                        + " There is also the hub, creative, and many mini games."),
                         Component.text("\n\nCommands:\n"),
-                        Component.text("/server", NamedTextColor.DARK_BLUE),
+                        Component.text("/server", NamedTextColor.BLUE),
                         Component.text("\nList all servers", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Server Commands:\n"),
-                        Component.text("/hub", NamedTextColor.DARK_BLUE),
+                        Component.text("/hub", NamedTextColor.BLUE),
                         Component.text("\nThe lobby between our servers\n\n", NamedTextColor.GRAY),
-                        Component.text("/creative", NamedTextColor.DARK_BLUE),
+                        Component.text("/creative", NamedTextColor.BLUE),
                         Component.text("\nOur creative mode server\n\n", NamedTextColor.GRAY),
-                        Component.text("/cavetale", NamedTextColor.DARK_BLUE),
+                        Component.text("/cavetale", NamedTextColor.BLUE),
                         Component.text("\nThe main server", NamedTextColor.GRAY),
                     }),
             });
@@ -104,8 +104,8 @@ public final class ServerSwitchGoal implements Goal, Listener {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        if (name == PluginPlayerEvent.Name.SWITCH_SERVER) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        if (event.getName() == PluginPlayerEvent.Name.SWITCH_SERVER) {
             switch (Detail.NAME.get(event, "")) {
             case "hub":
                 condHub.progress(playerQuest);

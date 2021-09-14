@@ -15,7 +15,9 @@ public enum QuestName {
     BEGINNER(Type.TUTORIAL, Component.text("Welcome to Cavetale!"), "group.trusted"),
     ORIENTATION(Type.TUTORIAL, Component.text("Beginner Tour"), QuestName.BEGINNER),
     MONEY(Type.TUTORIAL, Component.text("All About Money"), QuestName.BEGINNER),
-    MEMBER(Type.TUTORIAL, Component.text("The Road to Member"), QuestName.MONEY, QuestName.ORIENTATION);
+    MEMBER(Type.TUTORIAL, Component.text("The Road to Member"), QuestName.MONEY, QuestName.ORIENTATION),
+    // Member
+    FRIEND(Type.TUTORIAL, Component.text("Making Friends"), QuestName.MEMBER);
     public static final List<String> KEY_LIST;
 
     public final Type type;

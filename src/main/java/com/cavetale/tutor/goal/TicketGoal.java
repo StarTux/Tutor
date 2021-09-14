@@ -63,7 +63,7 @@ public final class TicketGoal implements Goal, Listener {
                         Component.text("Whenever you need staff assistance, make a ticket."
                                        + " This is the best way to reach out to staff."
                                        + "\n\nCommand:\n"),
-                        Component.text("/ticket", NamedTextColor.DARK_BLUE),
+                        Component.text("/ticket", NamedTextColor.BLUE),
                         Component.text("\nView the ticket menu,"
                                        + " click the buttons in chat for more.",
                                        NamedTextColor.GRAY),

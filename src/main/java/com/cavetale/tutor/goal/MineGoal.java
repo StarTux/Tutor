@@ -41,10 +41,10 @@ public final class MineGoal implements Goal {
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Mining World Commands:"),
-                        Component.text("\n/mine", NamedTextColor.DARK_BLUE),
+                        Component.text("\n/mine", NamedTextColor.BLUE),
                         Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),
                         Component.newline(),
-                        Component.text("\n/mine random", NamedTextColor.DARK_BLUE),
+                        Component.text("\n/mine random", NamedTextColor.BLUE),
                         Component.text("\nWarp to a random biome", NamedTextColor.GRAY),
                     }),
             });
@@ -82,12 +82,9 @@ public final class MineGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
-        case USE_MINE:
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        if (event.getName() == PluginPlayerEvent.Name.USE_MINE) {
             condMine.progress(playerQuest);
-            break;
-        default: break;
         }
     }
 

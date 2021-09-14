@@ -55,16 +55,16 @@ public final class BuyGoal implements Goal {
                                        + " Starting with the Member rank,"
                                        + " you can claim market a plot and set up shop chests there."
                                        + "\n\nCommand:\n"),
-                        Component.text("/market", NamedTextColor.DARK_BLUE),
+                        Component.text("/market", NamedTextColor.BLUE),
                         Component.text("\nWarp to the market world\n", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("You can search the market for specific items:\n\n"),
-                        Component.text("/shop search <item>", NamedTextColor.DARK_BLUE),
+                        Component.text("/shop search <item>", NamedTextColor.BLUE),
                         Component.text("\nExample:\n", NamedTextColor.DARK_GRAY),
-                        Component.text("/shop search oak", NamedTextColor.DARK_BLUE),
+                        Component.text("/shop search oak", NamedTextColor.BLUE),
                         Component.text("\nSearch the shops for an item. Click the ", NamedTextColor.GRAY),
-                        Component.text("[Port]", NamedTextColor.DARK_BLUE),
+                        Component.text("[Port]", NamedTextColor.BLUE),
                         Component.text(" button in chat to port to the chest", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
@@ -72,7 +72,7 @@ public final class BuyGoal implements Goal {
                                        + " It will grow automatically in all directions"
                                        + " unless the claim settings are changed."
                                        + "\n\nCommand:\n"),
-                        Component.text("/claim buy <amount>", NamedTextColor.DARK_BLUE),
+                        Component.text("/claim buy <amount>", NamedTextColor.BLUE),
                         Component.text("\nEach block costs 10 Cents", NamedTextColor.GRAY),
                     }),
             });

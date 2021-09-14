@@ -169,7 +169,7 @@ public interface Goal {
         return list;
     }
 
-    default void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) { }
+    default void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) { }
 
     default void onTutorEvent(PlayerQuest playerQuest, TutorEvent event) { }
 }

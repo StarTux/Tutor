@@ -97,7 +97,7 @@ public final class ChoosePetGoal implements Goal {
     private void onClick(PlayerQuest playerQuest) {
         condClick.progress(playerQuest);
         Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.DARK_BLUE));
+        gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.BLUE));
         ItemStack cat = PetType.CAT.icon.createIcon();
         cat.editMeta(meta -> {
                 meta.displayName(Component.text("I'm more of a cat person!", NamedTextColor.BLUE));

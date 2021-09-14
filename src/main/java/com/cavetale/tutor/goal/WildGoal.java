@@ -21,7 +21,6 @@ public final class WildGoal implements Goal {
     protected final CheckboxCondition condWild;
     protected final CheckboxCondition condClaim;
     protected final ClickableCondition condSkip;
-    protected final ClickableCondition condSkipShare;
 
     public WildGoal() {
         this.id = "wild";
@@ -32,30 +31,28 @@ public final class WildGoal implements Goal {
         condClaim = new CheckboxCondition(Component.text("Make a claim"),
                                           playerQuest -> getProgress(playerQuest).claim,
                                           playerQuest -> getProgress(playerQuest).claim = true);
-        condSkip = new ClickableCondition(Component.text("I already have a claim!"), "IHaveAClaim",
-                                          this::skip);
-        condSkipShare = new ClickableCondition(Component.text("I live with a friend!"), "ILiveWithAFriend",
-                                               this::skipShare);
+        condSkip = new ClickableCondition(Component.text("I live with a friend!"), "ILiveWithAFriend",
+                                          this::skip,
+                                          playerQuest -> !getProgress(playerQuest).isComplete());
         condWild.setBookPageIndex(0);
         condClaim.setBookPageIndex(1);
         this.conditions = Arrays.asList(new Condition[] {
                 condWild,
                 condSkip,
-                condSkipShare,
                 condClaim,
             });
         this.constraints = Arrays.asList(new MainServerConstraint());
         this.additionalBookPages = Arrays.asList(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("You can type "),
-                        Component.text("/wild", NamedTextColor.DARK_BLUE),
+                        Component.text("/wild", NamedTextColor.BLUE),
                         Component.text(" in order to find a nice place for you to start your base."
                                        + " This will teleport you to a random place in the main build world."
                                        + " You can repeat the command until you find a nice place."),
                     }),
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Once you have found a place you like, type "),
-                        Component.text("/claim new", NamedTextColor.DARK_BLUE),
+                        Component.text("/claim new", NamedTextColor.BLUE),
                         Component.text(" to claim the area as your own."
                                        + "You can grow the claim further out later on."),
                     }),
@@ -64,7 +61,12 @@ public final class WildGoal implements Goal {
 
     @Override
     public void onEnable(PlayerQuest playerQuest) {
-        if (!getProgress(playerQuest).isComplete()) {
+        WildProgress progress = getProgress(playerQuest);
+        if (!progress.isComplete() && PluginPlayerQuery.Name.CLAIM_COUNT.call(playerQuest.getPlugin(), playerQuest.getPlayer(), 0) > 0) {
+            progress.setComplete();
+            playerQuest.onProgress();
+        }
+        if (!progress.isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("Let's find a place to"),
@@ -84,17 +86,6 @@ public final class WildGoal implements Goal {
 
     private void skip(PlayerQuest playerQuest) {
         Player player = playerQuest.getPlayer();
-        if (PluginPlayerQuery.Name.CLAIM_COUNT.call(playerQuest.getPlugin(), player, 0) < 1) {
-            player.sendMessage(Component.text("You don't have a claim!", NamedTextColor.RED));
-        } else {
-            if (getProgress(playerQuest).setComplete()) {
-                playerQuest.onProgress();
-            }
-        }
-    }
-
-    private void skipShare(PlayerQuest playerQuest) {
-        Player player = playerQuest.getPlayer();
         if (!PluginPlayerQuery.Name.INSIDE_TRUSTED_CLAIM.call(playerQuest.getPlugin(), player, false)) {
             player.sendMessage(Component.text("Please stand in your shared claim", NamedTextColor.RED));
         } else {
@@ -105,8 +96,8 @@ public final class WildGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case USE_WILD:
             condWild.progress(playerQuest);
             break;

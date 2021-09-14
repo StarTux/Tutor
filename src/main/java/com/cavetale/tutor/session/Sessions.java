@@ -160,9 +160,8 @@ public final class Sessions implements Listener {
 
     @EventHandler
     void onPluginPlayer(PluginPlayerEvent event) {
-        PluginPlayerEvent.Name name = event.getName();
         applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                goal.onPluginPlayer(playerQuest, name, event);
+                goal.onPluginPlayer(playerQuest, event);
             });
     }
 

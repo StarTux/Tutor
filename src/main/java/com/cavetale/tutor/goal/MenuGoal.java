@@ -35,7 +35,7 @@ public final class MenuGoal implements Goal {
                                        + " Explore more of them at your pace."
                                        + " We prepared a menu to help you with that."
                                        + "\n\nCommand:\n"),
-                        Component.text("/menu", NamedTextColor.DARK_BLUE),
+                        Component.text("/menu", NamedTextColor.BLUE),
                         Component.text("\nView the main menu", NamedTextColor.GRAY),
                     }),
             });
@@ -63,8 +63,8 @@ public final class MenuGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        if (name == PluginPlayerEvent.Name.OPEN_MENU) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        if (event.getName() == PluginPlayerEvent.Name.OPEN_MENU) {
             condMenu.progress(playerQuest);
         }
     }

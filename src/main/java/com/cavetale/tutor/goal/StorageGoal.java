@@ -53,7 +53,7 @@ public final class StorageGoal implements Goal {
                         Component.text("Mass Storage is an infinite store for simple items,"
                                        + " from cobblestone to diamonds."
                                        + "\n\nCommand:\n"),
-                        Component.text("/ms", NamedTextColor.DARK_BLUE),
+                        Component.text("/ms", NamedTextColor.BLUE),
                         Component.text("\nOpen the Mass Storage menu\n", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
@@ -61,7 +61,7 @@ public final class StorageGoal implements Goal {
                                        + " You can click your way through the menu,"
                                        + " or enter the name of what you're looking for."
                                        + "\n\nCommand:\n"),
-                        Component.text("/ms diamond", NamedTextColor.DARK_BLUE),
+                        Component.text("/ms diamond", NamedTextColor.BLUE),
                         Component.text("\nSearch for diamonds\n", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {
@@ -69,7 +69,7 @@ public final class StorageGoal implements Goal {
                                        + " just like your ender chest."
                                        + " It can transport items to the raid server."
                                        + "\n\nCommand:\n"),
-                        Component.text("/st", NamedTextColor.DARK_BLUE),
+                        Component.text("/st", NamedTextColor.BLUE),
                         Component.text("\nOpen your stash", NamedTextColor.GRAY),
                     }),
             });
@@ -93,8 +93,8 @@ public final class StorageGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case OPEN_MASS_STORAGE:
             condMs.progress(playerQuest);
             break;

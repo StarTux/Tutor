@@ -102,7 +102,7 @@ public final class TutorCommand implements TabExecutor {
 
     private boolean menu(Player player, String[] args) {
         if (args.length != 0) return false;
-        if (!plugin.sessions.apply(player, session -> session.openPetMenu(player))) {
+        if (!plugin.sessions.apply(player, session -> session.overviewMenu(player))) {
             throw new CommandWarn("Session loading. Please try again later!");
         }
         return true;

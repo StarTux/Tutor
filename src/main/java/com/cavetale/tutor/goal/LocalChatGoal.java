@@ -1,6 +1,7 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,10 +47,10 @@ public final class LocalChatGoal implements Goal {
                                         playerQuest -> getProgress(playerQuest).use = true,
                                         playerQuest -> getProgress(playerQuest).focusLocal);
         condList.setBookPageIndex(0);
-        condFocusLocal.setBookPageIndex(1);
-        condFocusGlobal.setBookPageIndex(1);
-        condSettings.setBookPageIndex(2);
-        condUse.setBookPageIndex(3);
+        condFocusLocal.setBookPageIndex(2);
+        condFocusGlobal.setBookPageIndex(2);
+        condSettings.setBookPageIndex(3);
+        condUse.setBookPageIndex(4);
         this.conditions = Arrays.asList(new Condition[] {
                 condList,
                 condFocusLocal,
@@ -63,34 +64,68 @@ public final class LocalChatGoal implements Goal {
                         Component.text("Chat has several channels."
                                        + " There is global, local, party and private."
                                        + "\n\nCommands:\n"),
-                        Component.text("/ch list", NamedTextColor.DARK_BLUE),
+                        Component.text("/ch list", NamedTextColor.BLUE),
                         Component.text("\nList chat channels", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
+                        Component.text("Chat has components:\n\n"),
+                        (Component.text()
+                         .append(Component.text(Unicode.ARROW_RIGHT.character + " ", NamedTextColor.BLUE))
+                         .append(Component.text("["))
+                         .append(Component.text("G", NamedTextColor.GRAY))
+                         .append(Component.text("]"))
+                         .build()),
+                        (Component.text()
+                         .color(NamedTextColor.GRAY)
+                         .content("\nThe channel. There is ")
+                         .append(Component.text("G", NamedTextColor.DARK_GRAY, TextDecoration.BOLD))
+                         .append(Component.text("lobal, "))
+                         .append(Component.text("L", NamedTextColor.DARK_GRAY, TextDecoration.BOLD))
+                         .append(Component.text("ocal, "))
+                         .append(Component.text("PM", NamedTextColor.DARK_GRAY, TextDecoration.BOLD))
+                         .append(Component.text(" (private), and "))
+                         .append(Component.text("P", NamedTextColor.DARK_GRAY, TextDecoration.BOLD))
+                         .append(Component.text("arty\n\n"))
+                         .build()),
+                        (Component.text()
+                         .append(Component.text(Unicode.ARROW_RIGHT.character + " ", NamedTextColor.BLUE))
+                         .append(Component.text("["))
+                         .append(Component.text("Friendly", NamedTextColor.DARK_GRAY))
+                         .append(Component.text("]"))
+                         .build()),
+                        Component.text("\nThe chosen title\n\n", NamedTextColor.GRAY),
+                        (Component.text()
+                         .append(Component.text(Unicode.ARROW_RIGHT.character + " ", NamedTextColor.BLUE))
+                         .append(Component.text("Notch: ", NamedTextColor.GRAY))
+                         .append(Component.text("Hello!"))
+                         .build()),
+                        Component.text("\nThe name and message", NamedTextColor.GRAY),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Local chat has a range of "),
                         Component.text("500 blocks", NamedTextColor.DARK_RED, TextDecoration.UNDERLINED),
                         Component.text(". You can focus a channel to speak in there."),
                         Component.text("\n\nCommands:\n"),
-                        Component.text("/l", NamedTextColor.DARK_BLUE),
+                        Component.text("/l", NamedTextColor.BLUE),
                         Component.text("\nFocus local chat (500 blocks)\n", NamedTextColor.GRAY),
-                        Component.text("/g", NamedTextColor.DARK_BLUE),
+                        Component.text("/g", NamedTextColor.BLUE),
                         Component.text("\nFocus global chat\n", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                TextComponent.ofChildren(new Component[] {// 3
                         Component.text("Chat has many settings."
                                        + " You can change the look and feel of each channel to your liking."
                                        + " Returning to the default settings is easy."),
                         Component.text("\n\nCommands:\n"),
-                        Component.text("/ch set", NamedTextColor.DARK_BLUE),
+                        Component.text("/ch set", NamedTextColor.BLUE),
                         Component.text("\nOpen chat settings\n", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 3
+                TextComponent.ofChildren(new Component[] {// 4
                         Component.text("Each channel command can send a message."
                                        + " It can be used without a message to focus."),
                         Component.text("\n\nCommands:\n"),
-                        Component.text("/l Hello World", NamedTextColor.DARK_BLUE),
+                        Component.text("/l Hello World", NamedTextColor.BLUE),
                         Component.text("\nSay \"Hello World\" in local chat\n", NamedTextColor.GRAY),
-                        Component.text("/l", NamedTextColor.DARK_BLUE),
+                        Component.text("/l", NamedTextColor.BLUE),
                         Component.text("\nFocus local chat\n", NamedTextColor.GRAY),
                     }),
             });
@@ -145,8 +180,8 @@ public final class LocalChatGoal implements Goal {
     }
 
     @Override
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case LIST_CHAT_CHANNELS:
             condList.progress(playerQuest);
             break;

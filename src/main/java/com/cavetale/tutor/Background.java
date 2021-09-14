@@ -18,7 +18,7 @@ public enum Background {
             text = NamedTextColor.WHITE;
             green = NamedTextColor.GREEN;
             red = NamedTextColor.RED;
-            blue = NamedTextColor.AQUA;
+            blue = NamedTextColor.BLUE;
             gray = NamedTextColor.GRAY;
         } else {
             text = NamedTextColor.BLACK;
