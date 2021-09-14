@@ -1,7 +1,7 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goals;
-import com.winthier.perm.PlayerRank;
+import com.winthier.perm.rank.PlayerRank;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
