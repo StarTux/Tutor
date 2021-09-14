@@ -122,8 +122,10 @@ public final class TicketGoal implements Goal, Listener {
         session.applyGoals((playerQuest, goal) -> {
                 if (goal != this) return;
                 switch (event.getAction()) {
-                case CREATED:
+                case CREATE:
                     event.getTicket().setSilent(true);
+                    break;
+                case CREATED:
                     final int ticketId = event.getTicket().getId();
                     Bukkit.getScheduler().runTaskLater(TutorPlugin.getInstance(), () -> {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
