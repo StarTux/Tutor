@@ -35,9 +35,9 @@ public final class LocalChatGoal implements Goal {
                                                playerQuest -> getProgress(playerQuest).focusLocal = true,
                                                playerQuest -> getProgress(playerQuest).list);
         condFocusGlobal = new CheckboxCondition(Component.text("Focus global chat"),
-                                               playerQuest -> getProgress(playerQuest).focusGlobal,
-                                               playerQuest -> getProgress(playerQuest).focusGlobal = true,
-                                               playerQuest -> getProgress(playerQuest).list);
+                                                playerQuest -> getProgress(playerQuest).focusGlobal,
+                                                playerQuest -> getProgress(playerQuest).focusGlobal = true,
+                                                playerQuest -> getProgress(playerQuest).list);
         condSettings = new CheckboxCondition(Component.text("Open local chat settings"),
                                              playerQuest -> getProgress(playerQuest).settings,
                                              playerQuest -> getProgress(playerQuest).settings = true,

@@ -42,7 +42,7 @@ public final class DummyGoal extends AbstractGoal<DummyProgress> {
 }
 
 final class DummyProgress extends GoalProgress {
-    boolean done;
+    protected boolean done;
 
     @Override
     public boolean isComplete() {

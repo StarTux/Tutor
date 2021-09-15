@@ -35,7 +35,9 @@ public final class Goals {
                 new MenuGoal(),
             });
         case FRIEND: return Arrays.asList(new Goal[] {
-                new LocalChatGoal(),
+                new PrivateChatGoal(),
+                new PartyChatGoal(),
+                new TelevatorGoal(),
                 new TitleGoal(),
                 new MailGoal(),
                 new FriendGoal(),

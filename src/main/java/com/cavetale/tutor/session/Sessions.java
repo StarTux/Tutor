@@ -103,7 +103,7 @@ public final class Sessions implements Listener {
         }
     }
 
-    public <G extends Goal> void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
+    public void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
         Session session = sessionsMap.get(player.getUniqueId());
         session.applyGoals(callback);
     }

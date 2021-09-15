@@ -6,6 +6,8 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 
 public final class MainServerConstraint implements Constraint.Simple {
+    private static final MainServerConstraint INSTANCE = new MainServerConstraint();
+
     @Getter
     private final Component missedMessage = Component.text("Must be on main server!", RED);
 
@@ -16,5 +18,9 @@ public final class MainServerConstraint implements Constraint.Simple {
 
     public static boolean isTrue() {
         return Connect.getInstance().getServerName().equals("cavetale");
+    }
+
+    public static MainServerConstraint instance() {
+        return INSTANCE;
     }
 }
