@@ -8,6 +8,8 @@ import net.kyori.adventure.text.Component;
 public final class MainServerConstraint implements Constraint.Simple {
     private static final MainServerConstraint INSTANCE = new MainServerConstraint();
 
+    private MainServerConstraint() { }
+
     @Getter
     private final Component missedMessage = Component.text("Must be on main server!", RED);
 

@@ -52,7 +52,7 @@ public final class WarpGoal implements Goal {
                 condListVisits,
                 condUseVisit
             });
-        this.constraints = List.of(new MainServerConstraint());
+        this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Get back to the place you started any time."

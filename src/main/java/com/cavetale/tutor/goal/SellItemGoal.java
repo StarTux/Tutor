@@ -36,7 +36,7 @@ public final class SellItemGoal implements Goal {
                 condDiamond,
                 condMoney,
             });
-        this.constraints = List.of(new MainServerConstraint());
+        this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."

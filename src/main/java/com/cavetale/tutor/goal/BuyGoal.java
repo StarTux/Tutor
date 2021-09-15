@@ -47,7 +47,7 @@ public final class BuyGoal implements Goal {
                 condShopPort,
                 condBuyClaimBlocks,
             });
-        this.constraints = List.of(new MainServerConstraint());
+        this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The market contains player created shops."
