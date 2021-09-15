@@ -6,7 +6,6 @@ import com.cavetale.tutor.Background;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -79,7 +78,7 @@ public interface Goal {
     }
 
     default List<Component> getAdditionalBookPages() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     default List<Component> getBookPages(PlayerQuest playerQuest) {

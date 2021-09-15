@@ -4,7 +4,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -36,13 +35,13 @@ public final class WildGoal implements Goal {
                                           playerQuest -> !getProgress(playerQuest).isComplete());
         condWild.setBookPageIndex(0);
         condClaim.setBookPageIndex(1);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condWild,
                 condSkip,
                 condClaim,
             });
-        this.constraints = Arrays.asList(new MainServerConstraint());
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of(new MainServerConstraint());
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("You can type "),
                         Component.text("/wild", NamedTextColor.BLUE),

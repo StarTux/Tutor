@@ -4,7 +4,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -32,12 +31,12 @@ public final class SetHomeGoal implements Goal {
                                          playerQuest -> getProgress(playerQuest).sethome);
         condSetHome.setBookPageIndex(0);
         condHome.setBookPageIndex(0);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condSetHome,
                 condHome,
             });
-        this.constraints = Arrays.asList(new MainServerConstraint());
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of(new MainServerConstraint());
+        this.additionalBookPages = List.of(new Component[] {
                 Component.text()
                 .append(Component.text("Set your primary home via "))
                 .append(Component.text("/sethome", NamedTextColor.BLUE))

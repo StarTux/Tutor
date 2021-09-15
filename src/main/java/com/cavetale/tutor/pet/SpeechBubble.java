@@ -1,7 +1,6 @@
 package com.cavetale.tutor.pet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public final class SpeechBubble {
     }
 
     public void setLines(long theLifetime, Component... theLines) {
-        this.lines = Arrays.asList(theLines);
+        this.lines = List.of(theLines);
         this.lifetime = theLifetime;
     }
 

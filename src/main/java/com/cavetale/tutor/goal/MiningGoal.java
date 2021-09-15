@@ -6,7 +6,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -56,13 +55,13 @@ public final class MiningGoal implements Goal, Listener {
         condIron.setBookPageIndex(0);
         condDiamond.setBookPageIndex(0);
         condDungeon.setBookPageIndex(1);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condIron,
                 condDiamond,
                 condDungeon,
             });
-        this.constraints = Arrays.asList(new MiningWorldConstraint());
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of(new MiningWorldConstraint());
+        this.additionalBookPages = List.of(new Component[] {
                 // Mining
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The mining world is filled with special caves,"

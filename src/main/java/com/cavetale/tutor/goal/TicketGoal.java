@@ -6,8 +6,6 @@ import com.cavetale.tutor.session.Session;
 import com.winthier.ticket.TicketPlugin;
 import com.winthier.ticket.event.TicketEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -51,14 +49,14 @@ public final class TicketGoal implements Goal, Listener {
         condView.setBookPageIndex(2);
         condComment.setBookPageIndex(2);
         condClose.setBookPageIndex(2);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condCreate,
                 condView,
                 condComment,
                 condClose,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Whenever you need staff assistance, make a ticket."
                                        + " This is the best way to reach out to staff."

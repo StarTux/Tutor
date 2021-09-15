@@ -3,7 +3,6 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -33,12 +32,12 @@ public final class SellItemGoal implements Goal {
         condDiamond.setBookPageIndex(0);
         condMoney.setBookPageIndex(1);
         condDiamond.setBookPageIndex(0);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condDiamond,
                 condMoney,
             });
-        this.constraints = Arrays.asList(new MainServerConstraint());
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of(new MainServerConstraint());
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."
                                        + " The sell menu lists all the sellable items you currently have."

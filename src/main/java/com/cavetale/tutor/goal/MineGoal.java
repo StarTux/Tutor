@@ -2,8 +2,6 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -30,9 +28,9 @@ public final class MineGoal implements Goal {
                                          playerQuest -> getProgress(playerQuest).mine,
                                          playerQuest -> getProgress(playerQuest).mine = true);
         condMine.setBookPageIndex(0);
-        this.conditions = Arrays.asList(condMine);
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.conditions = List.of(condMine);
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The mining world is there for you to get your resources from."
                                        + " Not only do you keep the home worlds pristine by using this to harvest:"

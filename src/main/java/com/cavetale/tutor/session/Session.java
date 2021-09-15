@@ -16,7 +16,6 @@ import com.cavetale.tutor.util.Gui;
 import com.winthier.playercache.PlayerCache;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -398,7 +397,7 @@ public final class Session {
         ItemStack petItem = pet.getType().icon.createIcon();
         petItem.editMeta(meta -> {
                 meta.displayName(playerPetRow.getNameComponent());
-                meta.lore(Arrays.asList(new Component[] {
+                meta.lore(List.of(new Component[] {
                             Component.text("Access Pet Options", NamedTextColor.GRAY),
                         }));
             });
@@ -411,7 +410,7 @@ public final class Session {
         ItemStack questsItem = new ItemStack(Material.WRITTEN_BOOK);
         questsItem.editMeta(meta -> {
                 meta.displayName(Component.text("Tutorials", NamedTextColor.YELLOW));
-                meta.lore(Arrays.asList(new Component[] {
+                meta.lore(List.of(new Component[] {
                             Component.text("Tutorial Menu", NamedTextColor.GRAY),
                         }));
                 meta.addItemFlags(ItemFlag.values());
@@ -444,7 +443,7 @@ public final class Session {
             ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
             currentQuestIcon.editMeta(meta -> {
                     meta.displayName(playerQuest.getQuest().getDisplayName());
-                    meta.lore(Arrays.asList(new Component[] {
+                    meta.lore(List.of(new Component[] {
                                 Component.text("Current " + playerQuest.getQuest().getName().type.upper, NamedTextColor.YELLOW),
                             }));
                     meta.addItemFlags(ItemFlag.values());
@@ -465,7 +464,7 @@ public final class Session {
                 ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
                 item.editMeta(meta -> {
                         meta.displayName(quest.getDisplayName());
-                        meta.lore(Arrays.asList(new Component[] {
+                        meta.lore(List.of(new Component[] {
                                     Component.text("Completed", NamedTextColor.GRAY),
                                 }));
                         meta.addItemFlags(ItemFlag.values());
@@ -480,7 +479,7 @@ public final class Session {
                 ItemStack item = Mytems.STAR.createIcon();
                 item.editMeta(meta -> {
                         meta.displayName(quest.getDisplayName());
-                        meta.lore(Arrays.asList(new Component[] {
+                        meta.lore(List.of(new Component[] {
                                     Component.text("Start this " + questName.type.lower + "?", NamedTextColor.GRAY),
                                 }));
                     });

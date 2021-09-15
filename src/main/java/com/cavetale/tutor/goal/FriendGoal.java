@@ -3,8 +3,6 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerQuery;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -36,13 +34,13 @@ public final class FriendGoal implements Goal {
         condBday.setBookPageIndex(0);
         condGift.setBookPageIndex(1);
         condFriend.setBookPageIndex(3);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condBday,
                 condGift,
                 condFriend,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("If you share your birthday,"
                                        + " it will be visible on everyone's"

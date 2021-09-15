@@ -2,8 +2,6 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -25,11 +23,11 @@ public final class DummyGoal extends AbstractGoal<DummyProgress> {
                                      playerQuest -> getProgress(playerQuest).done,
                                      playerQuest -> getProgress(playerQuest).done = true);
         cond.setBookPageIndex(0);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 cond,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text(""),
                     }),

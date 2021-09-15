@@ -2,7 +2,6 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -46,15 +45,15 @@ public final class WarpGoal implements Goal {
         condUseWarp.setBookPageIndex(1);
         condListVisits.setBookPageIndex(2);
         condUseVisit.setBookPageIndex(2);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condSpawn,
                 condListWarps,
                 condUseWarp,
                 condListVisits,
                 condUseVisit
             });
-        this.constraints = Arrays.asList(new MainServerConstraint());
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of(new MainServerConstraint());
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Get back to the place you started any time."
                                        + " There are portals, merchants, and secrets to be discovered."

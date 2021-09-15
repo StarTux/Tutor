@@ -5,8 +5,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.winthier.connect.Connect;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -43,14 +41,14 @@ public final class ServerSwitchGoal implements Goal, Listener {
         condHub.setBookPageIndex(0);
         condCreative.setBookPageIndex(0);
         condCavetale.setBookPageIndex(0);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condHub,
                 condCreative,
                 condCavetale,
             });
-        this.constraints = Collections.emptyList();
+        this.constraints = List.of();
         this.displayName = Component.text("Server switching");
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("Cavetale is the main server, but we offer several others"
                                        + " with various gamemodes on them."

@@ -4,8 +4,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.util.Console;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -49,13 +47,13 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         condReply.setBookPageIndex(1);
         condFocus.setBookPageIndex(2);
         condReturn.setBookPageIndex(4);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condReply,
                 condFocus,
                 condReturn,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("There are many commands to send private messages:"),
                         Component.text("\n/tell <player> <msg>", NamedTextColor.BLUE),

@@ -2,8 +2,6 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -27,11 +25,11 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                                              playerQuest -> getProgress(playerQuest).readMail,
                                              playerQuest -> getProgress(playerQuest).readMail = true);
         condReadMail.setBookPageIndex(0);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condReadMail,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {
                         Component.text("You can exchange mail with other players."
                                        + " If they are not online, they will get see it"

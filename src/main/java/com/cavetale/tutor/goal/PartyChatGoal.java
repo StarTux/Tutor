@@ -3,8 +3,6 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -33,12 +31,12 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
                                          playerQuest -> getProgress(playerQuest).talk = true);
         condJoin.setBookPageIndex(0);
         condTalk.setBookPageIndex(1);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condJoin,
                 condTalk,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("A party is a named group chat where"
                                        + " everyone in the same party can hear you."

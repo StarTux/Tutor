@@ -2,11 +2,11 @@ package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goals;
 import com.winthier.perm.rank.PlayerRank;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -52,15 +52,13 @@ public enum QuestName {
     }
 
     QuestName(final Type type, final Component displayName, final String autoStartPermission) {
-        this(type, displayName, autoStartPermission, Collections.emptySet());
+        this(type, displayName, autoStartPermission, Set.of());
     }
 
     static {
-        List<String> keys = new ArrayList<>();
-        for (QuestName it : QuestName.values()) {
-            keys.add(it.key);
-        }
-        KEY_LIST = Collections.unmodifiableList(keys);
+        KEY_LIST = Stream.of(QuestName.values())
+            .map(n -> n.key)
+            .collect(Collectors.toUnmodifiableList());
     }
 
     /**

@@ -7,8 +7,6 @@ import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.util.Gui;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -43,13 +41,13 @@ public final class ChoosePetGoal implements Goal {
         condClick.setBookPageIndex(0);
         condChoose.setBookPageIndex(0);
         condRename.setBookPageIndex(1);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condClick,
                 condChoose,
                 condRename,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("You have arrived at a strange place."
                                        + " Why not choose a pet to keep you company!"

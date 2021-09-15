@@ -2,8 +2,6 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -30,14 +28,14 @@ public final class TitleGoal extends AbstractGoal<TitleProgress> {
                                                 playerQuest -> getProgress(playerQuest).selectTitle,
                                                 playerQuest -> getProgress(playerQuest).selectTitle = true,
                                                 playerQuest -> getProgress(playerQuest).listTitles);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condListTitles,
                 condSelectTitle,
             });
         condListTitles.setBookPageIndex(0);
         condSelectTitle.setBookPageIndex(1);
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("The tag before your name in chat is not your rank,"
                                        + " it's a title."

@@ -1,7 +1,6 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.tutor.QuestName;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,28 +12,28 @@ public final class Goals {
 
     public static List<Goal> create(QuestName name) {
         switch (name) {
-        case BEGINNER: return Arrays.asList(new Goal[] {
+        case BEGINNER: return List.of(new Goal[] {
                 new ChoosePetGoal(),
                 new WildGoal(),
                 new SetHomeGoal(),
             });
-        case ORIENTATION: return Arrays.asList(new Goal[] {
+        case ORIENTATION: return List.of(new Goal[] {
                 new LocalChatGoal(),
                 new WarpGoal(),
                 new ServerSwitchGoal(),
             });
-        case MONEY: return Arrays.asList(new Goal[] {
+        case MONEY: return List.of(new Goal[] {
                 new MineGoal(),
                 new MiningGoal(),
                 new StorageGoal(),
                 new SellItemGoal(),
                 new BuyGoal(),
             });
-        case MEMBER: return Arrays.asList(new Goal[] {
+        case MEMBER: return List.of(new Goal[] {
                 new TicketGoal(),
                 new MenuGoal(),
             });
-        case FRIEND: return Arrays.asList(new Goal[] {
+        case FRIEND: return List.of(new Goal[] {
                 new PrivateChatGoal(),
                 new PartyChatGoal(),
                 new TelevatorGoal(),

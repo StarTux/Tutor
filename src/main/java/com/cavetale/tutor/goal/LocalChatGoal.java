@@ -3,8 +3,6 @@ package com.cavetale.tutor.goal;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.session.PlayerQuest;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -51,15 +49,15 @@ public final class LocalChatGoal implements Goal {
         condFocusGlobal.setBookPageIndex(2);
         condSettings.setBookPageIndex(3);
         condUse.setBookPageIndex(4);
-        this.conditions = Arrays.asList(new Condition[] {
+        this.conditions = List.of(new Condition[] {
                 condList,
                 condFocusLocal,
                 condFocusGlobal,
                 condSettings,
                 condUse,
             });
-        this.constraints = Collections.emptyList();
-        this.additionalBookPages = Arrays.asList(new Component[] {
+        this.constraints = List.of();
+        this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Chat has several channels."
                                        + " There is global, local, party and private."
