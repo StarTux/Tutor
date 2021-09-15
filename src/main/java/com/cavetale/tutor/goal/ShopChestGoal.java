@@ -1,6 +1,7 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.font.VanillaItems;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
@@ -34,7 +35,9 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Making a Chest Shop is simple."
-                                       + " Just place a sign above a chest and write "),
+                                       + " Just place a "),
+                        VanillaItems.OAK_SIGN.component,
+                        Component.text("sign above a chest and write "),
                         Component.text("[shop]", NamedTextColor.BLUE),
                         Component.text(" in the first line."
                                        + "\n\nWik Page:\n"),

@@ -1,7 +1,7 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
@@ -55,20 +55,17 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                         Component.text("The server spawn has a few display Link Portals."
                                        + " They're inside the barn by the farming area."
                                        + " Find them and travel through them."
-                                       + "\n\nCommand:"),
+                                       + "\n\nCommand:\n"),
                         Component.text("/spawn", NamedTextColor.BLUE),
-                        Component.text("Teleport and turn around to find the farms", NamedTextColor.GRAY),
+                        Component.text("\nTeleport and turn around to find the farms", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
-                        Component.text("Now that we explored the display at spawn,"
-                                       + " it's time to build our own!"
+                        Component.text("Now it's time to build our own!"
                                        + " Just place a "),
                         VanillaItems.OAK_SIGN.component,
-                        Component.text("sign on a nether portal frame,"
-                                       + " or a door frame with a button in it,"
-                                       + " and write "),
+                        Component.text("sign on a nether portal frame and write "),
                         Component.text("[link]", NamedTextColor.BLUE),
-                        Component.text("in the first line."
+                        Component.text(" in the first line."
                                        + "\n\nWiki Page:\n"),
                         (Component.text().content("cavetale.com/wiki/link-portals")
                          .color(NamedTextColor.BLUE)
