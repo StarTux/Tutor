@@ -28,7 +28,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         super(PrivateChatProgress.class, PrivateChatProgress::new);
         this.id = "private_chat";
         this.displayName = Component.text("Whisper");
-        condWhisper = new CheckboxCondition(Component.text("Reply to Console"),
+        condWhisper = new CheckboxCondition(Component.text("Whisper to Console"),
                                             playerQuest -> getProgress(playerQuest).whisper,
                                             playerQuest -> getProgress(playerQuest).whisper = true);
         condReply = new CheckboxCondition(Component.text("Reply to Console"),
@@ -48,6 +48,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         condFocus.setBookPageIndex(2);
         condReturn.setBookPageIndex(4);
         this.conditions = List.of(new Condition[] {
+                condWhisper,
                 condReply,
                 condFocus,
                 condReturn,
@@ -71,10 +72,10 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("\nReply to the last person who sent you a PM", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
-                        Component.text("You can also focus on a private conversation,"
-                                       + " just like a chat channel, except you need a target:\n\n"),
+                        Component.text("You can also focus on a PM,"
+                                       + " like a chat channel, but you need a target:\n\n"),
                         Component.text("/r", NamedTextColor.BLUE),
-                        Component.text("\nFocus on the last person who messaged you\n\n", NamedTextColor.GRAY),
+                        Component.text("\nFocus on your last messager\n\n", NamedTextColor.GRAY),
                         Component.text("/msg <player>", NamedTextColor.BLUE),
                         Component.text("\nFocus on a specific person", NamedTextColor.GRAY),
                     }),
@@ -90,8 +91,9 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("Once you're done,"
                                        + " return to the regular chat channels as always:\n\n"),
                         Component.text("/g", NamedTextColor.BLUE),
-                        Component.newline(),
+                        Component.text("\nReturn to global\n\n", NamedTextColor.GRAY),
                         Component.text("/l", NamedTextColor.BLUE),
+                        Component.text("\nReturn to local", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -99,7 +101,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
     @Override
     public void onEnable(PlayerQuest playerQuest) {
         PrivateChatProgress progress = getProgress(playerQuest);
-        if (progress.whisper && !progress.reply || !progress.focus) {
+        if (progress.whisper && !progress.reply) {
             runConsoleWhisper(playerQuest.getPlayer());
         }
     }
