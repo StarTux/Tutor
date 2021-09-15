@@ -50,9 +50,9 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
                         Component.text("Once you have joined, talking works just like in"
                                        + " global or local."
                                        + " You can even focus your party.\n\n"),
-                        Component.text("/p"),
+                        Component.text("/p", NamedTextColor.BLUE),
                         Component.text("\nFocus your party\n\n", NamedTextColor.GRAY),
-                        Component.text("/p <message>"),
+                        Component.text("/p <message>", NamedTextColor.BLUE),
                         Component.text("\nSend one message to your party", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2

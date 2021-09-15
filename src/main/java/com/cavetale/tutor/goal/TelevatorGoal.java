@@ -32,7 +32,7 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
     public TelevatorGoal() {
         super(TelevatorProgress.class, TelevatorProgress::new);
         this.id = "televator";
-        this.displayName = Component.text("");
+        this.displayName = Component.text("Televator");
         condPlace = new NumberCondition(Component.text("Place " + PLACE + " Gold Blocks"), PLACE,
                                         playerQuest -> getProgress(playerQuest).place,
                                         (playerQuest, amount) -> getProgress(playerQuest).place = amount);
