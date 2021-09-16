@@ -16,32 +16,41 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public final class ServerSwitchGoal implements Goal, Listener {
+public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> implements Listener {
     @Getter private final String id;
     @Getter private final Component displayName;
     @Getter private final List<Condition> conditions;
     @Getter protected final List<Constraint> constraints;
     @Getter private final List<Component> additionalBookPages;
+    protected final CheckboxCondition condList;
     protected final CheckboxCondition condHub;
     protected final CheckboxCondition condCreative;
     protected final CheckboxCondition condCavetale;
 
     public ServerSwitchGoal() {
+        super(ServerSwitchProgress.class, ServerSwitchProgress::new);
         this.id = "server_switch";
+        condList = new CheckboxCondition(Component.text("View Server List"),
+                                        playerQuest -> getProgress(playerQuest).list,
+                                        playerQuest -> getProgress(playerQuest).list = true);
         condHub = new CheckboxCondition(Component.text("Visit the Hub"),
                                         playerQuest -> getProgress(playerQuest).hub,
-                                        playerQuest -> getProgress(playerQuest).hub = true);
+                                        playerQuest -> getProgress(playerQuest).hub = true,
+                                        playerQuest -> getProgress(playerQuest).list);
         condCreative = new CheckboxCondition(Component.text("Visit Creative"),
                                              playerQuest -> getProgress(playerQuest).creative,
-                                             playerQuest -> getProgress(playerQuest).creative = true);
+                                             playerQuest -> getProgress(playerQuest).creative = true,
+                                             playerQuest -> getProgress(playerQuest).list);
         condCavetale = new CheckboxCondition(Component.text("Return to Cavetale"),
                                              playerQuest -> getProgress(playerQuest).cavetale,
                                              playerQuest -> getProgress(playerQuest).cavetale = true,
                                              playerQuest -> getProgress(playerQuest).readyForCavetale());
-        condHub.setBookPageIndex(0);
-        condCreative.setBookPageIndex(0);
-        condCavetale.setBookPageIndex(0);
+        condList.setBookPageIndex(0);
+        condHub.setBookPageIndex(1);
+        condCreative.setBookPageIndex(1);
+        condCavetale.setBookPageIndex(1);
         this.conditions = List.of(new Condition[] {
+                condList,
                 condHub,
                 condCreative,
                 condCavetale,
@@ -92,18 +101,12 @@ public final class ServerSwitchGoal implements Goal, Listener {
     }
 
     @Override
-    public ServerSwitchProgress newProgress() {
-        return new ServerSwitchProgress();
-    }
-
-    @Override
-    public ServerSwitchProgress getProgress(PlayerQuest playerQuest) {
-        return playerQuest.getProgress(ServerSwitchProgress.class, ServerSwitchProgress::new);
-    }
-
-    @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
-        if (event.getName() == PluginPlayerEvent.Name.SWITCH_SERVER) {
+        switch (event.getName()) {
+        case VIEW_SERVER_LIST:
+            condList.progress(playerQuest);
+            break;
+        case SWITCH_SERVER:
             switch (Detail.NAME.get(event, "")) {
             case "hub":
                 condHub.progress(playerQuest);
@@ -116,6 +119,8 @@ public final class ServerSwitchGoal implements Goal, Listener {
                 break;
             default: break;
             }
+            break;
+        default: break;
         }
     }
 
@@ -140,21 +145,22 @@ public final class ServerSwitchGoal implements Goal, Listener {
         default: break;
         }
     }
+}
 
-    protected static final class ServerSwitchProgress extends GoalProgress {
-        protected boolean hub;
-        protected boolean creative;
-        protected boolean cavetale;
+final class ServerSwitchProgress extends GoalProgress {
+    protected boolean list;
+    protected boolean hub;
+    protected boolean creative;
+    protected boolean cavetale;
 
-        @Override
-        public boolean isComplete() {
-            return hub
-                && creative
-                && cavetale;
-        }
+    @Override
+    public boolean isComplete() {
+        return hub
+            && creative
+            && cavetale;
+    }
 
-        protected boolean readyForCavetale() {
-            return hub && creative;
-        }
+    protected boolean readyForCavetale() {
+        return hub && creative;
     }
 }

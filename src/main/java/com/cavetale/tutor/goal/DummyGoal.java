@@ -36,6 +36,9 @@ public final class DummyGoal extends AbstractGoal<DummyProgress> {
 
     @Override
     public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
+        default: break;
+        }
     }
 }
 

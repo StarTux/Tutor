@@ -17,10 +17,19 @@ public final class Goals {
                 new WildGoal(),
                 new SetHomeGoal(),
             });
-        case ORIENTATION: return List.of(new Goal[] {
-                new LocalChatGoal(),
+        case WARP: return List.of(new Goal[] {
+                new PublicHomeGoal(),
                 new WarpGoal(),
+                WarpPlaceGoal.bazaar(),
+                WarpPlaceGoal.dwarven(),
+                WarpPlaceGoal.cloud(),
+                WarpPlaceGoal.witch(),
                 new ServerSwitchGoal(),
+            });
+        case CHAT: return List.of(new Goal[] {
+                new LocalChatGoal(),
+                new PrivateChatGoal(),
+                new PartyChatGoal(),
             });
         case MONEY: return List.of(new Goal[] {
                 new MineGoal(),
@@ -33,16 +42,17 @@ public final class Goals {
                 new TicketGoal(),
                 new MenuGoal(),
             });
-        case FRIEND: return List.of(new Goal[] {
-                new PrivateChatGoal(),
-                new PartyChatGoal(),
+        case BUILD: return List.of(new Goal[] {
                 new TelevatorGoal(),
-                new ShopChestGoal(),
-                new PocketMobGoal(),
                 new LinkPortalGoal(),
+                new ShopChestGoal(),
+            });
+        case FRIEND: return List.of(new Goal[] {
+                new RaidGoal(),
+                new PocketMobGoal(),
                 new TitleGoal(),
                 new MailGoal(),
-                new FriendGoal(),
+                new FriendsGoal(),
             });
         default:
             throw new IllegalStateException("Quest not defined: " + name);

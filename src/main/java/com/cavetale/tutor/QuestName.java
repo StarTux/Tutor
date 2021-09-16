@@ -12,11 +12,14 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public enum QuestName {
+    // Beginner
     BEGINNER(Type.TUTORIAL, Component.text("Welcome to Cavetale!"), "group.trusted"),
-    ORIENTATION(Type.TUTORIAL, Component.text("Beginner Tour"), QuestName.BEGINNER),
+    WARP(Type.TUTORIAL, Component.text("Beginner Tour"), QuestName.BEGINNER),
+    CHAT(Type.TUTORIAL, Component.text("Chatting 101"), QuestName.BEGINNER),
     MONEY(Type.TUTORIAL, Component.text("All About Money"), QuestName.BEGINNER),
-    MEMBER(Type.TUTORIAL, Component.text("The Road to Member"), QuestName.MONEY, QuestName.ORIENTATION),
+    MEMBER(Type.TUTORIAL, Component.text("The Road to Member"), QuestName.MONEY, QuestName.WARP, QuestName.CHAT),
     // Member
+    BUILD(Type.TUTORIAL, Component.text("Advanced Construction"), QuestName.MEMBER),
     FRIEND(Type.TUTORIAL, Component.text("Making Friends"), QuestName.MEMBER);
     public static final List<String> KEY_LIST;
 

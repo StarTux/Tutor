@@ -8,49 +8,39 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public final class WarpGoal implements Goal {
+public final class WarpGoal extends AbstractGoal<WarpProgress> {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
+
     protected final CheckboxCondition condSpawn;
+    protected final CheckboxCondition condRepairman;
+
     protected final CheckboxCondition condListWarps;
-    protected final CheckboxCondition condUseWarp;
-    protected final CheckboxCondition condListVisits;
-    protected final CheckboxCondition condUseVisit;
 
     public WarpGoal() {
+        super(WarpProgress.class, WarpProgress::new);
         this.id = "warp";
-        this.displayName = Component.text("Getting around");
+        this.displayName = Component.text("Getting Around");
         condSpawn = new CheckboxCondition(Component.text("Visit spawn"),
                                           playerQuest -> getProgress(playerQuest).spawn,
                                           playerQuest -> getProgress(playerQuest).spawn = true);
+        condRepairman = new CheckboxCondition(Component.text("Find the Repairman"),
+                                              playerQuest -> getProgress(playerQuest).repairman,
+                                              playerQuest -> getProgress(playerQuest).repairman = true);
         condListWarps = new CheckboxCondition(Component.text("List warps"),
                                               playerQuest -> getProgress(playerQuest).listWarps,
                                               playerQuest -> getProgress(playerQuest).listWarps = true);
-        condUseWarp = new CheckboxCondition(Component.text("Use a warp"),
-                                            playerQuest -> getProgress(playerQuest).useWarp,
-                                            playerQuest -> getProgress(playerQuest).useWarp = true,
-                                            playerQuest -> getProgress(playerQuest).listWarps);
-        condListVisits = new CheckboxCondition(Component.text("List public homes"),
-                                               playerQuest -> getProgress(playerQuest).listVisits,
-                                               playerQuest -> getProgress(playerQuest).listVisits = true);
-        condUseVisit = new CheckboxCondition(Component.text("Visit a public home"),
-                                             playerQuest -> getProgress(playerQuest).useVisit,
-                                             playerQuest -> getProgress(playerQuest).useVisit = true,
-                                             playerQuest -> getProgress(playerQuest).listVisits);
+
         condSpawn.setBookPageIndex(0);
-        condListWarps.setBookPageIndex(1);
-        condUseWarp.setBookPageIndex(1);
-        condListVisits.setBookPageIndex(2);
-        condUseVisit.setBookPageIndex(2);
+        condRepairman.setBookPageIndex(1);
+        condListWarps.setBookPageIndex(2);
         this.conditions = List.of(new Condition[] {
                 condSpawn,
+                condRepairman,
                 condListWarps,
-                condUseWarp,
-                condListVisits,
-                condUseVisit
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
@@ -62,18 +52,18 @@ public final class WarpGoal implements Goal {
                         Component.text("\nTeleport to spawn", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
+                        Component.text("There are many villagers at spawn."
+                                       + " One of them can repair your gear"
+                                       + " in exchange for diamonds."
+                                       + "\n\nHe's an expert and can repair anything."
+                                       + " Let's fine out where he is for future reference"),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Warps can take you to key locations on the server."
                                        + " They are public places set up by our staff."
                                        + "\n\nCommand:\n"),
                         Component.text("/warp", NamedTextColor.BLUE),
                         Component.text("\nView the warp list. Click to warp", NamedTextColor.GRAY),
-                    }),
-                TextComponent.ofChildren(new Component[] {// 2
-                        Component.text("Public homes are made by players."
-                                       + " Anyone can turn their named home into a public home."
-                                       + "\n\nCommand:\n"),
-                        Component.text("/visit", NamedTextColor.BLUE),
-                        Component.text("\nView the public home list. Click to warp", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -83,14 +73,12 @@ public final class WarpGoal implements Goal {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 150L,
-                                        Component.text("Sharing is caring,"),
-                                        Component.text("and we can share our"),
-                                        Component.text("homes with others."));
+                                        Component.text("Cavetale has lots"),
+                                        Component.text("of colorful places"),
+                                        Component.text("to offer."));
                     pet.addSpeechBubble(id, 0L, 100L,
-                                        Component.text("There are public homes"),
-                                        Component.text("and public warps."));
-                    pet.addSpeechBubble(id, 0L, 60L,
-                                        Component.text("Let's check them out!"));
+                                        Component.text("Let's look around"),
+                                        Component.text("a little, " + pet.getType().speechGimmick + "..."));
                 });
         }
     }
@@ -104,43 +92,22 @@ public final class WarpGoal implements Goal {
         case LIST_WARPS:
             condListWarps.progress(playerQuest);
             break;
-        case USE_WARP:
-            condUseWarp.progress(playerQuest);
-            break;
-        case VIEW_PUBLIC_HOMES:
-            condListVisits.progress(playerQuest);
-            break;
-        case VISIT_PUBLIC_HOME:
-            condUseVisit.progress(playerQuest);
-            break;
         default: break;
         }
     }
+}
+
+final class WarpProgress extends GoalProgress {
+    protected boolean spawn;
+    protected boolean repairman;
+    protected boolean listWarps;
+    protected boolean bazaar;
+    protected boolean bazaarNPC;
 
     @Override
-    public WarpProgress newProgress() {
-        return new WarpProgress();
-    }
-
-    @Override
-    public WarpProgress getProgress(PlayerQuest playerQuest) {
-        return playerQuest.getProgress(WarpProgress.class, WarpProgress::new);
-    }
-
-    protected static final class WarpProgress extends GoalProgress {
-        boolean spawn;
-        boolean listWarps;
-        boolean useWarp;
-        boolean listVisits;
-        boolean useVisit;
-
-        @Override
-        public boolean isComplete() {
-            return spawn
-                && listWarps
-                && useWarp
-                && listVisits
-                && useVisit;
-        }
+    public boolean isComplete() {
+        return spawn && repairman
+            && listWarps
+            && bazaar && bazaarNPC;
     }
 }
