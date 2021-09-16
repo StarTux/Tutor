@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 public enum QuestName {
@@ -30,15 +33,25 @@ public enum QuestName {
     public final Set<QuestName> dependencies;
 
     public enum Type {
-        TUTORIAL("Tutorial"),
-        QUEST("Quest");
+        TUTORIAL("Tutorial", "/tutor"),
+        QUEST("Quest", "/quest");
 
         public final String upper;
         public final String lower;
+        public final String command;
 
-        Type(final String upper) {
+        Type(final String upper, final String command) {
             this.upper = upper;
             this.lower = upper.toLowerCase();
+            this.command = command;
+        }
+
+        public ClickEvent clickEvent() {
+            return ClickEvent.runCommand(command);
+        }
+
+        public HoverEvent hoverEvent() {
+            return HoverEvent.showText(Component.text(command, NamedTextColor.YELLOW));
         }
     }
 

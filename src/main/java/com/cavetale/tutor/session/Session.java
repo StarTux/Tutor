@@ -133,6 +133,7 @@ public final class Session {
         }
         deferredCallbacks.clear();
         triggerAutomaticQuests();
+        triggerQuestReminder();
     }
 
     protected void disable() {
@@ -298,16 +299,28 @@ public final class Session {
             startQuest(questName);
             return;
         }
+    }
+
+    public void triggerQuestReminder() {
+        if (!currentQuests.isEmpty()) return;
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && canSee(questName)) {
-                if (pet != null) {
+                if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
                     pet.addSpeechBubble("session", 60L, 150L,
-                                        Component.text("There are more"),
-                                        Component.text(questName.type.lower + "s waiting"),
+                                        Component.text("There is another"),
+                                        Component.text(questName.type.lower + " waiting"),
                                         Component.text("for you!"));
                     pet.addSpeechBubble("session", 0L, 150L,
                                         Component.text("Click me or type"),
-                                        Component.text("/tutor", NamedTextColor.YELLOW));
+                                        Component.text(questName.type.command, NamedTextColor.YELLOW));
+                } else {
+                    getPlayer().sendMessage(Component.text()
+                                            .content("There is another " + questName.type.lower
+                                                     + " waiting for you! Type ")
+                                            .append(Component.text(questName.type.command, NamedTextColor.YELLOW))
+                                            .color(NamedTextColor.AQUA)
+                                            .clickEvent(questName.type.clickEvent())
+                                            .hoverEvent(questName.type.hoverEvent()));
                 }
                 return;
             }
@@ -339,6 +352,7 @@ public final class Session {
 
     public boolean applyPet(Consumer<Pet> callback) {
         if (pet == null) return false;
+        if (!pet.isSpawned() && playerPetRow.isAutoSpawn()) return false;
         callback.accept(pet);
         return true;
     }
