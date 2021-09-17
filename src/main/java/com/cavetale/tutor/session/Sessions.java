@@ -195,6 +195,8 @@ public final class Sessions implements Listener {
     void onPlayerPermissionUpdate(PlayerPermissionUpdateEvent event) {
         Session session = find(event.getPlayer());
         if (session == null) return;
-        session.triggerAutomaticQuests();
+        if (event.getPlayer().hasPermission("tutor.tutor")) {
+            session.triggerAutomaticQuests();
+        }
     }
 }

@@ -132,8 +132,10 @@ public final class Session {
             callback.run();
         }
         deferredCallbacks.clear();
-        triggerAutomaticQuests();
-        triggerQuestReminder();
+        if (getPlayer().hasPermission("tutor.tutor")) {
+            triggerAutomaticQuests();
+            triggerQuestReminder();
+        }
     }
 
     protected void disable() {
@@ -442,6 +444,9 @@ public final class Session {
     }
 
     private boolean canSee(QuestName questName) {
+        if (questName.autoStartPermission != null && !getPlayer().hasPermission(questName.autoStartPermission)) {
+            return false;
+        }
         for (QuestName dep : questName.dependencies) {
             if (!completedQuests.containsKey(dep)) return false;
         }
