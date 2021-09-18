@@ -64,6 +64,7 @@ public final class TutorCommand implements TabExecutor {
                 PlayerQuest playerQuest = session.getCurrentQuests().get(questName);
                 if (playerQuest == null) return true;
                 if (!playerQuest.getCurrentProgress().isComplete()) return true;
+                if (playerQuest.getCurrentGoal().hasMissedConstraints(playerQuest)) return true;
                 playerQuest.onGoalComplete(player);
                 return true;
             }

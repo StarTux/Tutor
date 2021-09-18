@@ -1,5 +1,6 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
@@ -56,7 +57,7 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
                                        + " One of them can repair your gear"
                                        + " in exchange for diamonds."
                                        + "\n\nHe's an expert and can repair anything."
-                                       + " Let's fine out where he is for future reference"),
+                                       + " Let's fine out where he is for future reference."),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
                         Component.text("Warps can take you to key locations on the server."
@@ -89,6 +90,11 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
         case USE_SPAWN:
             condSpawn.progress(playerQuest);
             break;
+        case INTERACT_NPC:
+            if (Detail.NAME.is(event, "Repairman")) {
+                condRepairman.progress(playerQuest);
+            }
+            break;
         case LIST_WARPS:
             condListWarps.progress(playerQuest);
             break;
@@ -101,13 +107,9 @@ final class WarpProgress extends GoalProgress {
     protected boolean spawn;
     protected boolean repairman;
     protected boolean listWarps;
-    protected boolean bazaar;
-    protected boolean bazaarNPC;
 
     @Override
     public boolean isComplete() {
-        return spawn && repairman
-            && listWarps
-            && bazaar && bazaarNPC;
+        return spawn && repairman && listWarps;
     }
 }

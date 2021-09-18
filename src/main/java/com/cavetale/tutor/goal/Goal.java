@@ -122,15 +122,18 @@ public interface Goal {
             }
             lines.add(conditionComponent);
         }
+        boolean hasMissedConstraint = false;
         for (Constraint constraint : getConstraints()) {
             if (constraint.doesMeet(playerQuest)) continue;
             lines.add(constraint.getMissedMessage(playerQuest, Background.LIGHT));
+            hasMissedConstraint = true;
         }
-        if (playerQuest.getCurrentProgress().isComplete()) {
-            lines.add(Component.text()
-                      .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
-                      .color(NamedTextColor.DARK_AQUA)
-                      .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.AQUA)))
+        if (!hasMissedConstraint && playerQuest.getCurrentProgress().isComplete()) {
+            lines.add(Component.text().content("[")
+                      .append(Component.text("" + Unicode.CHECKMARK.character, NamedTextColor.GOLD))
+                      .append(Component.text("Complete]"))
+                      .color(NamedTextColor.DARK_GREEN)
+                      .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.GREEN)))
                       .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key))
                       .build());
         } else if (playerQuest.getQuest().getName().isQuittable()) {
@@ -139,7 +142,7 @@ public interface Goal {
                       .content("[Abandon]")
                       .color(NamedTextColor.DARK_RED)
                       .hoverEvent(HoverEvent.showText(Component.text("Abandon this " + playerQuest.getQuest().getName().type.lower,
-                                                                     NamedTextColor.AQUA)))
+                                                                     NamedTextColor.RED)))
                       .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key))
                       .build());
         }
@@ -154,16 +157,17 @@ public interface Goal {
             if (!condition.isVisible(playerQuest) || !condition.isOnSidebar(playerQuest)) continue;
             list.add(condition.toComponent(playerQuest, Background.DARK));
         }
-        if (playerQuest.getCurrentProgress().isComplete()) {
-            list.add(Component.text()
-                     .content(Unicode.CHECKED_CHECKBOX.character + " [Complete]")
-                     .color(NamedTextColor.AQUA)
-                     .build());
-        } else {
-            for (Constraint constraint : getConstraints()) {
-                if (constraint.doesMeet(playerQuest)) continue;
-                list.add(constraint.getMissedMessage(playerQuest, Background.DARK));
-            }
+        boolean hasMissedConstraint = false;
+        for (Constraint constraint : getConstraints()) {
+            if (constraint.doesMeet(playerQuest)) continue;
+            list.add(constraint.getMissedMessage(playerQuest, Background.DARK));
+            hasMissedConstraint = true;
+        }
+        if (!hasMissedConstraint && playerQuest.getCurrentProgress().isComplete()) {
+            list.add(Component.text().content("[")
+                     .append(Component.text("" + Unicode.CHECKMARK.character, NamedTextColor.GOLD))
+                     .append(Component.text("Complete]"))
+                     .color(NamedTextColor.GREEN).build());
         }
         return list;
     }
@@ -171,4 +175,11 @@ public interface Goal {
     default void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) { }
 
     default void onTutorEvent(PlayerQuest playerQuest, TutorEvent event) { }
+
+    default boolean hasMissedConstraints(PlayerQuest playerQuest) {
+        for (Constraint constraint : getConstraints()) {
+            if (!constraint.doesMeet(playerQuest)) return true;
+        }
+        return false;
+    }
 }
