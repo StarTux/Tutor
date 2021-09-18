@@ -89,8 +89,9 @@ public final class BuyGoal implements Goal {
         }
     }
 
-    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent.Name name, PluginPlayerEvent event) {
-        switch (name) {
+    @Override
+    public void onPluginPlayer(PlayerQuest playerQuest, PluginPlayerEvent event) {
+        switch (event.getName()) {
         case USE_WARP:
             if (Detail.NAME.is(event, "market")) {
                 condMarket.progress(playerQuest);
