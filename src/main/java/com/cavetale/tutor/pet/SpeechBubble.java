@@ -25,6 +25,7 @@ public final class SpeechBubble {
         in case it must be removed. */
     @Setter private String tag;
     @Setter private long warmup;
+    @Setter private Runnable onDisable;
 
     private Location getArmorStandLocation(int index, int total) {
         double offset = (double) (total - index - 1) * 0.24;
@@ -54,7 +55,7 @@ public final class SpeechBubble {
             if (target != null) {
                 Component wholeMessage = Component.text()
                     .append(Component.text().color(NamedTextColor.GRAY)
-                            .append(pet.getType().icon.component)
+                            .append(pet.getType().mytems.component)
                             .append(pet.getCustomName())
                             .append(Component.text(": ")))
                     .append(Component.join(Component.space(), lines))
@@ -79,8 +80,7 @@ public final class SpeechBubble {
     public void disable() {
         disabled = true;
         clear();
-        pet.currentSpeechBubble = null;
-        pet.triggerSpeechBubble();
+        if (onDisable != null) onDisable.run();
     }
 
     protected void clear() {

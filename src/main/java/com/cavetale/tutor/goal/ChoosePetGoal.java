@@ -96,11 +96,11 @@ public final class ChoosePetGoal implements Goal {
         condClick.progress(playerQuest);
         Gui gui = new Gui();
         gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.BLUE));
-        ItemStack cat = PetType.CAT.icon.createIcon();
+        ItemStack cat = PetType.CAT.mytems.createIcon();
         cat.editMeta(meta -> {
                 meta.displayName(Component.text("I'm more of a cat person!", NamedTextColor.BLUE));
             });
-        ItemStack dog = PetType.DOG.icon.createIcon();
+        ItemStack dog = PetType.DOG.mytems.createIcon();
         dog.editMeta(meta -> {
                 meta.displayName(Component.text("I'm more of a dog person!", NamedTextColor.BLUE));
             });
@@ -123,13 +123,14 @@ public final class ChoosePetGoal implements Goal {
         }
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
         playerQuest.getSession().setPet(petType, true);
-        Pet pet = playerQuest.getSession().spawnPet();
-        pet.addSpeechBubble(id, 50L, 100L, new Component[] {
-                Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
-            });
-        pet.addSpeechBubble(id, 0L, 100L, new Component[] {
-                Component.text("I will be your personal assistant."),
-                Component.text("Please give me a name, " + petType.speechGimmick + "."),
+        playerQuest.getSession().applyPet(pet -> {
+                pet.addSpeechBubble(id, 50L, 100L, new Component[] {
+                        Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
+                    });
+                pet.addSpeechBubble(id, 0L, 100L, new Component[] {
+                        Component.text("I will be your personal assistant."),
+                        Component.text("Please give me a name, " + petType.speechGimmick + "."),
+                    });
             });
     }
 

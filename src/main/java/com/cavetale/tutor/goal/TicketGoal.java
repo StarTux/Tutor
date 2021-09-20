@@ -91,7 +91,7 @@ public final class TicketGoal implements Goal, Listener {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(id, 180L, 60L,
+                    pet.addSpeechBubble(id, 50L, 180L,
                                         Component.text("Is there a problem?"),
                                         Component.text("Someone bothering you?"),
                                         Component.text("Found a bug?"));

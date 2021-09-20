@@ -2,6 +2,8 @@ package com.cavetale.tutor;
 
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.tutor.pet.Pet;
+import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import java.util.List;
@@ -29,6 +31,9 @@ public final class TutorCommand implements TabExecutor {
         rootNode.addChild("rename").denyTabCompletion()
             .description("Rename your pet")
             .playerCaller(this::rename);
+        rootNode.addChild("spawn").denyTabCompletion()
+            .description("Spawn your pet")
+            .playerCaller(this::spawn);
         plugin.getCommand("tutor").setExecutor(this);
     }
 
@@ -129,6 +134,28 @@ public final class TutorCommand implements TabExecutor {
         session.applyGoals((playerQuest, goal) -> {
                 goal.onTutorEvent(playerQuest, TutorEvent.RENAME_PET);
             });
+        return true;
+    }
+
+    private boolean spawn(Player player, String[] args) {
+        if (args.length != 0) return false;
+        Session session = plugin.sessions.find(player);
+        if (session == null) {
+            throw new CommandWarn("Session loading. Please try again later!");
+        }
+        Pet pet = session.getPet();
+        if (pet == null) {
+            throw new CommandWarn("You don't have a pet yet!");
+        }
+        if (!pet.tryToSpawn(player, SpawnRule.LOOKAT)) {
+            if (!pet.tryToSpawn(player, SpawnRule.NEARBY)) {
+                throw new CommandWarn("Could not spawn your pet!");
+            }
+        }
+        pet.setAutoDespawn(false);
+        player.sendMessage(Component.text().append(pet.getCustomName())
+                           .append(Component.text(" appeared!"))
+                           .color(NamedTextColor.GREEN));
         return true;
     }
 }

@@ -19,7 +19,7 @@ public final class SQLPlayerPet {
     private Integer id;
     @Column(nullable = false, unique = true)
     private UUID player;
-    @Column(nullable = true, length = 255)
+    @Column(nullable = true, length = 31)
     private String pet;
     @Column(nullable = false)
     private boolean autoSpawn;
@@ -47,7 +47,7 @@ public final class SQLPlayerPet {
         if (pet == null) return null;
         try {
             return PetType.valueOf(pet.toUpperCase());
-        } catch (IllegalStateException iae) {
+        } catch (IllegalArgumentException iae) {
             return null;
         }
     }
@@ -57,7 +57,8 @@ public final class SQLPlayerPet {
     }
 
     public Component getNameComponent() {
-        return Component.text(name != null ? name : "Your Pet")
-            .append(gender.component);
+        String result = (name != null ? name : "Your Pet")
+            + (gender.ordinal() > 0 ? gender.character : "");
+        return Component.text(result);
     }
 }

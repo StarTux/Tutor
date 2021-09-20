@@ -8,9 +8,12 @@ import com.cavetale.tutor.goal.Constraint;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Noise;
 import com.cavetale.tutor.pet.Pet;
+import com.cavetale.tutor.pet.PetGender;
 import com.cavetale.tutor.pet.PetType;
+import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
+import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import com.winthier.playercache.PlayerCache;
@@ -29,6 +32,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -48,6 +52,7 @@ public final class Session {
     protected final String name;
     protected final Map<QuestName, PlayerQuest> currentQuests = new EnumMap<>(QuestName.class);
     protected final Map<QuestName, SQLCompletedQuest> completedQuests = new EnumMap<>(QuestName.class);
+    protected final Map<PetType, SQLPlayerPetUnlock> unlockedPets = new EnumMap<>(PetType.class);
     protected SQLPlayerPet playerPetRow = null;
     protected boolean ready;
     protected boolean disabled;
@@ -82,6 +87,7 @@ public final class Session {
     private final class Cache {
         List<SQLPlayerQuest> playerQuestRows;
         List<SQLCompletedQuest> completedQuestRows;
+        List<SQLPlayerPetUnlock> playerPetUnlockRows;
     }
 
     protected void loadAsync(Runnable callback) {
@@ -90,6 +96,8 @@ public final class Session {
                 cache.playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
                     .eq("player", uuid).findList();
                 cache.completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
+                    .eq("player", uuid).findList();
+                cache.playerPetUnlockRows = plugin.getDatabase().find(SQLPlayerPetUnlock.class)
                     .eq("player", uuid).findList();
                 this.playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
                 if (playerPetRow == null) {
@@ -125,6 +133,14 @@ public final class Session {
                 continue;
             }
             completedQuests.put(questName, row);
+        }
+        for (SQLPlayerPetUnlock row : cache.playerPetUnlockRows) {
+            PetType petType = row.parsePetType();
+            if (petType == null) {
+                plugin.getLogger().warning("Pet type not found: " + row);
+                continue;
+            }
+            unlockedPets.put(petType, row);
         }
         cache = null;
         ready = true;
@@ -335,10 +351,11 @@ public final class Session {
     public Pet spawnPet() {
         PetType petType = playerPetRow.parsePetType();
         if (petType == null) return null; // must not have finished beginner tut
-        if (pet != null && pet.isValid() && pet.getType() != petType) {
+        if (pet != null) {
+            pet.setOnDespawn(null);
             pet.despawn();
-        }
-        if (pet == null) {
+            pet.setType(petType);
+        } else {
             pet = plugin.getPets().createPet(uuid, petType);
         }
         pet.setExclusive(true);
@@ -359,10 +376,12 @@ public final class Session {
     }
 
     public void setPet(PetType petType, boolean autoSpawn) {
+        if (petType == playerPetRow.parsePetType()) return;
         playerPetRow.setPetType(petType);
         playerPetRow.setAutoSpawn(autoSpawn);
         playerPetRow.setNow();
         plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "auto_spawn");
+        spawnPet();
     }
 
     public void renamePet(String petName) {
@@ -407,9 +426,9 @@ public final class Session {
         if (pet == null) return;
         int size = 3 * 9;
         Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
+        gui.withOverlay(3 * 9, NamedTextColor.AQUA, playerPetRow.getNameComponent());
         // Pet Item
-        ItemStack petItem = pet.getType().icon.createIcon();
+        ItemStack petItem = pet.getType().mytems.createIcon();
         petItem.editMeta(meta -> {
                 meta.displayName(playerPetRow.getNameComponent());
                 meta.lore(List.of(new Component[] {
@@ -454,7 +473,7 @@ public final class Session {
 
     public void openQuestsMenu(Player player) {
         Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
+        gui.withOverlay(3 * 9, TextColor.color(0x400000), Component.text("Quests", NamedTextColor.WHITE));
         // Current Quest
         if (!currentQuests.isEmpty()) {
             PlayerQuest playerQuest = currentQuests.values().iterator().next();
@@ -526,48 +545,129 @@ public final class Session {
 
     public void openPetSettingsMenu(Player player) {
         if (pet == null) return;
+        List<Integer> indexes = List.of(0 + 4,
+                                        9 + 1, 9 + 3, 9 + 5, 9 + 7);
+        final boolean on = playerPetRow.isAutoSpawn();
+        Component petName = playerPetRow.getNameComponent();
+        PetType petType = playerPetRow.parsePetType();
+        PetGender petGender = playerPetRow.getGender();
+        List<Gui.Slot> slots = List.of(new Gui.Slot[] {
+                // Pet Type
+                Gui.Slot.of(petType.mytems.createIcon(),
+                            List.of(Component.text("Choose Pet", NamedTextColor.GREEN)),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                Noise.CLICK.play(player);
+                                openPetTypeSelectionMenu(player);
+                            }),
+                // Spawn
+                Gui.Slot.of(Mytems.STAR.createIcon(),
+                            List.of(Component.text().content("Spawn ").color(NamedTextColor.GREEN)
+                                    .append(petName).build()),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                Noise.CLICK.play(player);
+                                if (!pet.tryToSpawn(player, SpawnRule.LOOKAT)) {
+                                    if (!pet.tryToSpawn(player, SpawnRule.NEARBY)) {
+                                        player.sendMessage(Component.text("Could not spawn your pet!",
+                                                                          NamedTextColor.RED));
+                                    }
+                                }
+                                player.sendMessage(Component.text().append(petName)
+                                                   .append(Component.text(" appeared!"))
+                                                   .color(NamedTextColor.GREEN));
+                                pet.setAutoDespawn(false);
+                            }),
+                // Auto Respawn
+                Gui.Slot.of(on ? Mytems.OK.createIcon() : Mytems.NO.createIcon(),
+                            List.of(playerPetRow.isAutoSpawn()
+                                    ? Component.text("Auto Respawn Enabled", NamedTextColor.GREEN)
+                                    : Component.text("Auto Respawn Disabled", NamedTextColor.RED)),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                if (on == playerPetRow.isAutoSpawn()) {
+                                    Noise.CLICK.play(player);
+                                    playerPetRow.setAutoSpawn(!on);
+                                    pet.setAutoRespawn(!on);
+                                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
+                                }
+                                openPetSettingsMenu(player);
+                            }),
+                // Name
+                Gui.Slot.of(new ItemStack(Material.NAME_TAG),
+                            List.of(Component.text("Change Name", NamedTextColor.GREEN)),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                Noise.CLICK.play(player);
+                                player.closeInventory();
+                                player.sendMessage(Component.text().content("\n  Click here to change the name of your pet\n")
+                                                   .color(NamedTextColor.BLUE)
+                                                   .decorate(TextDecoration.BOLD)
+                                                   .clickEvent(ClickEvent.suggestCommand("/tutor rename "))
+                                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor rename",
+                                                                                                  NamedTextColor.YELLOW))));
+                            }),
+                // Gender
+                Gui.Slot.of(petGender.itemStack,
+                            List.of(petGender.component),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                if (playerPetRow.getGender() != petGender) {
+                                    return;
+                                }
+                                Noise.CLICK.play(player);
+                                PetGender[] allGenders = PetGender.values();
+                                PetGender newGender = allGenders[(petGender.ordinal() + 1) % allGenders.length];
+                                playerPetRow.setGender(newGender);
+                                plugin.getDatabase().updateAsync(playerPetRow, null, "gender");
+                                spawnPet();
+                                openPetSettingsMenu(player);
+                            }),
+            });
         int size = 3 * 9;
         Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.BLUE, playerPetRow.getNameComponent());
-        // Auto Spawn
-        boolean on = playerPetRow.isAutoSpawn();
-        ItemStack autoSpawnItem = on
-            ? Mytems.OK.createIcon()
-            : Mytems.NO.createIcon();
-        autoSpawnItem.editMeta(meta -> {
-                meta.displayName(on
-                                 ? Component.text("Auto Respawn Enabled", NamedTextColor.GREEN)
-                                 : Component.text("Auto Respawn Disabled", NamedTextColor.RED));
-            });
-        gui.setItem(9 + 2, autoSpawnItem, click -> {
-                if (!click.isLeftClick()) return;
-                if (on == playerPetRow.isAutoSpawn()) {
-                    Noise.CLICK.play(player);
-                    playerPetRow.setAutoSpawn(!on);
-                    pet.setAutoRespawn(!on);
-                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
-                }
-                openPetSettingsMenu(player);
-            });
-        // Name
-        ItemStack nameItem = new ItemStack(Material.NAME_TAG);
-        nameItem.editMeta(meta -> {
-                meta.displayName(Component.text("Change Name", NamedTextColor.GREEN));
-            });
-        gui.setItem(9 + 6, nameItem, click -> {
-                if (!click.isLeftClick()) return;
-                Noise.CLICK.play(player);
-                player.closeInventory();
-                player.sendMessage(Component.text().content("\n  Click here to change the name of your pet\n")
-                                   .color(NamedTextColor.BLUE)
-                                   .decorate(TextDecoration.BOLD)
-                                   .clickEvent(ClickEvent.suggestCommand("/tutor rename "))
-                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor rename", NamedTextColor.YELLOW))));
-            });
-        //
-        gui.setItem(Gui.OUTSIDE, null, click -> {
+        gui.withOverlay(3 * 9, NamedTextColor.DARK_AQUA, petName);
+        gui.setSlots(indexes, slots);
+        gui.setOutsideClick(click -> {
                 Noise.CLICK.play(player);
                 overviewMenu(player);
+            });
+        gui.open(player);
+    }
+
+    public void openPetTypeSelectionMenu(Player player) {
+        Gui gui = new Gui();
+        PetType[] allTypes = PetType.values();
+        int rows = (allTypes.length - 1) / 9 + 1;
+        int size = rows * 9;
+        gui.withOverlay(size, TextColor.color(0x008888), Component.text("Choose a Pet", NamedTextColor.WHITE));
+        for (int index = 0; index < size; index += 1) {
+            PetType petType = index < allTypes.length ? allTypes[index] : null;
+            if (petType != null && petType.unlocked || unlockedPets.containsKey(petType)) {
+                gui.setSlot(index,
+                            Gui.Slot.of(petType.mytems.createIcon(),
+                                        List.of(petType.displayName.color(NamedTextColor.GREEN)),
+                                        click -> {
+                                            if (!click.isLeftClick()) return;
+                                            Noise.CLICK.play(player);
+                                            setPet(petType, true);
+                                            openPetSettingsMenu(player);
+                                        }));
+            } else {
+                // petType may be null!
+                gui.setSlot(index,
+                            Gui.Slot.of(Mytems.QUESTION_MARK.createIcon(),
+                                        List.of(Component.text("???", NamedTextColor.DARK_RED),
+                                                Component.text("Not yet unlocked", NamedTextColor.DARK_GRAY)),
+                                        click -> {
+                                            if (!click.isLeftClick()) return;
+                                            Noise.FAIL.play(player);
+                                        }));
+            }
+        }
+        gui.setOutsideClick(click -> {
+                Noise.CLICK.play(player);
+                openPetSettingsMenu(player);
             });
         gui.open(player);
     }

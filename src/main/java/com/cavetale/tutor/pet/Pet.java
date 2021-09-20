@@ -13,20 +13,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Cat;
+import org.bukkit.entity.Breedable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sittable;
 import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Wolf;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.RayTraceResult;
 
@@ -40,9 +38,11 @@ public final class Pet {
     @Setter protected boolean exclusive;
     @Setter protected boolean autoRespawn;
     @Setter protected boolean spawnOnce;
-    @Setter protected AutoRespawnRule autoRespawnRule = AutoRespawnRule.AREA;
+    @Setter protected SpawnRule autoSpawnRule = SpawnRule.NEARBY;
     @Setter protected boolean collidable;
     @Setter protected double ownerDistance;
+    protected boolean teleporting;
+    @Setter protected boolean autoDespawn;
     protected Component customName;
     @Setter protected boolean customNameVisible;
     @Setter protected Runnable onClick;
@@ -56,24 +56,8 @@ public final class Pet {
     private List<SpeechBubble> speechBubbleQueue = new ArrayList<>();
 
     public void spawn(Location location) {
-        despawn();
-        switch (Objects.requireNonNull(type)) {
-        case CAT:
-            entity = location.getWorld().spawn(location, Cat.class, cat -> {
-                    prepLivingEntity(cat);
-                    cat.setCollarColor(DyeColor.LIGHT_BLUE);
-                    cat.setCatType(Cat.Type.BLACK);
-                });
-            break;
-        case DOG:
-            entity = location.getWorld().spawn(location, Wolf.class, dog -> {
-                    prepLivingEntity(dog);
-                    dog.setCollarColor(DyeColor.LIGHT_BLUE);
-                });
-            break;
-        default:
-            throw new IllegalStateException("type=" + type);
-        }
+        if (isSpawned()) despawn();
+        entity = Objects.requireNonNull(type).spawn(location, this::prepLivingEntity);
         spawnOnce = false;
         triggerSpeechBubble();
     }
@@ -81,12 +65,15 @@ public final class Pet {
     public void teleport(Location location) {
         if (entity == null) {
             spawn(location);
-            return;
+        } else {
+            teleporting = true;
+            entity.teleport(location);
+            teleporting = false;
         }
-        entity.teleport(location);
     }
 
     public void despawn() {
+        autoDespawn = false;
         if (entity != null) {
             Player owner = getOwner();
             if (owner != null) {
@@ -121,11 +108,18 @@ public final class Pet {
         long then = System.currentTimeMillis() - 1000L * 60L;
         speechBubbleQueue.removeIf(b -> b.created < then); // expiry: 1 minutes
         if (speechBubbleQueue.isEmpty()) {
-            if (!autoRespawn) despawn();
             return;
         }
         final SpeechBubble theSpeechBubble = speechBubbleQueue.remove(0);
         currentSpeechBubble = theSpeechBubble;
+        theSpeechBubble.setOnDisable(() -> {
+                currentSpeechBubble = null;
+                if (speechBubbleQueue.isEmpty()) {
+                    if (autoDespawn) despawn();
+                } else {
+                    triggerSpeechBubble();
+                }
+            });
         currentSpeechBubble.enable();
     }
 
@@ -138,6 +132,7 @@ public final class Pet {
         if (!isSpawned()) {
             if (!autoRespawn) {
                 spawnOnce = true;
+                autoDespawn = true;
             }
             autoRespawnCooldown = 0L;
         } else {
@@ -186,8 +181,10 @@ public final class Pet {
         if (living instanceof Tameable) {
             Tameable tameable = (Tameable) living;
             tameable.setTamed(true);
-            Player owner = Bukkit.getPlayer(ownerId);
-            if (owner != null) tameable.setOwner(owner);
+        }
+        if (living instanceof Breedable) {
+            Breedable breedable = (Breedable) living;
+            breedable.setAgeLock(true);
         }
     }
 
@@ -264,7 +261,7 @@ public final class Pet {
         } else { // if (entity == null) {
             if (autoRespawn || spawnOnce) {
                 if (now < autoRespawnCooldown) return;
-                tryToAutoRespawn(owner);
+                tryToSpawn(owner, autoSpawnRule);
                 if (entity != null) {
                     autoRespawnCooldown = now + 10000L;
                 } else {
@@ -274,29 +271,30 @@ public final class Pet {
         }
     }
 
-    private void tryToAutoRespawn(Player owner) {
-        switch (autoRespawnRule) {
+    public boolean tryToSpawn(Player owner, SpawnRule rule) {
+        switch (rule) {
         case LOOKAT: {
             RayTraceResult rayTraceResult = owner.rayTraceBlocks(6.0);
-            if (rayTraceResult == null) return;
+            if (rayTraceResult == null) return false;
             Block block = rayTraceResult.getHitBlock();
-            if (block == null) return;
+            if (block == null) return false;
             BlockFace blockFace = rayTraceResult.getHitBlockFace();
-            if (blockFace == null) return;
-            if (blockFace.getModY() < 0) return;
+            if (blockFace == null) return false;
+            if (blockFace.getModY() < 0) return false;
             Block spawnBlock = block.getRelative(blockFace);
-            if (!spawnBlock.isEmpty()) return;
-            if (!spawnBlock.getRelative(BlockFace.DOWN).isSolid()) return;
+            if (!spawnBlock.isEmpty()) return false;
+            if (!spawnBlock.getRelative(BlockFace.DOWN).isSolid()) return false;
             Location spawnLocation = spawnBlock.getLocation().add(0.5, 0.0, 0.5);
             for (Pet otherPet : pets.findPets(owner)) {
+                if (otherPet == this) continue;
                 if (otherPet.entity != null && otherPet.entity.getBoundingBox().contains(spawnLocation.toVector())) {
-                    return;
+                    return false;
                 }
             }
-            spawn(spawnLocation);
-            return;
+            teleport(spawnLocation);
+            return true;
         }
-        case AREA: {
+        case NEARBY: {
             Random random = ThreadLocalRandom.current();
             Block base = owner.getLocation().getBlock();
             final int r = 8;
@@ -317,13 +315,13 @@ public final class Pet {
                 if (!spawnBlock.isEmpty()) continue;
                 if (!spawnBlock.getRelative(BlockFace.DOWN).isSolid()) continue;
                 Location spawnLocation = spawnBlock.getLocation().add(0.5, 0.0, 0.5);
-                spawn(spawnLocation);
-                return;
+                teleport(spawnLocation);
+                return true;
             }
-            return;
+            return false;
         }
         default:
-            throw new IllegalStateException("autoRespawnRule=" + autoRespawnRule);
+            throw new IllegalStateException("rule=" + rule);
         }
     }
 

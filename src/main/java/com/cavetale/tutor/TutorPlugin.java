@@ -5,6 +5,7 @@ import com.cavetale.tutor.pet.Pets;
 import com.cavetale.tutor.session.Sessions;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayerPet;
+import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import com.winthier.sql.SQLDatabase;
@@ -29,7 +30,8 @@ public final class TutorPlugin extends JavaPlugin {
         database = new SQLDatabase(this);
         database.registerTables(SQLPlayerQuest.class,
                                 SQLCompletedQuest.class,
-                                SQLPlayerPet.class);
+                                SQLPlayerPet.class,
+                                SQLPlayerPetUnlock.class);
         if (!database.createAllTables()) {
             throw new IllegalStateException("Table creation failed!");
         }

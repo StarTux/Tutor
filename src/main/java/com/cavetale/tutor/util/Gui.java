@@ -3,9 +3,9 @@ package com.cavetale.tutor.util;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.tutor.TutorPlugin;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,11 +37,19 @@ public final class Gui implements InventoryHolder {
     @Getter private Component title = Component.empty();
     boolean locked = false;
 
-    @RequiredArgsConstructor @AllArgsConstructor
-    private static final class Slot {
-        final int index;
-        ItemStack item;
-        Consumer<InventoryClickEvent> onClick;
+    @RequiredArgsConstructor
+    public static final class Slot {
+        protected final ItemStack item;
+        protected final Consumer<InventoryClickEvent> onClick;
+
+        public static Slot of(ItemStack theItem, Consumer<InventoryClickEvent> clickHandler) {
+            return new Slot(theItem, clickHandler);
+        }
+
+        public static Slot of(ItemStack theItem, List<Component> text, Consumer<InventoryClickEvent> clickHandler) {
+            Items.text(theItem, text);
+            return new Slot(theItem, clickHandler);
+        }
     }
 
     public Gui title(Component newTitle) {
@@ -64,8 +72,7 @@ public final class Gui implements InventoryHolder {
     }
 
     public Gui withOverlay(final int theSize, TextColor color, Component theTitle) {
-        return size(theSize).title(Component.text().append(DefaultFont.guiBlankOverlay(theSize, color))
-                                   .append(theTitle).build());
+        return size(theSize).title(DefaultFont.guiBlankOverlay(theSize, color, theTitle));
     }
 
     public Inventory getInventory() {
@@ -98,8 +105,21 @@ public final class Gui implements InventoryHolder {
             inventory.setItem(index, item);
         }
         if (index < 0) index = OUTSIDE;
-        Slot slot = new Slot(index, item, responder);
+        Slot slot = new Slot(item, responder);
         slots.put(index, slot);
+    }
+
+    public void setSlot(int index, Slot slot) {
+        this.slots.put(index, slot);
+    }
+
+    public void setSlots(List<Integer> indexList, List<Slot> slotList) {
+        if (indexList.size() != slotList.size()) {
+            throw new IllegalArgumentException(indexList.size() + "!=" + slotList.size());
+        }
+        for (int i = 0; i < indexList.size(); i += 1) {
+            this.slots.put(indexList.get(i), slotList.get(i));
+        }
     }
 
     public void setItem(int column, int row, ItemStack item, Consumer<InventoryClickEvent> responder) {
@@ -108,6 +128,10 @@ public final class Gui implements InventoryHolder {
         }
         if (row < 0) throw new IllegalArgumentException("row=" + row);
         setItem(column + row * 9, item, responder);
+    }
+
+    public void setOutsideClick(Consumer<InventoryClickEvent> clickHandler) {
+        this.slots.put(OUTSIDE, new Slot(null, clickHandler));
     }
 
     public Gui open(Player player) {
