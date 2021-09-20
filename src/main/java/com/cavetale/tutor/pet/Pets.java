@@ -18,13 +18,16 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -179,6 +182,20 @@ public final class Pets implements Listener {
         return true;
     }
 
+    /**
+     * Quick generic event checker. Cancels the event if entity is a
+     * pet and event is not null.
+     * @param entity the event entity
+     * @param event the event (nullable)
+     * @return The pet if the entity is a pet, null otherwise.
+     */
+    protected Pet handleEvent(Entity entity, Cancellable event) {
+        Pet pet = entityPetMap.get(entity.getEntityId());
+        if (pet == null) return null;
+        if (event != null) event.setCancelled(true);
+        return pet;
+    }
+
     @EventHandler
     void onEntityRemoveFromWorld(EntityRemoveFromWorldEvent event) {
         int entityId = event.getEntity().getEntityId();
@@ -192,9 +209,8 @@ public final class Pets implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     void onEntityDamage(EntityDamageEvent event) {
-        Pet pet = entityPetMap.get(event.getEntity().getEntityId());
+        Pet pet = handleEvent(event.getEntity(), event);
         if (pet == null) return;
-        event.setCancelled(true);
         if (pet.autoRespawn || pet.spawnOnce) {
             pet.autoRespawnCooldown = System.currentTimeMillis() + 10000L;
             if (pet.tag == null && event instanceof EntityDamageByEntityEvent) {
@@ -212,14 +228,12 @@ public final class Pets implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     void onEntityCombust(EntityCombustEvent event) {
-        Pet pet = entityPetMap.get(event.getEntity().getEntityId());
-        if (pet != null) event.setCancelled(true);
+        handleEvent(event.getEntity(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     void onEntityPortal(EntityPortalEvent event) {
-        Pet pet = entityPetMap.get(event.getEntity().getEntityId());
-        if (pet != null) event.setCancelled(true);
+        handleEvent(event.getEntity(), event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -258,9 +272,8 @@ public final class Pets implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Pet pet = entityPetMap.get(event.getRightClicked().getEntityId());
+        Pet pet = handleEvent(event.getRightClicked(), event);
         if (pet == null) return;
-        event.setCancelled(true);
         Player player = event.getPlayer();
         if (!Objects.equals(player.getUniqueId(), pet.ownerId)) return;
         if (pet.onClick != null) pet.onClick.run();
@@ -268,8 +281,7 @@ public final class Pets implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onEntityMove(EntityMoveEvent event) {
-        int entityId = event.getEntity().getEntityId();
-        Pet pet = entityPetMap.get(entityId);
+        Pet pet = handleEvent(event.getEntity(), null); // do not cancel
         if (pet == null) return;
         pet.onEntityMove();
     }
@@ -287,10 +299,11 @@ public final class Pets implements Listener {
 
     @EventHandler
     void onPluginEntity(PluginEntityEvent event) {
-        if (event.getPlugin() == plugin) return;
-        int entityId = event.getEntity().getEntityId();
-        Pet pet = entityPetMap.get(entityId);
-        if (pet == null) return;
-        event.setCancelled(true);
+        handleEvent(event.getEntity(), event);
+    }
+
+    @EventHandler
+    protected void onEntityInteract(EntityInteractEvent event) {
+        handleEvent(event.getEntity(), event);
     }
 }

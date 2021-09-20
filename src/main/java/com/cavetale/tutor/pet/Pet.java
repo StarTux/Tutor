@@ -15,6 +15,9 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Cat;
@@ -85,7 +88,12 @@ public final class Pet {
 
     public void despawn() {
         if (entity != null) {
-            pets.entityPetMap.remove(entity.getEntityId()); // necessary?
+            Player owner = getOwner();
+            if (owner != null) {
+                Location petLocation = entity.getLocation().add(0, 0.25, 0);
+                owner.spawnParticle(Particle.SMOKE_NORMAL, petLocation, 32, 0.25, 0.25, 0.25, 0.0);
+                owner.playSound(petLocation, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.25f, 2.0f);
+            }
             entity.remove();
             entity = null;
             try {
@@ -112,7 +120,10 @@ public final class Pet {
         if (entity == null) return;
         long then = System.currentTimeMillis() - 1000L * 60L;
         speechBubbleQueue.removeIf(b -> b.created < then); // expiry: 1 minutes
-        if (speechBubbleQueue.isEmpty()) return;
+        if (speechBubbleQueue.isEmpty()) {
+            if (!autoRespawn) despawn();
+            return;
+        }
         final SpeechBubble theSpeechBubble = speechBubbleQueue.remove(0);
         currentSpeechBubble = theSpeechBubble;
         currentSpeechBubble.enable();

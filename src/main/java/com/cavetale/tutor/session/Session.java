@@ -354,7 +354,6 @@ public final class Session {
 
     public boolean applyPet(Consumer<Pet> callback) {
         if (pet == null) return false;
-        if (!pet.isSpawned() && playerPetRow.isAutoSpawn()) return false;
         callback.accept(pet);
         return true;
     }
