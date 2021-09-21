@@ -200,6 +200,7 @@ public final class Session {
             questName.deliverQuestReward(player);
         }
         triggerAutomaticQuests();
+        triggerQuestReminder();
     }
 
     public PlayerQuest removeQuest(QuestName questName) {
@@ -349,6 +350,7 @@ public final class Session {
      * Create the pet object and prepare it to be spawned.
      */
     public Pet spawnPet() {
+        if (pet != null) return pet;
         PetType petType = playerPetRow.parsePetType();
         if (petType == null) return null; // must not have finished beginner tut
         if (pet != null) {
@@ -375,21 +377,20 @@ public final class Session {
         return true;
     }
 
-    public void setPet(PetType petType, boolean autoSpawn) {
+    public void setPetType(PetType petType) {
         if (petType == playerPetRow.parsePetType()) return;
         playerPetRow.setPetType(petType);
-        playerPetRow.setAutoSpawn(autoSpawn);
         playerPetRow.setNow();
-        plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "auto_spawn");
-        spawnPet();
+        plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "updated");
     }
 
     public void renamePet(String petName) {
         playerPetRow.setName(petName);
+        playerPetRow.setNow();
         if (pet != null) {
             pet.setCustomName(playerPetRow.getNameComponent());
         }
-        plugin.getDatabase().updateAsync(playerPetRow, null, "name");
+        plugin.getDatabase().updateAsync(playerPetRow, null, "name", "updated");
     }
 
     /**
@@ -588,8 +589,9 @@ public final class Session {
                                 if (on == playerPetRow.isAutoSpawn()) {
                                     Noise.CLICK.play(player);
                                     playerPetRow.setAutoSpawn(!on);
+                                    playerPetRow.setNow();
                                     pet.setAutoRespawn(!on);
-                                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn");
+                                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn", "updated");
                                 }
                                 openPetSettingsMenu(player);
                             }),
@@ -619,8 +621,11 @@ public final class Session {
                                 PetGender[] allGenders = PetGender.values();
                                 PetGender newGender = allGenders[(petGender.ordinal() + 1) % allGenders.length];
                                 playerPetRow.setGender(newGender);
-                                plugin.getDatabase().updateAsync(playerPetRow, null, "gender");
-                                spawnPet();
+                                playerPetRow.setNow();
+                                plugin.getDatabase().updateAsync(playerPetRow, null, "gender", "updated");
+                                if (pet != null) {
+                                    pet.setCustomName(playerPetRow.getNameComponent());
+                                }
                                 openPetSettingsMenu(player);
                             }),
             });
@@ -650,7 +655,11 @@ public final class Session {
                                         click -> {
                                             if (!click.isLeftClick()) return;
                                             Noise.CLICK.play(player);
-                                            setPet(petType, true);
+                                            setPetType(petType);
+                                            if (pet != null && petType != pet.getType()) {
+                                                pet.setType(petType);
+                                                pet.despawn();
+                                            }
                                             openPetSettingsMenu(player);
                                         }));
             } else {

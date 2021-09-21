@@ -162,6 +162,10 @@ public final class PlayerQuest {
         }
     }
 
+    public boolean isComplete() {
+        return currentProgress.isComplete();
+    }
+
     private void completeQuestReminder(Player player) {
         player.sendMessage(Component.text().content("You completed a " + quest.getName().type.upper + " page!")
                            .append(Component.newline())
