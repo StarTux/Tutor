@@ -75,4 +75,9 @@ public final class CheckboxCondition implements Condition {
     public boolean hasBookPage() {
         return bookPageIndex >= 0;
     }
+
+    @Override
+    public boolean complete(PlayerQuest playerQuest) {
+        return progress(playerQuest);
+    }
 }

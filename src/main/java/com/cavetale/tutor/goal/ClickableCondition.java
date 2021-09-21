@@ -41,4 +41,9 @@ public final class ClickableCondition implements Condition {
             ? visibleGetter.apply(playerQuest)
             : true;
     }
+
+    @Override
+    public boolean complete(PlayerQuest playerQuest) {
+        return false;
+    }
 }

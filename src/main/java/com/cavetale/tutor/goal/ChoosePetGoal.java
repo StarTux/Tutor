@@ -122,7 +122,8 @@ public final class ChoosePetGoal implements Goal {
             return;
         }
         playerQuest.getPlugin().getPets().removeOwnerTag(playerQuest.getSession().getUuid(), id);
-        playerQuest.getSession().setPet(petType, true);
+        playerQuest.getSession().setPetType(petType);
+        playerQuest.getSession().spawnPet();
         playerQuest.getSession().applyPet(pet -> {
                 pet.addSpeechBubble(id, 50L, 100L, new Component[] {
                         Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),

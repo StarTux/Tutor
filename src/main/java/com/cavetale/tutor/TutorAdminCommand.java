@@ -4,6 +4,7 @@ import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
@@ -48,6 +49,10 @@ public final class TutorAdminCommand implements TabExecutor {
             .description("Skip current goal")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
             .senderCaller(this::skip);
+        rootNode.addChild("complete").arguments("<player> <quest>")
+            .description("Complete current goal condition")
+            .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
+            .senderCaller(this::complete);
         rootNode.addChild("info").arguments("<player>")
             .description("Player quest info")
             .completers(CommandArgCompleter.NULL)
@@ -156,6 +161,35 @@ public final class TutorAdminCommand implements TabExecutor {
                            .append(playerQuest.getCurrentGoal().getDisplayName())
                            .build());
         playerQuest.onGoalComplete(session.getPlayer());
+        return true;
+    }
+
+    private boolean complete(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        Session session = requireSession(args[0]);
+        Quest quest = requireQuest(args[1]);
+        PlayerQuest playerQuest = session.getQuest(quest.name);
+        if (playerQuest == null) {
+            throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
+        }
+        if (playerQuest.isComplete()) {
+            throw new CommandWarn("Quest is already complete!");
+        }
+        Condition completedCondition = null;
+        for (Condition condition : playerQuest.getCurrentGoal().getConditions()) {
+            if (condition.complete(playerQuest)) {
+                completedCondition = condition;
+                break;
+            }
+        }
+        if (completedCondition == null) {
+            throw new CommandWarn("No completable goal was found!");
+        }
+        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
+                           .append(Component.text(session.getName()))
+                           .append(Component.text(" completed condition: "))
+                           .append(completedCondition.getDescription())
+                           .build());
         return true;
     }
 

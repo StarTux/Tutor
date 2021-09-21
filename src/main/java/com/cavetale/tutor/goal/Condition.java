@@ -28,4 +28,6 @@ public interface Condition {
     default int getBookPageIndex() {
         return 0;
     }
+
+    boolean complete(PlayerQuest playerQuest);
 }
