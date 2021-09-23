@@ -48,6 +48,9 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                                        + " Click one of them to display the entire message,"
                                        + " which will also mark the mail as read."),
                     }),
+                TextComponent.ofChildren(new Component[] {
+                        Component.text("Mails are deleted from the system after 90 days."),
+                    }),
             });
     }
 
@@ -66,7 +69,8 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                             Component.text("Tom Hanks and Meg Ryan?"),
                         });
                     pet.addSpeechBubble(id, 0, 100L, new Component[] {
-                            Component.text("Yeah, it didn't age well."),
+                            Component.text("No? Don't worry,"),
+                            Component.text("it didn't age well."),
                         });
                 });
         }

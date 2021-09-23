@@ -26,8 +26,7 @@ public final class TitleGoal extends AbstractGoal<TitleProgress> {
                                                playerQuest -> getProgress(playerQuest).listTitles = true);
         condSelectTitle = new CheckboxCondition(Component.text("Select a Title"),
                                                 playerQuest -> getProgress(playerQuest).selectTitle,
-                                                playerQuest -> getProgress(playerQuest).selectTitle = true,
-                                                playerQuest -> getProgress(playerQuest).listTitles);
+                                                playerQuest -> getProgress(playerQuest).selectTitle = true);
         this.conditions = List.of(new Condition[] {
                 condListTitles,
                 condSelectTitle,
@@ -59,11 +58,13 @@ public final class TitleGoal extends AbstractGoal<TitleProgress> {
     public void onEnable(PlayerQuest playerQuest) {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
-                    pet.addSpeechBubble(id, 50L, 80L, new Component[] {
-                            Component.text("Titles aren't ranks."),
+                    pet.addSpeechBubble(id, 50L, 120L, new Component[] {
+                            Component.text("Titles and ranks are"),
+                            Component.text("not the same."),
                         });
                     pet.addSpeechBubble(id, 0L, 80L, new Component[] {
-                            Component.text("The can be collected."),
+                            Component.text("Titles can be"),
+                            Component.text("collected."),
                         });
                     pet.addSpeechBubble(id, 0L, 100L, new Component[] {
                             Component.text("You can choose a title"),
