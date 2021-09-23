@@ -40,7 +40,8 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
                         Component.text("sign above a chest and write "),
                         Component.text("[shop]", NamedTextColor.BLUE),
                         Component.text(" in the first line."
-                                       + "\n\nWik Page:\n"),
+                                       + " You can write the price in the second line."
+                                       + "\n\nWiki Page:\n"),
                         (Component.text().content("cavetale.com/wiki/chest-shops")
                          .color(NamedTextColor.BLUE)
                          .decorate(TextDecoration.UNDERLINED)
@@ -52,8 +53,10 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Completing enough tutorials to rank up to "),
                         Component.text("Speleologist", NamedTextColor.BLUE),
-                        Component.text(" will allow you to purchase a plot in the market world."
-                                       + " Shops made in there will show in the Shop Search."),
+                        Component.text(" will allow you to purchase a plot in the Market World."
+                                       + " Shop chests made in there will show up in the "),
+                        Component.text("/shop search", NamedTextColor.BLUE),
+                        Component.text("."),
                     }),
             });
     }

@@ -8,6 +8,10 @@ import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
     protected static final String NPC = "PocketMob";
@@ -29,15 +33,13 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                                          playerQuest -> getProgress(playerQuest).talk = true);
         condCatch = new CheckboxCondition(Component.text("Catch a Mob"),
                                           playerQuest -> getProgress(playerQuest).caught,
-                                          playerQuest -> getProgress(playerQuest).caught = true,
-                                          playerQuest -> getProgress(playerQuest).talk);
+                                          playerQuest -> getProgress(playerQuest).caught = true);
         condRelease = new CheckboxCondition(Component.text("Release a Mob"),
                                             playerQuest -> getProgress(playerQuest).release,
-                                            playerQuest -> getProgress(playerQuest).release = true,
-                                            playerQuest -> getProgress(playerQuest).talk);
+                                            playerQuest -> getProgress(playerQuest).release = true);
         condTalk.setBookPageIndex(0);
-        condCatch.setBookPageIndex(1);
-        condRelease.setBookPageIndex(2);
+        condCatch.setBookPageIndex(2);
+        condRelease.setBookPageIndex(4);
         this.conditions = List.of(new Condition[] {
                 condTalk,
                 condCatch,
@@ -48,31 +50,59 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                 TextComponent.ofChildren(new Component[] {// 0
                         Component.text("Mob Catchers"),
                         Mytems.MOB_CATCHER.component,
-                        Component.text(" can be bought at spawn."
-                                       + " Find the store near the micro block marketplace"
-                                       + " and bring the required resources."
-                                       + "\n\nAlso in the store,"
-                                       + " catchers can be upgraded to have a higher"
-                                       + " success rate with certain mob types: "),
-                        Mytems.MONSTER_CATCHER.component,
-                        Mytems.VILLAGER_CATCHER.component,
-                        Mytems.FISH_CATCHER.component,
-                        Mytems.ANIMAL_CATCHER.component,
-                        Mytems.PET_CATCHER.component,
+                        Component.text(" can be bought at Spawn."
+                                       + "\n\nFind the store near the "),
+                        Component.text("Player Heads", NamedTextColor.BLUE),
+                        Component.text(" marketplace and bring the required resources."
+                                       + "\n\nWiki Page:"),
+                        Component.text("cavetale.com/wiki/pocket-mob",
+                                       NamedTextColor.BLUE, TextDecoration.UNDERLINED)
+                        .hoverEvent(HoverEvent.showText(Component.text("cavetale.com/wiki/pocket-mob",
+                                                                       NamedTextColor.BLUE)))
+                        .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/pocket-mob")),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
-                        Component.text("Catch a mob by throwing the "),
-                        Mytems.MOB_CATCHER.component,
-                        Component.text("catcher at it."
-                                       + " Hostile mobs are harder to catch than animals."
-                                       + " Specialized mob catchers can improve the catch"
-                                       + " chance under the right circumstances."),
+                        Component.text("In the store,"
+                                       + " catchers can be upgraded to have a higher"
+                                       + " success rate with certain mob types:\n\n"),
+                        Mytems.MONSTER_CATCHER.component,
+                        Component.text(" Monsters\n"),
+                        Mytems.VILLAGER_CATCHER.component,
+                        Component.text(" Villagers\n"),
+                        Mytems.FISH_CATCHER.component,
+                        Component.text(" Water Mobs\n"),
+                        Mytems.ANIMAL_CATCHER.component,
+                        Component.text(" Animals\n"),
+                        Mytems.PET_CATCHER.component,
+                        Component.text(" Your Pets\n"),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
-                        Component.text("To release a mob, throw the Pocket Mob at a block."
-                                       + " You can generally release mobs in areas where you"
-                                       + " can also build,"
-                                       + " or else the Pocket Mob will just drop."
+                        Component.text("To catch a mob, throw the the "),
+                        Mytems.MOB_CATCHER.component,
+                        Component.text("catcher at it."
+                                       + "\nIf "),
+                        Component.text("successful", NamedTextColor.BLUE),
+                        Component.text(", the mob will turn into an item."
+                                       + " Make sure to pick it up!"
+                                       + "\n\nIf it "),
+                        Component.text("fails", NamedTextColor.RED),
+                        Component.text(", your catcher will be gone."
+                                       + "\n\nIn some areas such as Spawn,"
+                                       + " catchers will just drop."),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 3
+                        Component.text("Hostile mobs are harder to catch than passive ones."
+                                       + "\n\nSpecialized mob catchers can improve the catch"
+                                       + " chance. Make sure to read the item description"
+                                       + " carefully."),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 4
+                        Component.text("To "),
+                        Component.text("release", NamedTextColor.BLUE),
+                        Component.text(" a mob, throw the Pocket Mob at a block."
+                                       + "\n\nYou can release mobs in areas where you"
+                                       + " can build,"
+                                       + " or else the Pocket Mob will drop."
                                        + " When that happens,"
                                        + " pick it up and try somewhere else."),
                     }),
