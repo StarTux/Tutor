@@ -9,7 +9,10 @@ import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -36,14 +39,12 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
         condPlace = new NumberCondition(Component.text("Place " + PLACE + " Gold Blocks"), PLACE,
                                         playerQuest -> getProgress(playerQuest).place,
                                         (playerQuest, amount) -> getProgress(playerQuest).place = amount);
-        condUp = new CheckboxCondition(Component.text("Travel Televator Up"),
+        condUp = new CheckboxCondition(Component.text("Go Televator Up"),
                                        playerQuest -> getProgress(playerQuest).up,
-                                       playerQuest -> getProgress(playerQuest).up = true,
-                                       playerQuest -> getProgress(playerQuest).place >= PLACE);
-        condDown = new CheckboxCondition(Component.text("Travel Televator Down"),
+                                       playerQuest -> getProgress(playerQuest).up = true);
+        condDown = new CheckboxCondition(Component.text("Go Televator Down"),
                                          playerQuest -> getProgress(playerQuest).down,
-                                         playerQuest -> getProgress(playerQuest).down = true,
-                                         playerQuest -> getProgress(playerQuest).place >= PLACE);
+                                         playerQuest -> getProgress(playerQuest).down = true);
         condPlace.setBookPageIndex(0);
         condUp.setBookPageIndex(1);
         condDown.setBookPageIndex(1);
@@ -55,15 +56,20 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
-                        Component.text("Align two or more "),
+                        Component.text("Place two or more "),
                         VanillaItems.GOLD_BLOCK.component,
-                        Component.text("gold blocks vertically,"
-                                       + " and you have a Televator!"
-                                       + "\n\nIt's simple. All you need is 18"),
-                        VanillaItems.GOLD_INGOT.component,
-                        Component.text("gold ingots."
-                                       + " Craft them into blocks and make a Televator"
-                                       + " which speeds up traveling up and down."),
+                        Component.text("gold blocks above each other,"
+                                       + " with at least two blocks space inbetween,"
+                                       + " and you have a "),
+                        Component.text("Televator", NamedTextColor.BLUE),
+                        Component.text("!\n\nTelevator speeds up vertical travel."
+                                       + " Check out our wiki page:\n\n"),
+                        Component.text("cavetale.com/wiki/televator",
+                                       NamedTextColor.BLUE,
+                                       TextDecoration.UNDERLINED)
+                        .hoverEvent(HoverEvent.showText(Component.text("cavetale.com/wiki/televator",
+                                                                       NamedTextColor.BLUE)))
+                        .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/televator")),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
                         Component.text("Using the Televator is even simpler:\n\n"),
@@ -71,6 +77,8 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
                         Component.text("\nGo Up\n\n", NamedTextColor.GRAY),
                         Component.text("Sneak", NamedTextColor.BLUE),
                         Component.text("\nGo Down", NamedTextColor.GRAY),
+                        Component.text("\n\nYou travel instantly between"
+                                       + " your two gold blocks."),
                     }),
             });
     }

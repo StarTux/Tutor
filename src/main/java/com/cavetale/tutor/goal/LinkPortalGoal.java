@@ -2,6 +2,7 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
@@ -43,7 +44,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                                         playerQuest -> getProgress(playerQuest).usePublic);
         condUsePublic.setBookPageIndex(0);
         condBuild.setBookPageIndex(1);
-        condUse.setBookPageIndex(2);
+        condUse.setBookPageIndex(3);
         this.conditions = List.of(new Condition[] {
                 condUsePublic,
                 condBuild,
@@ -52,7 +53,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
-                        Component.text("The server spawn has a few display Link Portals."
+                        Component.text("The server spawn has display Link Portals."
                                        + " They're inside the barn by the farming area."
                                        + " Find them and travel through them."
                                        + "\n\nCommand:\n"),
@@ -63,7 +64,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                         Component.text("Now it's time to build our own!"
                                        + " Just place a "),
                         VanillaItems.OAK_SIGN.component,
-                        Component.text("sign on a nether portal frame and write "),
+                        Component.text("sign and write "),
                         Component.text("[link]", NamedTextColor.BLUE),
                         Component.text(" in the first line."
                                        + "\n\nWiki Page:\n"),
@@ -76,6 +77,19 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                          .build()),
                     }),
                 TextComponent.ofChildren(new Component[] {// 2
+                        Component.text("Link portals come in 2 kinds."
+                                       + "\n\n" + Unicode.BULLET_POINT.character
+                                       + " Sign attached to a "),
+                        Component.text("nether portal", NamedTextColor.BLUE),
+                        Component.text(". Just walk through it."
+                                       + "\n\n" + Unicode.BULLET_POINT.character
+                                       + " Sign over a "),
+                        Component.text("1x2 frame", NamedTextColor.BLUE),
+                        Component.text(". This one is used by pressing a"
+                                       + " button or pressure plate inside"
+                                       + " the frame."),
+                    }),
+                TextComponent.ofChildren(new Component[] {// 3
                         Component.text("In order to confirm that your portals are working,"
                                        + " step through them."
                                        + "\n\nDepending on their make,"

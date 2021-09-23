@@ -46,7 +46,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         condWhisper.setBookPageIndex(0);
         condReply.setBookPageIndex(1);
         condFocus.setBookPageIndex(2);
-        condReturn.setBookPageIndex(4);
+        condReturn.setBookPageIndex(3);
         this.conditions = List.of(new Condition[] {
                 condWhisper,
                 condReply,
@@ -56,7 +56,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 TextComponent.ofChildren(new Component[] {// 0
-                        Component.text("There are many commands to send private messages:"),
+                        Component.text("There are many ways to send private messages:"),
                         Component.text("\n/tell <player> <msg>", NamedTextColor.BLUE),
                         Component.text("\n/msg <player> <msg>", NamedTextColor.BLUE),
                         Component.text("\n/w <player> <msg>", NamedTextColor.BLUE),
@@ -64,10 +64,10 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("/msg #console hi", NamedTextColor.BLUE),
                     }),
                 TextComponent.ofChildren(new Component[] {// 1
-                        Component.text("When somebody sends you a private message "
-                                       + ", you can quickly reply via the command:\n\n"),
+                        Component.text("When somebody sends you a private message,"
+                                       + " you can quickly reply via these commands:\n\n"),
                         Component.text("/reply <message>", NamedTextColor.BLUE),
-                        Component.newline(),
+                        Component.text("\nor short:\n"),
                         Component.text("/r <message>", NamedTextColor.BLUE),
                         Component.text("\nReply to the last person who sent you a PM", NamedTextColor.GRAY),
                     }),
@@ -80,20 +80,12 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("\nFocus on a specific person", NamedTextColor.GRAY),
                     }),
                 TextComponent.ofChildren(new Component[] {// 3
-                        Component.text("If console just message you, do this:\n"),
-                        Component.text("/r", NamedTextColor.BLUE),
-                        Component.text("\n\nOr just use their full name:\n"),
-                        Component.text("/msg #console", NamedTextColor.BLUE),
-                        Component.text("\n\nKeep in mind that player names don't start with a hash."
-                                       + " Console is special."),
-                    }),
-                TextComponent.ofChildren(new Component[] {// 4
                         Component.text("Once you're done,"
-                                       + " return to the regular chat channels as always:\n\n"),
+                                       + " return focus to the regular chat channels:\n\n"),
                         Component.text("/g", NamedTextColor.BLUE),
-                        Component.text("\nReturn to global\n\n", NamedTextColor.GRAY),
+                        Component.text("\nFocus global\n\n", NamedTextColor.GRAY),
                         Component.text("/l", NamedTextColor.BLUE),
-                        Component.text("\nReturn to local", NamedTextColor.GRAY),
+                        Component.text("\nFocus local", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -110,7 +102,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
         String name = player.getName();
         Console.delayedCommand(40L, "msg " + name + " Hi there! Good job on your progress.");
         Console.delayedCommand(80L, "msg " + name + " You can reply to me with the /r command.");
-        Console.delayedCommand(120L, "msg " + name + " Or message me via /msg #console");
+        Console.delayedCommand(120L, "msg " + name + " Or message me using my name: #console");
     }
 
     @Override
