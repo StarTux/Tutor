@@ -48,8 +48,8 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
         this.conditions = List.of(new Condition[] {
                 condList,
                 condGift,
-                condBday,
                 condPriest,
+                condBday,
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
