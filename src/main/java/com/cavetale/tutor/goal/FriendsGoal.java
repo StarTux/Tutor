@@ -89,8 +89,8 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text(" Complete raids"),
                     }),
                 TextComponent.ofChildren(new Component[] {// 3
-                        Component.text("At 3"),
-                        Component.text("" + Unicode.HEART.character, NamedTextColor.RED),
+                        Component.text("At "),
+                        Component.text("3" + Unicode.HEART.character, NamedTextColor.RED),
                         Component.text(", you can send a "),
                         Component.text("Friend", NamedTextColor.BLUE),
                         Component.text(" request."
@@ -107,15 +107,15 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text("\n" + Unicode.BULLET_POINT.character),
                         Component.text(" Bonus hearts when starting a raid together"),
                         Component.text("\n" + Unicode.BULLET_POINT.character),
-                        Component.text(" Friendship never drops below 2"),
-                        Component.text("" + Unicode.HEART.character, NamedTextColor.RED),
+                        Component.text(" Friendship never drops below "),
+                        Component.text("2" + Unicode.HEART.character, NamedTextColor.RED),
                     }),
                 TextComponent.ofChildren(new Component[] {// 5
-                        Component.text("At 5"),
-                        Component.text("" + Unicode.HEART.character, NamedTextColor.RED),
+                        Component.text("At "),
+                        Component.text("5" + Unicode.HEART.character, NamedTextColor.RED),
                         Component.text(", you can ask to get "),
                         Component.text("married", NamedTextColor.BLUE),
-                        Component.text(". All you need is 2 "),
+                        Component.text(". All you need is two "),
                         Mytems.WEDDING_RING.component,
                         Component.text("Wedding Rings."
                                        + "\n\nThe priest in the cathedral at spawn"

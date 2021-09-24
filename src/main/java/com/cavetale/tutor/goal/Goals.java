@@ -48,10 +48,12 @@ public final class Goals {
                 new ShopChestGoal(),
             });
         case FRIEND: return List.of(new Goal[] {
+                new SetNamedHomeGoal(),
+                new InviteHomeGoal(),
+                new MailGoal(),
                 new RaidGoal(),
                 new PocketMobGoal(),
                 new TitleGoal(),
-                new MailGoal(),
                 new FriendsGoal(),
             });
         default:

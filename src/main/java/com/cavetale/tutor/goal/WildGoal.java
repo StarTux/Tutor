@@ -7,7 +7,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
@@ -42,18 +42,27 @@ public final class WildGoal implements Goal {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("You can type "),
                         Component.text("/wild", NamedTextColor.BLUE),
                         Component.text(" in order to find a nice place for you to start your base."
                                        + " This will teleport you to a random place in the main build world."
                                        + " You can repeat the command until you find a nice place."),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Once you have found a place you like, type "),
                         Component.text("/claim new", NamedTextColor.BLUE),
                         Component.text(" to claim the area as your own."
                                        + "You can grow the claim further out later on."),
+                    }),
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
+                        Component.text("If you play with friends, all this warping"
+                                       + " around can get you lost."
+                                       + " Teleport to each other via this command:\n\n"),
+                        Component.text("/tpa <player>", NamedTextColor.BLUE),
+                        Component.text("\nRequest a teleport."
+                                       + " Your friend can click in chat to accept",
+                                       NamedTextColor.GRAY),
                     }),
             });
     }
@@ -69,8 +78,8 @@ public final class WildGoal implements Goal {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 100L,
                                         Component.text("Let's find a place to"),
-                                        TextComponent.ofChildren(Component.text("call our home! "),
-                                                                 Mytems.SMILE.component));
+                                        Component.text("call our home! ")
+                                        .append(Mytems.SMILE.component));
                     pet.addSpeechBubble(id, 0L, 100L,
                                         Component.text("Then make a claim"),
                                         Component.text("there so nobody"),

@@ -5,7 +5,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 
 public final class DummyGoal extends AbstractGoal<DummyProgress> {
     @Getter protected final String id;
@@ -28,7 +28,7 @@ public final class DummyGoal extends AbstractGoal<DummyProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text(""),
                     }),
             });

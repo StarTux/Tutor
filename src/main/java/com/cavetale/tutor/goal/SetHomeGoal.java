@@ -22,10 +22,10 @@ public final class SetHomeGoal implements Goal {
 
     public SetHomeGoal() {
         this.displayName = Component.text("Set your home");
-        condSetHome = new CheckboxCondition(Component.text("Set your home"),
+        condSetHome = new CheckboxCondition(Component.text("Set your Home"),
                                             playerQuest -> getProgress(playerQuest).sethome,
                                             playerQuest -> getProgress(playerQuest).sethome = true);
-        condHome = new CheckboxCondition(Component.text("Use your home"),
+        condHome = new CheckboxCondition(Component.text("Use your Home"),
                                          playerQuest -> getProgress(playerQuest).home,
                                          playerQuest -> getProgress(playerQuest).home = true,
                                          playerQuest -> getProgress(playerQuest).sethome);
