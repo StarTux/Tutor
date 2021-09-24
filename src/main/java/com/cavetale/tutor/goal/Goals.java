@@ -48,6 +48,7 @@ public final class Goals {
                 new ShopChestGoal(),
             });
         case FRIEND: return List.of(new Goal[] {
+                new ClaimTrustGoal(),
                 new SetNamedHomeGoal(),
                 new InviteHomeGoal(),
                 new MailGoal(),
