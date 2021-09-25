@@ -498,6 +498,16 @@ public final class Session {
             if (!completedQuests.containsKey(questName) && !canSee(questName)) continue;
             gui.setItem(9 + index++, makeQuestItem(questName), click -> {
                     if (!click.isLeftClick()) return;
+                    if (currentQuests.containsKey(questName)) {
+                        Noise.CLICK.play(player);
+                        openQuestBook(player);
+                        return;
+                    }
+                    if (completedQuests.containsKey(questName)) {
+                        Noise.CLICK.play(player);
+                        openCompletedQuestBook(player, plugin.getQuests().get(questName), completedQuests.get(questName));
+                        return;
+                    }
                     if (!canSee(questName) || !canStart(questName)) {
                         Noise.FAIL.play(player);
                         return;

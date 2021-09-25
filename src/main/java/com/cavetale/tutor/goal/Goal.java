@@ -128,7 +128,11 @@ public interface Goal {
             lines.add(constraint.getMissedMessage(playerQuest, Background.LIGHT));
             hasMissedConstraint = true;
         }
-        if (!hasMissedConstraint && playerQuest.getCurrentProgress().isComplete()) {
+        boolean complete = !hasMissedConstraint && playerQuest.getCurrentProgress().isComplete();
+        boolean abandonable = !complete
+            && (playerQuest.getQuest().getName().isQuittable()
+                || playerQuest.getSession().getCompletedQuests().containsKey(playerQuest.getQuest().name));
+        if (complete) {
             lines.add(Component.text().content("[")
                       .append(Component.text("" + Unicode.CHECKMARK.character, NamedTextColor.GOLD))
                       .append(Component.text("Complete]"))
@@ -136,7 +140,7 @@ public interface Goal {
                       .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.GREEN)))
                       .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key))
                       .build());
-        } else if (playerQuest.getQuest().getName().isQuittable()) {
+        } else if (abandonable) {
             lines.add(Component.empty());
             lines.add(Component.text()
                       .content("[Abandon]")
