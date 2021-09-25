@@ -8,18 +8,16 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
 
 /**
  * A POJO object holding descriptive information about a quest.
  */
 @Getter @RequiredArgsConstructor
 public final class Quest {
-    protected final QuestName name;
-    protected final Component displayName;
-    protected final List<Goal> goals = new ArrayList<>();
+    public final QuestName name;
+    public final List<Goal> goals = new ArrayList<>();
 
-    public Quest(@NonNull final QuestName questName, @NonNull final Component displayName, @NonNull final List<Goal> goals) {
+    public Quest(@NonNull final QuestName questName, @NonNull final List<Goal> goals) {
         if (goals.isEmpty()) {
             throw new IllegalArgumentException("goals is empty!");
         }
@@ -31,7 +29,6 @@ public final class Quest {
             goalIds.add(goal.getId());
         }
         this.name = questName;
-        this.displayName = displayName;
         this.goals.addAll(goals);
     }
 

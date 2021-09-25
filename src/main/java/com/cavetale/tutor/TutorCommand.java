@@ -97,7 +97,7 @@ public final class TutorCommand implements TabExecutor {
                 session.removeQuest(questName);
                 player.sendMessage(Component.text().content(questName.type.upper + " abandoned: ")
                                    .color(NamedTextColor.YELLOW)
-                                   .append(playerQuest.getQuest().getDisplayName()));
+                                   .append(playerQuest.getQuest().name.displayName));
                 return true;
             }
             default: return true;

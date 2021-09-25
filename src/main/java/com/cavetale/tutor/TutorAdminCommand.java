@@ -1,12 +1,10 @@
 package com.cavetale.tutor;
 
+import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
-import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.goal.Condition;
-import com.cavetale.tutor.pet.Pet;
-import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import com.winthier.playercache.PlayerCache;
@@ -14,25 +12,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-@RequiredArgsConstructor
-public final class TutorAdminCommand implements TabExecutor {
-    private final TutorPlugin plugin;
-    private CommandNode rootNode = new CommandNode("tutoradmin");
+public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
 
-    public void enable() {
+    protected TutorAdminCommand(final TutorPlugin plugin) {
+        super(plugin, "tutoradmin");
+    }
+
+    @Override
+    public void onEnable() {
         rootNode.addChild("start").arguments("<player> <quest>")
             .description("Start quest for player")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
@@ -57,16 +54,6 @@ public final class TutorAdminCommand implements TabExecutor {
             .description("Player quest info")
             .completers(CommandArgCompleter.NULL)
             .senderCaller(this::info);
-    }
-
-    @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return rootNode.call(sender, command, alias, args);
-    }
-
-    @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return rootNode.complete(sender, command, alias, args);
     }
 
     private Player requirePlayer(String arg) {
@@ -105,7 +92,7 @@ public final class TutorAdminCommand implements TabExecutor {
         sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
                            .append(Component.text(session.getName()))
                            .append(Component.text(" started quest: "))
-                           .append(quest.getDisplayName())
+                           .append(quest.name.displayName)
                            .build());
         return true;
     }
@@ -120,7 +107,7 @@ public final class TutorAdminCommand implements TabExecutor {
         sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
                            .append(Component.text(session.getName()))
                            .append(Component.text(" stopped quest: "))
-                           .append(quest.getDisplayName())
+                           .append(quest.name.displayName)
                            .build());
         return true;
     }
@@ -136,7 +123,7 @@ public final class TutorAdminCommand implements TabExecutor {
         sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
                            .append(Component.text(session.getName()))
                            .append(Component.text(" restarted quest: "))
-                           .append(quest.getDisplayName())
+                           .append(quest.name.displayName)
                            .build());
         return true;
     }
@@ -152,7 +139,7 @@ public final class TutorAdminCommand implements TabExecutor {
         sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
                            .append(Component.text(session.getName()))
                            .append(Component.text(" skipping quest goal: "))
-                           .append(quest.getDisplayName())
+                           .append(quest.name.displayName)
                            .append(Component.text(", "))
                            .append(playerQuest.getCurrentGoal().getDisplayName())
                            .build());
@@ -204,7 +191,7 @@ public final class TutorAdminCommand implements TabExecutor {
                                                 Component.text().content(entry.getKey().key)
                                                 .color(NamedTextColor.GOLD)
                                                 .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
-                                                                plugin.getQuests().get(entry.getKey()).getDisplayName(),
+                                                                plugin.getQuests().get(entry.getKey()).name.displayName,
                                                                 Component.text("\nCompleted "
                                                                                + dateFormat.format(entry.getValue().getTime()),
                                                                                NamedTextColor.GRAY),
@@ -222,7 +209,7 @@ public final class TutorAdminCommand implements TabExecutor {
                                 (Component.text().content(playerQuest.getQuest().getName().key)
                                  .color(NamedTextColor.YELLOW)
                                  .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
-                                                 playerQuest.getQuest().getDisplayName(),
+                                                 playerQuest.getQuest().name.displayName,
                                                  Component.text("\n" + playerQuest.getQuest().getName().type.upper, NamedTextColor.GRAY),
                                              })))
                                  .build()),

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -141,9 +141,9 @@ public final class PlayerQuest {
 
     public void onQuestComplete(Player player) {
         session.questComplete(quest.getName(), player);
-        Component msg = TextComponent.ofChildren(new Component[] {
+        Component msg = Component.join(JoinConfiguration.noSeparators(), new Component[] {
                 Component.text(quest.getName().type.upper + " complete: ", NamedTextColor.DARK_AQUA),
-                quest.getDisplayName(),
+                quest.name.displayName,
             });
         player.sendMessage(msg);
         player.showTitle(Title.title(Component.empty(), msg,

@@ -1,5 +1,6 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
@@ -16,6 +17,8 @@ import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
+import com.cavetale.tutor.util.Items;
+import com.winthier.perm.Perm;
 import com.winthier.playercache.PlayerCache;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -244,7 +247,7 @@ public final class Session {
         List<Component> pages = new ArrayList<>();
         pages.add(TextComponent.ofChildren(new Component[] {
                     (Component.text()
-                     .append(quest.getDisplayName())
+                     .append(quest.name.displayName)
                      .color(NamedTextColor.DARK_AQUA)
                      .decorate(TextDecoration.BOLD)
                      .build()),
@@ -310,13 +313,14 @@ public final class Session {
         if (!currentQuests.isEmpty()) return;
         Player player = Objects.requireNonNull(getPlayer());
         for (QuestName questName : QuestName.values()) {
-            if (questName.autoStartPermission == null) continue;
             if (currentQuests.containsKey(questName)) continue;
             if (completedQuests.containsKey(questName)) continue;
-            if (!player.isPermissionSet(questName.autoStartPermission)) continue;
-            if (!player.hasPermission(questName.autoStartPermission)) continue;
-            startQuest(questName);
-            return;
+            if (questName.getAutoStartPermission() != null) {
+                if (Perm.has(uuid, questName.getAutoStartPermission().permission)) {
+                    startQuest(questName);
+                    return;
+                }
+            }
         }
     }
 
@@ -463,10 +467,14 @@ public final class Session {
     }
 
     private boolean canSee(QuestName questName) {
-        if (questName.autoStartPermission != null && !getPlayer().hasPermission(questName.autoStartPermission)) {
-            return false;
+        for (QuestName dep : questName.seeDependencies) {
+            if (!completedQuests.containsKey(dep)) return false;
         }
-        for (QuestName dep : questName.dependencies) {
+        return true;
+    }
+
+    private boolean canStart(QuestName questName) {
+        for (QuestName dep : questName.startDependencies) {
             if (!completedQuests.containsKey(dep)) return false;
         }
         return true;
@@ -477,16 +485,8 @@ public final class Session {
         gui.withOverlay(3 * 9, TextColor.color(0x400000), Component.text("Quests", NamedTextColor.WHITE));
         // Current Quest
         if (!currentQuests.isEmpty()) {
-            PlayerQuest playerQuest = currentQuests.values().iterator().next();
-            ItemStack currentQuestIcon = new ItemStack(Material.WRITABLE_BOOK);
-            currentQuestIcon.editMeta(meta -> {
-                    meta.displayName(playerQuest.getQuest().getDisplayName());
-                    meta.lore(List.of(new Component[] {
-                                Component.text("Current " + playerQuest.getQuest().getName().type.upper, NamedTextColor.YELLOW),
-                            }));
-                    meta.addItemFlags(ItemFlag.values());
-                });
-            gui.setItem(0 + 4, currentQuestIcon, click -> {
+            QuestName questName = currentQuests.keySet().iterator().next();
+            gui.setItem(0 + 4, makeQuestItem(questName), click -> {
                     if (!click.isLeftClick()) return;
                     Noise.CLICK.play(player);
                     openQuestBook(player);
@@ -495,46 +495,23 @@ public final class Session {
         // Completed Quest List
         int index = 0;
         for (QuestName questName : QuestName.values()) {
-            if (currentQuests.containsKey(questName)) {
-                continue;
-            } else if (completedQuests.containsKey(questName)) {
-                Quest quest = plugin.getQuests().get(questName);
-                ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
-                item.editMeta(meta -> {
-                        meta.displayName(quest.getDisplayName());
-                        meta.lore(List.of(new Component[] {
-                                    Component.text("Completed", NamedTextColor.GRAY),
-                                }));
-                        meta.addItemFlags(ItemFlag.values());
-                    });
-                gui.setItem(9 + index++, item, click -> {
-                        if (!click.isLeftClick()) return;
-                        Noise.CLICK.play(player);
-                        openCompletedQuestBook(player, quest, completedQuests.get(questName));
-                    });
-            } else if (canSee(questName)) {
-                Quest quest = plugin.getQuests().get(questName);
-                ItemStack item = Mytems.STAR.createIcon();
-                item.editMeta(meta -> {
-                        meta.displayName(quest.getDisplayName());
-                        meta.lore(List.of(new Component[] {
-                                    Component.text("Start this " + questName.type.lower + "?", NamedTextColor.GRAY),
-                                }));
-                    });
-                gui.setItem(9 + index++, item, click -> {
-                        if (!click.isLeftClick()) return;
-                        Noise.CLICK.play(player);
-                        if (!currentQuests.isEmpty()) {
-                            QuestName active = currentQuests.keySet().iterator().next();
-                            player.sendMessage(Component.text("You already have an active " + active.type.lower + "!", NamedTextColor.RED));
-                            return;
-                        }
-                        if (!currentQuests.containsKey(questName)) {
-                            startQuest(quest);
-                        }
-                        player.closeInventory();
-                    });
-            }
+            if (!completedQuests.containsKey(questName) && !canSee(questName)) continue;
+            gui.setItem(9 + index++, makeQuestItem(questName), click -> {
+                    if (!click.isLeftClick()) return;
+                    if (!canSee(questName) || !canStart(questName)) {
+                        Noise.FAIL.play(player);
+                        return;
+                    }
+                    if (!currentQuests.isEmpty()) {
+                        Noise.FAIL.play(player);
+                        QuestName active = currentQuests.keySet().iterator().next();
+                        player.sendMessage(Component.text("You already have an active " + active.type.lower + "!", NamedTextColor.RED));
+                        return;
+                    }
+                    Noise.CLICK.play(player);
+                    startQuest(questName);
+                    player.closeInventory();
+                });
         }
         //
         gui.setItem(Gui.OUTSIDE, null, click -> {
@@ -542,6 +519,45 @@ public final class Session {
                 overviewMenu(player);
             });
         gui.open(player);
+    }
+
+    protected ItemStack makeQuestItem(QuestName questName) {
+        Quest quest = plugin.getQuests().get(questName);
+        final ItemStack item;
+        final List<Component> text = new ArrayList<>();
+        text.add(quest.name.displayName);
+        if (currentQuests.containsKey(questName)) {
+            item = new ItemStack(Material.WRITABLE_BOOK);
+            text.add(Component.text("Current Quest", NamedTextColor.GOLD));
+        } else if (completedQuests.containsKey(questName)) {
+            item = new ItemStack(Material.WRITTEN_BOOK);
+            text.add(Component.text("Completed", NamedTextColor.GOLD));
+        } else if (canStart(questName)) {
+            item = Mytems.STAR.createIcon();
+            text.add(Component.text("Start this " + questName.type.lower + "?", NamedTextColor.GOLD));
+        } else {
+            item = new ItemStack(Material.CHEST);
+            text.add(Component.text("Locked", NamedTextColor.DARK_RED));
+        }
+        if (!questName.description.isEmpty()) {
+            text.add(Component.empty());
+            text.addAll(questName.description);
+        }
+        if (!questName.startDependencies.isEmpty()) {
+            text.add(Component.empty());
+            text.add(Component.text(questName.type.upper + " Requirements", NamedTextColor.LIGHT_PURPLE));
+            for (QuestName dependency : questName.startDependencies) {
+                if (completedQuests.containsKey(dependency)) {
+                    text.add(Component.text(Unicode.CHECKED_CHECKBOX.character + " ", NamedTextColor.GREEN)
+                             .append(dependency.displayName));
+                } else {
+                    text.add(Component.text(Unicode.CHECKBOX.character + " ", NamedTextColor.BLUE)
+                             .append(dependency.displayName));
+                }
+            }
+        }
+        Items.text(item, text);
+        return item;
     }
 
     public void openPetSettingsMenu(Player player) {

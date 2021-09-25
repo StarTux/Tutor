@@ -86,7 +86,7 @@ public interface Goal {
         List<Component> lines = new ArrayList<>();
         final int index = playerQuest.getQuest().goalIndex(getId());
         final int size = playerQuest.getQuest().getGoals().size();
-        lines.add(Component.text().append(playerQuest.getQuest().getDisplayName())
+        lines.add(Component.text().append(playerQuest.getQuest().name.displayName)
                   .color(NamedTextColor.DARK_AQUA)
                   .decorate(TextDecoration.BOLD)
                   .build());
