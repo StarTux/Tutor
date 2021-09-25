@@ -86,7 +86,7 @@ public final class ClaimTrustGoal extends AbstractGoal<ClaimTrustProgress> {
                         Component.text(" only gives access to buttons, levers, doors,"
                                        + " and a few other noninvasive actions:\n\n"),
                         Component.text("/claim interact-trust <player>", NamedTextColor.BLUE),
-                        Component.text("\nGive someone Interact Trust", NamedTextColor),
+                        Component.text("\nGive someone Interact Trust", NamedTextColor.GRAY),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("The next level up is "),

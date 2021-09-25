@@ -57,10 +57,6 @@ public final class TutorAdminCommand implements TabExecutor {
             .description("Player quest info")
             .completers(CommandArgCompleter.NULL)
             .senderCaller(this::info);
-        rootNode.addChild("createpet").arguments("<player> <type>")
-            .description("Spawn the player's pet")
-            .senderCaller(this::createPet);
-        plugin.getCommand("tutoradmin").setExecutor(this);
     }
 
     @Override
@@ -281,16 +277,5 @@ public final class TutorAdminCommand implements TabExecutor {
             + " " + location.getBlockX()
             + " " + location.getBlockY()
             + " " + location.getBlockZ();
-    }
-
-    private boolean createPet(CommandSender sender, String[] args) {
-        if (args.length != 2) return false;
-        Player player = requirePlayer(args[0]);
-        PetType petType = PetType.valueOf(args[1].toUpperCase());
-        Pet pet = plugin.pets.createPet(player, petType);
-        pet.setExclusive(true);
-        pet.setAutoRespawn(true);
-        sender.sendMessage(Component.text("Pet created!", NamedTextColor.YELLOW));
-        return true;
     }
 }
