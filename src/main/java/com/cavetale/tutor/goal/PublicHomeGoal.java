@@ -5,7 +5,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class PublicHomeGoal extends AbstractGoal<PublicHomeProgress> {
@@ -35,7 +35,7 @@ public final class PublicHomeGoal extends AbstractGoal<PublicHomeProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("Public homes are made by players."
                                        + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),

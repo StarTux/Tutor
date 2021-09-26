@@ -6,7 +6,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
@@ -37,7 +37,7 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("A party is a named group chat where"
                                        + " everyone in the same party can hear you."
                                        + "\n\nCommands:"),
@@ -46,7 +46,7 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
                         Component.text("/party <name>", NamedTextColor.BLUE),
                         Component.text("\nJoin or create a party", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("Once you have joined, talking works just like in"
                                        + " global or local."
                                        + " You can even focus your party.\n\n"),
@@ -55,7 +55,7 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
                         Component.text("/p <message>", NamedTextColor.BLUE),
                         Component.text("\nSend one message to your party", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
                         Component.text("Tell your friends to join your party"
                                        + " so you guys can group up easily."),
                         Component.text("\n\nAll your group needs is a party name,"

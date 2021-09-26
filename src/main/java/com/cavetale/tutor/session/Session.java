@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -245,7 +245,7 @@ public final class Session {
 
     public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
         List<Component> pages = new ArrayList<>();
-        pages.add(TextComponent.ofChildren(new Component[] {
+        pages.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                     (Component.text()
                      .append(quest.name.displayName)
                      .color(NamedTextColor.DARK_AQUA)
@@ -264,11 +264,11 @@ public final class Session {
                     (Component.text().content("[Repeat]")
                      .color(NamedTextColor.BLUE)
                      .clickEvent(ClickEvent.runCommand("/tutor redo " + quest.getName().key))
-                     .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
+                     .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                      Component.text("Repeat this " + quest.getName().type.lower, NamedTextColor.BLUE),
                                      Component.text("\nThere will not be", NamedTextColor.GRAY),
                                      Component.text("\nany extra rewards.", NamedTextColor.GRAY),
-                             })))
+                                 })))
                      .build()),
                 }));
         for (Goal goal : quest.getGoals()) {

@@ -9,7 +9,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -63,7 +63,7 @@ public final class MiningGoal implements Goal, Listener {
         this.constraints = List.of(new MiningWorldConstraint());
         this.additionalBookPages = List.of(new Component[] {
                 // Mining
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("The mining world is filled with special caves,"
                                        + " where the walls are are covered with veins of valuable ores."
                                        + " Maybe we will across one of them."
@@ -71,14 +71,14 @@ public final class MiningGoal implements Goal, Listener {
                                        + " because it resets every week. Let's get to it!"),
                     }),
                 // Dungeons
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("Not only are there custom caves with bonus ores in the mining world,"
                                        + " it also offers custom dungeons,"
                                        + " built in the past by players just like you!"
                                        + "\nDungeon chests contain special loot."
                                        + " Make sure to pick it up!"),
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
                         Component.text("Locating a dungeon:\n"),
                         Component.text("right-click", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
                         Component.text(" a "),

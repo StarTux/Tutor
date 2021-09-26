@@ -5,7 +5,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class MenuGoal implements Goal {
@@ -28,7 +28,7 @@ public final class MenuGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("There are many more plugins and commands on Cavetale."
                                        + " Explore more of them at your pace."
                                        + " We prepared a menu to help you with that."

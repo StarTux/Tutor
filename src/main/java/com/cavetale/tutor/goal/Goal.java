@@ -8,6 +8,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -110,7 +111,7 @@ public interface Goal {
                     // With book page changer
                     int toPage = condition.getBookPageIndex() + 2;
                     conditionComponent = conditionComponent
-                        .hoverEvent(HoverEvent.showText(Component.join(Component.newline(),
+                        .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()),
                                                                        condition.toComponent(playerQuest, Background.DARK),
                                                                        Component.text("Page " + toPage, NamedTextColor.GRAY))))
                         .clickEvent(ClickEvent.changePage(toPage));
@@ -150,7 +151,7 @@ public interface Goal {
                       .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key))
                       .build());
         }
-        pages.add(Component.join(Component.newline(), lines));
+        pages.add(Component.join(JoinConfiguration.separator(Component.newline()), lines));
         pages.addAll(getAdditionalBookPages());
         return pages;
     }

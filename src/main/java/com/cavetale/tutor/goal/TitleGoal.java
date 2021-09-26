@@ -5,7 +5,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class TitleGoal extends AbstractGoal<TitleProgress> {
@@ -35,7 +35,7 @@ public final class TitleGoal extends AbstractGoal<TitleProgress> {
         condSelectTitle.setBookPageIndex(1);
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("The tag before your name in chat is not your rank,"
                                        + " it's a title."
                                        + "\n\nTitles can be collected and are yours to keep and display."
@@ -43,7 +43,7 @@ public final class TitleGoal extends AbstractGoal<TitleProgress> {
                         Component.text("/title", NamedTextColor.BLUE),
                         Component.text("\nList your titles", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("Some titles express your rank, but most are decorative."
                                        + " You earn them by ranking up,"
                                        + " participating in weekly events,"

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -182,33 +182,35 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         plugin.sessions.findOrLoad(playerCache, session -> {
                 List<Component> lines = new ArrayList<>();
                 lines.add(Component.text("Quest info for " + playerCache.name, NamedTextColor.YELLOW));
-                lines.add(TextComponent.ofChildren(new Component[] {
+                lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                             Component.text("Completed ", NamedTextColor.GRAY),
                             Component.text("" + session.getCompletedQuests().size() + " ", NamedTextColor.YELLOW),
-                            Component.join(Component.text(", ", NamedTextColor.GRAY),
+                            Component.join(JoinConfiguration.separator(Component.text(", ", NamedTextColor.GRAY)),
                                            session.getCompletedQuests().entrySet().stream()
-                                           .map(entry ->
-                                                Component.text().content(entry.getKey().key)
-                                                .color(NamedTextColor.GOLD)
-                                                .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
-                                                                plugin.getQuests().get(entry.getKey()).name.displayName,
-                                                                Component.text("\nCompleted "
-                                                                               + dateFormat.format(entry.getValue().getTime()),
-                                                                               NamedTextColor.GRAY),
-                                                            })))
-                                                .build())
+                                           .map(entry -> {
+                                                   Component tooltip = Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                                                           plugin.getQuests().get(entry.getKey()).name.displayName,
+                                                           Component.text("\nCompleted "
+                                                                          + dateFormat.format(entry.getValue().getTime()),
+                                                                          NamedTextColor.GRAY),
+                                                       });
+                                                   return Component.text().content(entry.getKey().key)
+                                                       .color(NamedTextColor.GOLD)
+                                                       .hoverEvent(HoverEvent.showText(tooltip))
+                                                       .build();
+                                               })
                                            .collect(Collectors.toList())),
                         }));
-                lines.add(TextComponent.ofChildren(new Component[] {
+                lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                             Component.text("Current Quests ", NamedTextColor.GRAY),
                             Component.text("" + session.getCurrentQuests().size(), NamedTextColor.YELLOW),
                         }));
                 for (PlayerQuest playerQuest : session.getCurrentQuests().values()) {
-                    lines.add(TextComponent.ofChildren(new Component[] {
+                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                 Component.text(Unicode.BULLET_POINT.character + " ", NamedTextColor.GRAY),
                                 (Component.text().content(playerQuest.getQuest().getName().key)
                                  .color(NamedTextColor.YELLOW)
-                                 .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
+                                 .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                  playerQuest.getQuest().name.displayName,
                                                  Component.text("\n" + playerQuest.getQuest().getName().type.upper, NamedTextColor.GRAY),
                                              })))
@@ -216,7 +218,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                 Component.space(),
                                 (Component.text().content(playerQuest.getCurrentGoal().getId())
                                  .color(NamedTextColor.GOLD)
-                                 .hoverEvent(HoverEvent.showText(TextComponent.ofChildren(new Component[] {
+                                 .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                  playerQuest.getCurrentGoal().getDisplayName(),
                                                  Component.text("\n" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
                                                                 + "/" + playerQuest.getQuest().getGoals().size(),
@@ -228,12 +230,12 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                             }));
                 }
                 if (session.getPet() == null) {
-                    lines.add(TextComponent.ofChildren(new Component[] {
+                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                 Component.text("Pet ", NamedTextColor.GRAY),
                                 Component.text("None", NamedTextColor.DARK_GRAY),
                             }));
                 } else {
-                    lines.add(TextComponent.ofChildren(new Component[] {
+                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                 Component.text("Pet", NamedTextColor.GRAY),
                                 Component.space(),
                                 (Component.text()
@@ -250,9 +252,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                 Component.text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), NamedTextColor.YELLOW),
                             }));
                 }
-                sender.sendMessage(TextComponent.ofChildren(new Component[] {
+                sender.sendMessage(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                             Component.newline(),
-                            Component.join(Component.newline(), lines),
+                            Component.join(JoinConfiguration.separator(Component.newline()), lines),
                             Component.newline(),
                         }));
             });

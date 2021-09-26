@@ -10,7 +10,7 @@ import com.cavetale.tutor.util.Gui;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -48,13 +48,13 @@ public final class ChoosePetGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("You have arrived at a strange place."
                                        + " Why not choose a pet to keep you company!"
                                        + "\n\nWe hope you enjoy your stay. "),
                         Mytems.SMILE.component,
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("Naming your Pet:"),
                         Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
                         Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Back] in the book"),

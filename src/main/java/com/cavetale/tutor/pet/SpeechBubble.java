@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -58,7 +59,7 @@ public final class SpeechBubble {
                             .append(pet.getType().mytems.component)
                             .append(pet.getCustomName())
                             .append(Component.text(": ")))
-                    .append(Component.join(Component.space(), lines))
+                    .append(Component.join(JoinConfiguration.separator(Component.space()), lines))
                     .build();
                 target.sendMessage(wholeMessage);
             }

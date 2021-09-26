@@ -8,7 +8,7 @@ import com.winthier.connect.Connect;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -58,7 +58,7 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
         this.constraints = List.of();
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("Cavetale is the main server, but we offer several others"
                                        + " with various gamemodes on them."
                                        + " There is also the hub, creative, and many mini games."),
@@ -66,7 +66,7 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
                         Component.text("/server", NamedTextColor.BLUE),
                         Component.text("\nList all servers", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("Server Commands:\n"),
                         Component.text("/hub", NamedTextColor.BLUE),
                         Component.text("\nThe lobby between our servers\n\n", NamedTextColor.GRAY),

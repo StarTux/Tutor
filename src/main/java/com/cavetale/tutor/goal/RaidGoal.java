@@ -8,7 +8,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -53,7 +53,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("A raid "),
                         Component.text("(not to be confused with village raids)", NamedTextColor.GRAY),
                         Component.text(" is a world with waves of monsters and bosses to fight."
@@ -68,7 +68,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                          .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/raid-hub"))
                          .build()),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("You bring your own equipment to a raid."
                                        + " Don't forget to pack good gear and plenty of food."
                                        + " You can carry it over inside your stash:\n\n"),
@@ -77,20 +77,20 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text("\n\nYour gear will not suffer durability loss"
                                        + " on the raid server."),
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
                         Component.text("Raids are hosted on the raid server:\n\n"),
                         Component.text("/raid", NamedTextColor.BLUE),
                         Component.text("\nJoin the Raid server."
                                        + " It may have to start up first,"
                                        + " so let's be patient.", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 3
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
                         Component.text("Here you can choose a raid portal."
                                        + " Pick one and enter."
                                        + " After a brief warmup, the raid begins."
                                        + "\n\nThe raid will tell you what to do next..."),
                     }),
-                TextComponent.ofChildren(new Component[] {// 4
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 4
                         Component.text("When there's a "),
                         Component.text("goal", NamedTextColor.BLUE),
                         Component.text(", all players must gather around the spinning"
@@ -103,7 +103,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text(" waves challenge you to"
                                        + " survive long enough."),
                     }),
-                TextComponent.ofChildren(new Component[] {// 5
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 5
                         Component.text("If you're lost, use your "),
                         VanillaItems.COMPASS.component,
                         Component.text("compass."
@@ -114,7 +114,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                                        + " Carrying it in your off-hand is"
                                        + " a good idea."),
                     }),
-                TextComponent.ofChildren(new Component[] {// 6
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 6
                         Component.text("Raids are tough and there's no shame in"
                                        + " giving up to fight another day:\n\n"),
                         Component.text("/spawn", NamedTextColor.BLUE),
@@ -122,7 +122,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text("/cavetale", NamedTextColor.BLUE),
                         Component.text("\nReturn to the main server", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 7
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 7
                         Component.text("You can get a buff from starting"
                                        + " the raid together with friends."),
                         Component.text("\n\nAt the end of the raid,"

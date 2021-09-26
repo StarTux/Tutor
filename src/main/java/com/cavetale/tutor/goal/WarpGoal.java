@@ -6,7 +6,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class WarpGoal extends AbstractGoal<WarpProgress> {
@@ -45,21 +45,21 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("Get back to the place you started any time."
                                        + " There are portals, merchants, and secrets to be discovered."
                                        + "\n\nCommand:\n"),
                         Component.text("/spawn", NamedTextColor.BLUE),
                         Component.text("\nTeleport to spawn", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("There are many villagers at spawn."
                                        + " One of them can repair your gear"
                                        + " in exchange for diamonds."
                                        + "\n\nHe's an expert and can repair anything."
                                        + " Let's fine out where he is for future reference."),
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
                         Component.text("Warps can take you to key locations on the server."
                                        + " They are public places set up by our staff."
                                        + "\n\nCommand:\n"),

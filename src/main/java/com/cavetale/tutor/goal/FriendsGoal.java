@@ -10,7 +10,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
@@ -53,7 +53,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("You can grow your friendship with every other player"
                                        + " on Cavetale."
                                        + "\n\nCommand:\n"),
@@ -61,7 +61,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text("\nView your friends list, along with the daily friendship gift",
                                        NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("To gain friendship with somebody, drop the "),
                         Component.text("friendship gift", NamedTextColor.BLUE),
                         Component.text(" so that they pick it up."),
@@ -77,7 +77,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         VanillaItems.CAKE.component,
                         VanillaItems.GOLDEN_APPLE.component,
                     }),
-                TextComponent.ofChildren(new Component[] {// 2
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
                         Component.text("There are many ways to increase friendship with each other:\n"),
                         Component.text("\n" + Unicode.BULLET_POINT.character),
                         Component.text(" Daily friendship gift"),
@@ -88,7 +88,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text("\n" + Unicode.BULLET_POINT.character),
                         Component.text(" Complete raids"),
                     }),
-                TextComponent.ofChildren(new Component[] {// 3
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
                         Component.text("At "),
                         Component.text("3" + Unicode.HEART.character, NamedTextColor.RED),
                         Component.text(", you can send a "),
@@ -100,7 +100,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                                        + " They can accept by clicking"
                                        + " the message in chat.", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 4
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 4
                         Component.text("Making "),
                         Component.text("Friends", NamedTextColor.BLUE),
                         Component.text(" has its perks:\n"),
@@ -110,7 +110,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text(" Friendship never drops below "),
                         Component.text("2" + Unicode.HEART.character, NamedTextColor.RED),
                     }),
-                TextComponent.ofChildren(new Component[] {// 5
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 5
                         Component.text("At "),
                         Component.text("5" + Unicode.HEART.character, NamedTextColor.RED),
                         Component.text(", you can ask to get "),
@@ -122,7 +122,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                                        + " will sell them to you."
                                        + " Can you find them?"),
                     }),
-                TextComponent.ofChildren(new Component[] {// 6
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 6
                         Component.text("Marriage", NamedTextColor.BLUE),
                         Component.text(" comes with perks:\n"),
                         Component.text("\n" + Unicode.BULLET_POINT.character),
@@ -132,7 +132,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                         Component.text("/love", NamedTextColor.BLUE),
                         Component.text(" command to share your love"),
                     }),
-                TextComponent.ofChildren(new Component[] {// 7
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 7
                         Component.text("If you share your birthday,"
                                        + " it will be visible on everyone's"
                                        + " profile page as well as the website."

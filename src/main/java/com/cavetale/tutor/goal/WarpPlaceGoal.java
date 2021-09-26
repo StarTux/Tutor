@@ -6,7 +6,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
@@ -38,7 +38,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("Like all warps, find this place in the warp list.\n\n"),
                         Component.text("/warp", NamedTextColor.BLUE),
                         Component.text("\nView the warp list\n\n", NamedTextColor.GRAY),
@@ -67,7 +67,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal bazaar() {
-        return new WarpPlaceGoal("Bazaar", "Bazaar", TextComponent.ofChildren(new Component[] {
+        return new WarpPlaceGoal("Bazaar", "Bazaar", Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                     Component.text("This desert market is the result of a build event."
                                    + "\n\nIt is home to the merchant who sells the Dune item set."
                                    + " Let's find him!"),
@@ -75,7 +75,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal dwarven() {
-        return new WarpPlaceGoal("DwarvenVillage", "Dwarven Village", TextComponent.ofChildren(new Component[] {
+        return new WarpPlaceGoal("DwarvenVillage", "Dwarven Village", Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                     Component.text("This underground city was made during a weeklong build event."
                                    + "\n\nSomewhere around here, there's a salesman"
                                    + " who has the Dwarven Armor set in stock."
@@ -84,7 +84,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal cloud() {
-        return new WarpPlaceGoal("CloudVillage", "Cloud Village", TextComponent.ofChildren(new Component[] {
+        return new WarpPlaceGoal("CloudVillage", "Cloud Village", Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                     Component.text("This floating miracle was made by players for a build event."
                                    + "\n\nIt's home to a merchant who sells"
                                    + " two magical items."
@@ -94,7 +94,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal witch() {
-        return new WarpPlaceGoal("WitchLair", "Witch Lair", TextComponent.ofChildren(new Component[] {
+        return new WarpPlaceGoal("WitchLair", "Witch Lair", Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                     Component.text("This mysterious marsh stems from a build event."
                                    + "\n\nOne of local witches offers the Swampy Set."
                                    + " Where could she be?"),

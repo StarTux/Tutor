@@ -7,7 +7,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
@@ -71,7 +71,7 @@ public final class SetHomeGoal implements Goal {
                                         Component.text("Remember these commands:"),
                                         Component.text("/sethome", NamedTextColor.YELLOW),
                                         Component.text("/home", NamedTextColor.YELLOW));
-                    pet.addSpeechBubble(id, 0L, 100L, TextComponent.ofChildren(new Component[] {
+                    pet.addSpeechBubble(id, 0L, 100L, Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                 Component.text("This will come up a lot "),
                                 Mytems.WINK.component,
                             }));

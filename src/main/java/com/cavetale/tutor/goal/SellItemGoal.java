@@ -6,7 +6,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 
@@ -38,7 +38,7 @@ public final class SellItemGoal implements Goal {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {// 0
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."
                                        + " The sell menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
@@ -46,7 +46,7 @@ public final class SellItemGoal implements Goal {
                         Component.text("/sell", NamedTextColor.BLUE),
                         Component.text("\nOpen the sell menu", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {// 1
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
                         Component.text("Keep an eye on your bank balance."
                                        + "\n\nCommand:\n"),
                         Component.text("/money", NamedTextColor.BLUE),

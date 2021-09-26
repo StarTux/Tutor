@@ -6,7 +6,7 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 
@@ -37,7 +37,7 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("You can exchange mail with other players."
                                        + " If they are not online, they will get see it"
                                        + " when they return."
@@ -47,7 +47,7 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                         Component.text("/mailto <player> <message>", NamedTextColor.BLUE),
                         Component.text("\nSend mail\n", NamedTextColor.GRAY),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("When you have unread mail, it will say so in your sidebar."
                                        + "\n\nTyping "),
                         Component.text("/mail", NamedTextColor.BLUE),
@@ -55,7 +55,7 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                                        + " Click one of them to display the entire message,"
                                        + " which will also mark the mail as read."),
                     }),
-                TextComponent.ofChildren(new Component[] {
+                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                         Component.text("Now let's send a mail to someone:\n\n"),
                         Component.text("/mailto <player> <message>", NamedTextColor.BLUE),
                         Component.text("\n\nIf you can't think of anyone, just mail "),
