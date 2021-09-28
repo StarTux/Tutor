@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 /**
  * Condition classes have an inherent look but no builtin
@@ -35,7 +36,7 @@ public final class CheckboxCondition implements Condition {
         return Component.text()
             .append(checked
                     ? Component.text(Unicode.CHECKED_CHECKBOX.character, background.green)
-                    : Component.text(Unicode.CHECKBOX.character, background.blue))
+                    : Component.text(Unicode.CHECKBOX.character, NamedTextColor.BLUE))
             .append(Component.space())
             .append(description)
             .build();

@@ -23,7 +23,6 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
     protected final CheckboxCondition condStash;
     protected final CheckboxCondition condJoin;
     protected final CheckboxCondition condStart;
-    protected final CheckboxCondition condVictory;
 
     public RaidGoal() {
         super(RaidProgress.class, RaidProgress::new);
@@ -38,22 +37,17 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
         condStart = new CheckboxCondition(Component.text("Start any Raid"),
                                           playerQuest -> getProgress(playerQuest).start,
                                           playerQuest -> getProgress(playerQuest).start = true);
-        condVictory = new CheckboxCondition(Component.text("Defeat a Raid"),
-                                            playerQuest -> getProgress(playerQuest).victory,
-                                            playerQuest -> getProgress(playerQuest).victory = true);
         condStash.setBookPageIndex(1);
         condJoin.setBookPageIndex(2);
         condStart.setBookPageIndex(3);
-        condVictory.setBookPageIndex(4);
         this.conditions = List.of(new Condition[] {
                 condStash,
                 condJoin,
                 condStart,
-                condVictory,
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("A raid "),
                         Component.text("(not to be confused with village raids)", NamedTextColor.GRAY),
                         Component.text(" is a world with waves of monsters and bosses to fight."
@@ -68,7 +62,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                          .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/raid-hub"))
                          .build()),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("You bring your own equipment to a raid."
                                        + " Don't forget to pack good gear and plenty of food."
                                        + " You can carry it over inside your stash:\n\n"),
@@ -77,20 +71,20 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text("\n\nYour gear will not suffer durability loss"
                                        + " on the raid server."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Raids are hosted on the raid server:\n\n"),
                         Component.text("/raid", NamedTextColor.BLUE),
                         Component.text("\nJoin the Raid server."
                                        + " It may have to start up first,"
                                        + " so let's be patient.", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("Here you can choose a raid portal."
                                        + " Pick one and enter."
                                        + " After a brief warmup, the raid begins."
                                        + "\n\nThe raid will tell you what to do next..."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 4
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 4
                         Component.text("When there's a "),
                         Component.text("goal", NamedTextColor.BLUE),
                         Component.text(", all players must gather around the spinning"
@@ -103,7 +97,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text(" waves challenge you to"
                                        + " survive long enough."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 5
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 5
                         Component.text("If you're lost, use your "),
                         VanillaItems.COMPASS.component,
                         Component.text("compass."
@@ -114,7 +108,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                                        + " Carrying it in your off-hand is"
                                        + " a good idea."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 6
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 6
                         Component.text("Raids are tough and there's no shame in"
                                        + " giving up to fight another day:\n\n"),
                         Component.text("/spawn", NamedTextColor.BLUE),
@@ -122,7 +116,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text("/cavetale", NamedTextColor.BLUE),
                         Component.text("\nReturn to the main server", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 7
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 7
                         Component.text("You can get a buff from starting"
                                        + " the raid together with friends."),
                         Component.text("\n\nAt the end of the raid,"
@@ -149,9 +143,6 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
         case RAID_START:
             condStart.progress(playerQuest);
             break;
-        case RAID_VICTORY:
-            condVictory.progress(playerQuest);
-            break;
         default: break;
         }
     }
@@ -161,10 +152,9 @@ final class RaidProgress extends GoalProgress {
     protected boolean join;
     protected boolean stash;
     protected boolean start;
-    protected boolean victory;
 
     @Override
     public boolean isComplete() {
-        return join && stash && start && victory;
+        return join && stash && start;
     }
 }

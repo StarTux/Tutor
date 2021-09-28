@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 @Getter @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public final class ClickableCondition implements Condition {
             .append(Component.space())
             .append(Component.text()
                     .append(description)
-                    .color(background.blue)
+                    .color(NamedTextColor.BLUE)
                     .decorate(TextDecoration.ITALIC))
             .hoverEvent(description)
             .clickEvent(ClickEvent.runCommand("/tutor click " + token))

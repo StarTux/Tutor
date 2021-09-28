@@ -15,11 +15,9 @@ public final class BuyGoal implements Goal {
     @Getter protected final List<Condition> conditions;
     @Getter protected final List<Constraint> constraints;
     @Getter protected final List<Component> additionalBookPages;
-    private static final int CLAIM_BLOCKS = 2000;
     protected final CheckboxCondition condMarket;
     protected final CheckboxCondition condShopSearch;
     protected final CheckboxCondition condShopPort;
-    protected final NumberCondition condBuyClaimBlocks;
 
     public BuyGoal() {
         this.id = "buy";
@@ -34,22 +32,17 @@ public final class BuyGoal implements Goal {
                                              playerQuest -> getProgress(playerQuest).shopPort,
                                              playerQuest -> getProgress(playerQuest).shopPort = true,
                                              playerQuest -> getProgress(playerQuest).shopSearch);
-        condBuyClaimBlocks = new NumberCondition(Component.text("Buy Claim Blocks"), CLAIM_BLOCKS,
-                                                 playerQuest -> getProgress(playerQuest).buyClaimBlocks,
-                                                 (playerQuest, amount) -> getProgress(playerQuest).buyClaimBlocks = amount);
         condMarket.setBookPageIndex(0);
         condShopSearch.setBookPageIndex(1);
         condShopPort.setBookPageIndex(1);
-        condBuyClaimBlocks.setBookPageIndex(2);
         this.conditions = List.of(new Condition[] {
                 condMarket,
                 condShopSearch,
                 condShopPort,
-                condBuyClaimBlocks,
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The market contains player created shops."
                                        + " Starting with the Member rank,"
                                        + " you can claim market a plot and set up shop chests there."
@@ -57,7 +50,7 @@ public final class BuyGoal implements Goal {
                         Component.text("/market", NamedTextColor.BLUE),
                         Component.text("\nWarp to the market world\n", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("You can search the market for specific items:\n\n"),
                         Component.text("/shop search <item>", NamedTextColor.BLUE),
                         Component.text("\nExample:\n", NamedTextColor.DARK_GRAY),
@@ -65,14 +58,6 @@ public final class BuyGoal implements Goal {
                         Component.text("\nSearch the shops for an item. Click the ", NamedTextColor.GRAY),
                         Component.text("[Port]", NamedTextColor.BLUE),
                         Component.text(" button in chat to port to the chest", NamedTextColor.GRAY),
-                    }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
-                        Component.text("To grow your claim, buy more claim blocks first."
-                                       + " It will grow automatically in all directions"
-                                       + " unless the claim settings are changed."
-                                       + "\n\nCommand:\n"),
-                        Component.text("/claim buy <amount>", NamedTextColor.BLUE),
-                        Component.text("\nEach block costs 10 Cents", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -103,11 +88,6 @@ public final class BuyGoal implements Goal {
         case SHOP_SEARCH_PORT:
             condShopPort.progress(playerQuest);
             break;
-        case BUY_CLAIM_BLOCKS: {
-            int amount = event.getDetail(Detail.COUNT, 0);
-            condBuyClaimBlocks.progress(playerQuest, amount);
-            break;
-        }
         default: break;
         }
     }
@@ -126,14 +106,12 @@ public final class BuyGoal implements Goal {
         protected boolean market;
         protected boolean shopSearch;
         protected boolean shopPort;
-        protected int buyClaimBlocks;
 
         @Override
         public boolean isComplete() {
             return market
                 && shopSearch
-                && shopPort
-                && buyClaimBlocks >= CLAIM_BLOCKS;
+                && shopPort;
         }
     }
 }

@@ -35,7 +35,7 @@ public final class PublicHomeGoal extends AbstractGoal<PublicHomeProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Public homes are made by players."
                                        + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),

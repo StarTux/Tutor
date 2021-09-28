@@ -33,7 +33,7 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Making a Chest Shop is simple."
                                        + " Just place a "),
                         VanillaItems.OAK_SIGN.component,
@@ -50,7 +50,7 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
                          .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/chest-shops"))
                          .build()),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Completing enough tutorials to rank up to "),
                         Component.text("Speleologist", NamedTextColor.BLUE),
                         Component.text(" will allow you to purchase a plot in the Market World."

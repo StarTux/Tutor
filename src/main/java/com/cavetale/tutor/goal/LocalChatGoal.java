@@ -58,14 +58,14 @@ public final class LocalChatGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Chat has several channels."
                                        + " There is global, local, party and private."
                                        + "\n\nCommands:\n"),
                         Component.text("/ch list", NamedTextColor.BLUE),
                         Component.text("\nList chat channels", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Chat has components:\n\n"),
                         (Component.text()
                          .append(Component.text(Unicode.ARROW_RIGHT.character + " ", NamedTextColor.BLUE))
@@ -99,7 +99,7 @@ public final class LocalChatGoal implements Goal {
                          .build()),
                         Component.text("\nThe name and message", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Local chat has a range of "),
                         Component.text("500 blocks", NamedTextColor.DARK_RED, TextDecoration.UNDERLINED),
                         Component.text(". You can focus a channel to speak in there."),
@@ -109,7 +109,7 @@ public final class LocalChatGoal implements Goal {
                         Component.text("/g", NamedTextColor.BLUE),
                         Component.text("\nFocus global chat\n", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("Chat has many settings."
                                        + " You can change the look and feel of each channel to your liking."
                                        + " Returning to the default settings is easy."),
@@ -117,7 +117,7 @@ public final class LocalChatGoal implements Goal {
                         Component.text("/ch set", NamedTextColor.BLUE),
                         Component.text("\nOpen chat settings\n", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 4
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 4
                         Component.text("Each channel command can send a message."
                                        + " It can be used without a message to focus."),
                         Component.text("\n\nCommands:\n"),

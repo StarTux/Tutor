@@ -48,14 +48,14 @@ public final class StorageGoal implements Goal {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("Mass Storage is an infinite store for simple items,"
                                        + " from cobblestone to diamonds."
                                        + "\n\nCommand:\n"),
                         Component.text("/ms", NamedTextColor.BLUE),
                         Component.text("\nOpen the Mass Storage menu\n", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("Finding items in MS is easy."
                                        + " You can click your way through the menu,"
                                        + " or enter the name of what you're looking for."
@@ -63,7 +63,7 @@ public final class StorageGoal implements Goal {
                         Component.text("/ms diamond", NamedTextColor.BLUE),
                         Component.text("\nSearch for diamonds\n", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("Your stash can hold any item (except shulker boxes),"
                                        + " just like your ender chest."
                                        + " It can transport items to the raid server."

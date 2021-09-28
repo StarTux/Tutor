@@ -200,7 +200,6 @@ public final class Session {
             SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
             completedQuests.put(questName, newRow);
             plugin.getDatabase().insertAsync(newRow, null);
-            questName.deliverQuestReward(player);
         }
         triggerAutomaticQuests();
         triggerQuestReminder();

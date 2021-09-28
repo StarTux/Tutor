@@ -55,7 +55,7 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Place two or more "),
                         VanillaItems.GOLD_BLOCK.component,
                         Component.text("gold blocks above each other,"
@@ -71,7 +71,7 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
                                                                        NamedTextColor.BLUE)))
                         .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/televator")),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Using the Televator is even simpler:\n\n"),
                         Component.text("Jump", NamedTextColor.BLUE),
                         Component.text("\nGo Up\n\n", NamedTextColor.GRAY),

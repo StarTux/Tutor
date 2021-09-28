@@ -71,7 +71,7 @@ public final class SetHomeGoal implements Goal {
                                         Component.text("Remember these commands:"),
                                         Component.text("/sethome", NamedTextColor.YELLOW),
                                         Component.text("/home", NamedTextColor.YELLOW));
-                    pet.addSpeechBubble(id, 0L, 100L, Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                    pet.addSpeechBubble(id, 0L, 100L, Component.join(JoinConfiguration.noSeparators(), new Component[] {
                                 Component.text("This will come up a lot "),
                                 Mytems.WINK.component,
                             }));

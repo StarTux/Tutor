@@ -55,7 +55,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("There are many ways to send private messages:"),
                         Component.text("\n/tell <player> <msg>", NamedTextColor.BLUE),
                         Component.text("\n/msg <player> <msg>", NamedTextColor.BLUE),
@@ -63,7 +63,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("\n\nLet's send a PM to console:\n", NamedTextColor.GRAY),
                         Component.text("/msg #console hi", NamedTextColor.BLUE),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("When somebody sends you a private message,"
                                        + " you can quickly reply via these commands:\n\n"),
                         Component.text("/reply <message>", NamedTextColor.BLUE),
@@ -71,7 +71,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("/r <message>", NamedTextColor.BLUE),
                         Component.text("\nReply to the last person who sent you a PM", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("You can also focus on a PM,"
                                        + " like a chat channel, but you need a target:\n\n"),
                         Component.text("/r", NamedTextColor.BLUE),
@@ -79,7 +79,7 @@ public final class PrivateChatGoal extends AbstractGoal<PrivateChatProgress> {
                         Component.text("/msg <player>", NamedTextColor.BLUE),
                         Component.text("\nFocus on a specific person", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("Once you're done,"
                                        + " return focus to the regular chat channels:\n\n"),
                         Component.text("/g", NamedTextColor.BLUE),

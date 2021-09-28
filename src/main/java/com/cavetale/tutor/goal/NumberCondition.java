@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 /**
  * Condition with a score and a goal.
@@ -38,7 +39,7 @@ public final class NumberCondition implements Condition {
         final boolean completed = has >= goal;
         return Component.text()
             .append(Component.text("(" + Unicode.superscript(has) + "/" + Unicode.subscript(goal) + ")",
-                                   (completed ? background.green : background.blue)))
+                                   (completed ? background.green : NamedTextColor.BLUE)))
             .append(Component.space())
             .append(description)
             .build();

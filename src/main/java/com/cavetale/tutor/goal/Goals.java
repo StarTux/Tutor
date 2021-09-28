@@ -12,51 +12,50 @@ public final class Goals {
 
     public static List<Goal> create(QuestName name) {
         switch (name) {
-        case BEGINNER: return List.of(new Goal[] {
-                new ChoosePetGoal(),
-                new WildGoal(),
-                new SetHomeGoal(),
-            });
-        case WARP: return List.of(new Goal[] {
-                new PublicHomeGoal(),
-                new WarpGoal(),
-                WarpPlaceGoal.bazaar(),
-                WarpPlaceGoal.dwarven(),
-                WarpPlaceGoal.cloud(),
-                WarpPlaceGoal.witch(),
-                new ServerSwitchGoal(),
-            });
-        case CHAT: return List.of(new Goal[] {
-                new LocalChatGoal(),
-                new PrivateChatGoal(),
-                new PartyChatGoal(),
-            });
-        case MONEY: return List.of(new Goal[] {
-                new MineGoal(),
-                new MiningGoal(),
-                new StorageGoal(),
-                new SellItemGoal(),
-                new BuyGoal(),
-            });
-        case MEMBER: return List.of(new Goal[] {
-                new TicketGoal(),
-                new MenuGoal(),
-            });
-        case BUILD: return List.of(new Goal[] {
-                new TelevatorGoal(),
-                new LinkPortalGoal(),
-                new ShopChestGoal(),
-            });
-        case FRIEND: return List.of(new Goal[] {
-                new ClaimTrustGoal(),
-                new SetNamedHomeGoal(),
-                new InviteHomeGoal(),
-                new MailGoal(),
-                new RaidGoal(),
-                new PocketMobGoal(),
-                new TitleGoal(),
-                new FriendsGoal(),
-            });
+        case BEGINNER:
+            return List.of(new ChoosePetGoal(),
+                           new WildGoal(),
+                           new SetHomeGoal());
+        case WARP:
+            return List.of(new PublicHomeGoal(),
+                           new WarpGoal(),
+                           WarpPlaceGoal.bazaar(),
+                           WarpPlaceGoal.dwarven(),
+                           WarpPlaceGoal.cloud(),
+                           WarpPlaceGoal.witch(),
+                           new ServerSwitchGoal());
+        case CHAT:
+            return List.of(new LocalChatGoal(),
+                           new PrivateChatGoal(),
+                           new PartyChatGoal());
+        case MONEY:
+            return List.of(new MineGoal(),
+                           new MiningGoal(),
+                           new StorageGoal(),
+                           new SellItemGoal(),
+                           new BuyGoal());
+        case MEMBER:
+            return List.of(new TicketGoal(),
+                           new MenuGoal(),
+                           new MemberAcceptGoal());
+        case MEMBER_INTRO:
+            return List.of(new MailGoal(),
+                           new TitleGoal(),
+                           new FriendsGoal(),
+                           new RaidGoal());
+        case HOME:
+            return List.of(new ClaimGrowGoal(),
+                           new ClaimTrustGoal(),
+                           new SetNamedHomeGoal(),
+                           new InviteHomeGoal());
+        case MOBILITY:
+            return List.of(new TelevatorGoal(),
+                           new LinkPortalGoal(),
+                           new PocketMobGoal());
+        case SPELEOLOGIST:
+            return List.of(new SpeleologistGoal(),
+                           new SpeleologistAcceptGoal());
+            // new ShopChestGoal(),
         default:
             throw new IllegalStateException("Quest not defined: " + name);
         }

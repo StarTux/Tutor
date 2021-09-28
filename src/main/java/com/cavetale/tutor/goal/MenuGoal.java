@@ -28,7 +28,7 @@ public final class MenuGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("There are many more plugins and commands on Cavetale."
                                        + " Explore more of them at your pace."
                                        + " We prepared a menu to help you with that."

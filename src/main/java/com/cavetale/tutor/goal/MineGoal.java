@@ -31,13 +31,13 @@ public final class MineGoal implements Goal {
         this.conditions = List.of(condMine);
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The mining world is there for you to get your resources from."
                                        + " Not only do you keep the home worlds pristine by using this to harvest:"
                                        + " There are also way more ores to be found here!"
                                        + " This world is reset once a week."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Mining World Commands:"),
                         Component.text("\n/mine", NamedTextColor.BLUE),
                         Component.text("\nView biome list. Click for a warp", NamedTextColor.GRAY),

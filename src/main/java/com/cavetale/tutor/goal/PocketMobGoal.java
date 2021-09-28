@@ -47,7 +47,7 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Mob Catchers"),
                         Mytems.MOB_CATCHER.component,
                         Component.text(" can be bought at Spawn."
@@ -61,7 +61,7 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                                                                        NamedTextColor.BLUE)))
                         .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/pocket-mob")),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("In the store,"
                                        + " catchers can be upgraded to have a higher"
                                        + " success rate with certain mob types:\n\n"),
@@ -76,7 +76,7 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                         Mytems.PET_CATCHER.component,
                         Component.text(" Your Pets\n"),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("To catch a mob, throw the the "),
                         Mytems.MOB_CATCHER.component,
                         Component.text("catcher at it."
@@ -90,13 +90,13 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                                        + "\n\nIn some areas such as Spawn,"
                                        + " catchers will just drop."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("Hostile mobs are harder to catch than passive ones."
                                        + "\n\nSpecialized mob catchers can improve the catch"
                                        + " chance. Make sure to read the item description"
                                        + " carefully."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 4
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 4
                         Component.text("To "),
                         Component.text("release", NamedTextColor.BLUE),
                         Component.text(" a mob, throw the Pocket Mob at a block."

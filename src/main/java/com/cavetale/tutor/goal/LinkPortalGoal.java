@@ -52,7 +52,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The server spawn has display Link Portals."
                                        + " They're inside the barn by the farming area."
                                        + " Find them and travel through them."
@@ -60,7 +60,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                         Component.text("/spawn", NamedTextColor.BLUE),
                         Component.text("\nTeleport and turn around to find the farms", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Now it's time to build our own!"
                                        + " Just place a "),
                         VanillaItems.OAK_SIGN.component,
@@ -76,7 +76,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                          .clickEvent(ClickEvent.openUrl("https://cavetale.com/wiki/link-portals"))
                          .build()),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Link portals come in 2 kinds."
                                        + "\n\n" + Unicode.BULLET_POINT.character
                                        + " Sign attached to a "),
@@ -89,7 +89,7 @@ public final class LinkPortalGoal extends AbstractGoal<LinkPortalProgress> {
                                        + " button or pressure plate inside"
                                        + " the frame."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 3
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 3
                         Component.text("In order to confirm that your portals are working,"
                                        + " step through them."
                                        + "\n\nDepending on their make,"

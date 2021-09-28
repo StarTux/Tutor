@@ -57,7 +57,7 @@ public final class TicketGoal implements Goal, Listener {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Whenever you need staff assistance, make a ticket."
                                        + " This is the best way to reach out to staff."
                                        + "\n\nCommand:\n"),
@@ -66,14 +66,14 @@ public final class TicketGoal implements Goal, Listener {
                                        + " click the buttons in chat for more.",
                                        NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("For the purpose of this tutorial, write any message in the ticket."
                                        + " When you make a ticket for real, try to provide as much information"
                                        + " as possible."
                                        + " Tickets remember where they were made."
                                        + " Our staff will be able to teleport there."),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 2
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("You will be notified when an admin or"
                                        + " moderator responds to your ticket."
                                        + "\n\nJust click the line in chat to view it."

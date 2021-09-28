@@ -38,7 +38,7 @@ public final class SellItemGoal implements Goal {
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("You can sell certain items in your inventory."
                                        + " The sell menu lists all the sellable items you currently have."
                                        + " Click an item to sell it."
@@ -46,7 +46,7 @@ public final class SellItemGoal implements Goal {
                         Component.text("/sell", NamedTextColor.BLUE),
                         Component.text("\nOpen the sell menu", NamedTextColor.GRAY),
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Keep an eye on your bank balance."
                                        + "\n\nCommand:\n"),
                         Component.text("/money", NamedTextColor.BLUE),

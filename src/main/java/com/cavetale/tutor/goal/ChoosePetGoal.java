@@ -48,13 +48,13 @@ public final class ChoosePetGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 0
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("You have arrived at a strange place."
                                        + " Why not choose a pet to keep you company!"
                                        + "\n\nWe hope you enjoy your stay. "),
                         Mytems.SMILE.component,
                     }),
-                Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {// 1
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Naming your Pet:"),
                         Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
                         Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Back] in the book"),

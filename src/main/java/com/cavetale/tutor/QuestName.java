@@ -1,7 +1,6 @@
 package com.cavetale.tutor;
 
 import com.cavetale.tutor.goal.Goals;
-import com.winthier.perm.rank.PlayerRank;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,7 +11,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Player;
 
 /**
  * A QuestName is the static configuration of all quests, with display
@@ -31,33 +29,48 @@ public enum QuestName {
                  Component.text("different places"),
                  Component.text("Cavetale has to offer,"),
                  Component.text("and how to get there.")),
-         Set.of(QuestName.BEGINNER),
-         Set.of(QuestName.BEGINNER)),
+         Set.of(BEGINNER),
+         Set.of(BEGINNER)),
     CHAT(Type.TUTORIAL, Component.text("Chatting 101"),
          List.of(Component.text("On using our"),
                  Component.text("chat channels.")),
-         Set.of(QuestName.BEGINNER),
-         Set.of(QuestName.BEGINNER)),
+         Set.of(BEGINNER),
+         Set.of(BEGINNER)),
     MONEY(Type.TUTORIAL, Component.text("All About Money"),
           List.of(Component.text("Learn how to earn"),
                   Component.text("and spend money.")),
-          Set.of(QuestName.BEGINNER),
-          Set.of(QuestName.BEGINNER)),
+          Set.of(BEGINNER),
+          Set.of(BEGINNER)),
     MEMBER(Type.TUTORIAL, Component.text("The Road to Member"),
            List.of(Component.text("Graduate from the"),
                    Component.text("Beginner Tutorial and"),
                    Component.text("and become a Member.")),
-           Set.of(QuestName.BEGINNER),
-           Set.of(QuestName.MONEY, QuestName.WARP, QuestName.CHAT)),
+           Set.of(BEGINNER),
+           Set.of(MONEY, WARP, CHAT)),
     // Member
-    BUILD(Type.TUTORIAL, Component.text("Advanced Construction"),
-          List.of(Component.text("")),
-          Set.of(QuestName.MEMBER),
-          Set.of(QuestName.MEMBER)),
-    FRIEND(Type.TUTORIAL, Component.text("Making Friends"),
-           List.of(Component.text("")),
-           Set.of(QuestName.MEMBER),
-           Set.of(QuestName.MEMBER));
+    MEMBER_INTRO(Type.TUTORIAL, Component.text("New Members Introduction"),
+                 List.of(Component.text("Explore some of the"),
+                         Component.text("features you want to"),
+                         Component.text("know when you play"),
+                         Component.text("on Cavetale")),
+                 Set.of(MEMBER), Set.of(MEMBER)),
+    HOME(Type.TUTORIAL, Component.text("Advanced Claims and Homes"),
+         List.of(Component.text("How to grow your"),
+                 Component.text("claim and trust your"),
+                 Component.text("friends in it."),
+                 Component.text("Share your homes.")),
+         Set.of(MEMBER), Set.of(MEMBER_INTRO)),
+    MOBILITY(Type.TUTORIAL, Component.text("Mobility"),
+             List.of(Component.text("These systems"),
+                     Component.text("give you more"),
+                     Component.text("power for making"),
+                     Component.text("your base.")),
+             Set.of(MEMBER), Set.of(MEMBER_INTRO)),
+    SPELEOLOGIST(Type.TUTORIAL, Component.text("Rank up to Speleologist"),
+                 List.of(Component.text("Aquire a higher rank"),
+                         Component.text("and enjoy its perks.")),
+                 Set.of(MEMBER),
+                 Set.of(MEMBER_INTRO, HOME, MOBILITY));
     public static final List<String> KEY_LIST;
 
     public final Type type;
@@ -116,18 +129,6 @@ public enum QuestName {
         KEY_LIST = Stream.of(QuestName.values())
             .map(n -> n.key)
             .collect(Collectors.toUnmodifiableList());
-    }
-
-    /**
-     * Called for first-time quest completion.
-     */
-    public void deliverQuestReward(Player player) {
-        switch (this) {
-        case MEMBER:
-            PlayerRank.MEMBER.promote(player.getUniqueId());
-            break;
-        default: break;
-        }
     }
 
     public static QuestName of(@NonNull String key) {
