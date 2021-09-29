@@ -88,7 +88,7 @@ public final class InviteHomeGoal extends AbstractGoal<InviteHomeProgress> {
                         Component.text("/invitehome <player>", NamedTextColor.BLUE),
                         Component.text("\nand\n"),
                         Component.text("/uninvitehome <player>", NamedTextColor.BLUE),
-                        Component.text("Just skip the home name", NamedTextColor.GRAY),
+                        Component.text("\nJust skip the home name", NamedTextColor.GRAY),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 5
                         Component.text("Since you no longer need the home, delete it:\n\n"),
@@ -103,12 +103,13 @@ public final class InviteHomeGoal extends AbstractGoal<InviteHomeProgress> {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 100L, new Component[] {
-                            Component.text("Remember the movie with"),
-                            Component.text("Tom Hanks and Meg Ryan?"),
+                            Component.text("You can share your"),
+                            Component.text("homes with your"),
+                            Component.text("friends."),
                         });
                     pet.addSpeechBubble(id, 0, 100L, new Component[] {
-                            Component.text("No? Don't worry,"),
-                            Component.text("it didn't age well."),
+                            Component.text("Just send them an"),
+                            Component.text("invite."),
                         });
                 });
         }
