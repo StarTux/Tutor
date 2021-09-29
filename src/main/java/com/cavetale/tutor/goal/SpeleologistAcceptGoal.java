@@ -36,9 +36,9 @@ public final class SpeleologistAcceptGoal extends AbstractGoal<SpeleologistAccep
                         Component.text("The "),
                         Component.text("Speleologist", NamedTextColor.BLUE),
                         Component.text(" rank comes with many new perks:"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Buy a Market Plot"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Start Auctions"),
                     }),
             });

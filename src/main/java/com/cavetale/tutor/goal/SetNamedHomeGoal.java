@@ -109,6 +109,6 @@ final class SetNamedHomeProgress extends GoalProgress {
 
     @Override
     public boolean isComplete() {
-        return sethome && home;
+        return sethome && home && list;
     }
 }

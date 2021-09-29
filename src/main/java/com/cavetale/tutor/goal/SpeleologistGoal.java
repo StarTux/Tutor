@@ -22,7 +22,7 @@ public final class SpeleologistGoal extends AbstractGoal<SpeleologistProgress> {
     public SpeleologistGoal() {
         super(SpeleologistProgress.class, SpeleologistProgress::new);
         this.id = "speleologist";
-        this.displayName = Component.text("");
+        this.displayName = Component.text("Winning");
         condDefeatRaid = new CheckboxCondition(Component.text("Defeat a Raid"),
                                                playerQuest -> getProgress(playerQuest).defeatRaid,
                                                playerQuest -> getProgress(playerQuest).defeatRaid = true);
@@ -33,13 +33,14 @@ public final class SpeleologistGoal extends AbstractGoal<SpeleologistProgress> {
         condMakeFriend.setBookPageIndex(1);
         this.conditions = List.of(new Condition[] {
                 condDefeatRaid,
+                condMakeFriend,
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Return to the Raid server to defeat any raid.\n\n"),
                         Component.text("/raid", NamedTextColor.BLUE),
-                        Component.text("Join the raid server", NamedTextColor.GRAY),
+                        Component.text("\nJoin the raid server", NamedTextColor.GRAY),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("At "),
@@ -47,11 +48,13 @@ public final class SpeleologistGoal extends AbstractGoal<SpeleologistProgress> {
                         Component.text(", you can send a "),
                         Component.text("Friend", NamedTextColor.BLUE),
                         Component.text(" request."
-                                       + "\n\nCommand:"),
+                                       + "\n\nCommands:\n"),
+                        Component.text("/friends", NamedTextColor.BLUE),
+                        Component.text("\nFiew friendships\n", NamedTextColor.GRAY),
                         Component.text("/friend <player>", NamedTextColor.BLUE),
                         Component.text("\nSend a friend request."
                                        + " They can accept by clicking"
-                                       + " the message in chat.", NamedTextColor.GRAY),
+                                       + " the message in chat", NamedTextColor.GRAY),
                     }),
             });
     }

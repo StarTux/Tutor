@@ -44,8 +44,8 @@ public final class Goals {
                            new FriendsGoal(),
                            new RaidGoal());
         case HOME:
-            return List.of(new ClaimGrowGoal(),
-                           new ClaimTrustGoal(),
+            return List.of(new ClaimTrustGoal(),
+                           new ClaimGrowGoal(),
                            new SetNamedHomeGoal(),
                            new InviteHomeGoal());
         case MOBILITY:

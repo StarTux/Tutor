@@ -244,7 +244,7 @@ public final class Session {
 
     public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
         List<Component> pages = new ArrayList<>();
-        pages.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+        pages.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     (Component.text()
                      .append(quest.name.displayName)
                      .color(NamedTextColor.DARK_AQUA)
@@ -262,11 +262,11 @@ public final class Session {
                     Component.text("\n\n"),
                     (Component.text().content("[Repeat]")
                      .color(NamedTextColor.BLUE)
-                     .clickEvent(ClickEvent.runCommand("/tutor redo " + quest.getName().key))
+                     .clickEvent(ClickEvent.runCommand("/tutor click redo " + quest.getName().key))
                      .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                      Component.text("Repeat this " + quest.getName().type.lower, NamedTextColor.BLUE),
-                                     Component.text("\nThere will not be", NamedTextColor.GRAY),
-                                     Component.text("\nany extra rewards.", NamedTextColor.GRAY),
+                                     Component.text("There will not be", NamedTextColor.GRAY),
+                                     Component.text("any extra rewards.", NamedTextColor.GRAY),
                                  })))
                      .build()),
                 }));

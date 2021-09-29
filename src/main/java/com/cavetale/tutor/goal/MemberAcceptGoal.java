@@ -36,17 +36,17 @@ public final class MemberAcceptGoal extends AbstractGoal<MemberAcceptProgress> {
                         Component.text("The "),
                         Component.text("Member", NamedTextColor.BLUE),
                         Component.text(" rank comes with many new perks:"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Daily Member Kit"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Use ArmorStandEditor"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Purchase Creative Worlds"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Buy Creative Worlds"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Get Married"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " "
+                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Use the Beta Server"),
                     }),
             });

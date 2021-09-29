@@ -10,7 +10,7 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
-    protected static final int CLAIM_BLOCKS = 2000;
+    protected static final int CLAIM_BLOCKS = 1024;
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
@@ -38,7 +38,7 @@ public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
-                        Component.text("Your claim starts of small "),
+                        Component.text("Your claim starts off small "),
                         Component.text("(128x128 blocks)", NamedTextColor.GRAY),
                         Component.text(" but you can grow it."
                                        + "\n\nTo grow it to a certain spot,"
@@ -78,6 +78,6 @@ final class ClaimGrowProgress extends GoalProgress {
     @Override
     public boolean isComplete() {
         return growClaim
-            && buyClaimBlocks > ClaimGrowGoal.CLAIM_BLOCKS;
+            && buyClaimBlocks >= ClaimGrowGoal.CLAIM_BLOCKS;
     }
 }
