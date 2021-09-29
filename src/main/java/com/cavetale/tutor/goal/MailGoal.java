@@ -42,7 +42,7 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                                        + " If they are not online, they will get see it"
                                        + " when they return."
                                        + "\n\nCommands:\n"),
-                        Component.text("/mail", NamedTextColor.BLUE),
+                        Component.text("/mail list", NamedTextColor.BLUE),
                         Component.text("\nRead mail\n\n", NamedTextColor.GRAY),
                         Component.text("/mailto <player> <message>", NamedTextColor.BLUE),
                         Component.text("\nSend mail\n", NamedTextColor.GRAY),
@@ -50,7 +50,7 @@ public final class MailGoal extends AbstractGoal<MailProgress> {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("When you have unread mail, it will say so in your sidebar."
                                        + "\n\nTyping "),
-                        Component.text("/mail", NamedTextColor.BLUE),
+                        Component.text("/mail list", NamedTextColor.BLUE),
                         Component.text(" will list all your unread mails in chat."
                                        + " Click one of them to display the entire message,"
                                        + " which will also mark the mail as read."),
