@@ -66,7 +66,7 @@ public final class MiningGoal implements Goal, Listener {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The mining world is filled with special caves,"
                                        + " where the walls are are covered with veins of valuable ores."
-                                       + " Maybe we will across one of them."
+                                       + " Maybe we will come across one of them."
                                        + "\n\nThis is the best place to gather resources,"
                                        + " because it resets every week. Let's get to it!"),
                     }),

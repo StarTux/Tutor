@@ -40,7 +40,7 @@ public final class PartyChatGoal extends AbstractGoal<PartyChatProgress> {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("A party is a named group chat where"
                                        + " everyone in the same party can hear you."
-                                       + "\n\nCommands:"),
+                                       + "\n\nCommands:\n"),
                         Component.text("/party", NamedTextColor.BLUE),
                         Component.text("\nInfo about your party\n\n", NamedTextColor.GRAY),
                         Component.text("/party <name>", NamedTextColor.BLUE),

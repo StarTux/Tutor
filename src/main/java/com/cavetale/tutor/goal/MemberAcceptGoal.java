@@ -41,8 +41,6 @@ public final class MemberAcceptGoal extends AbstractGoal<MemberAcceptProgress> {
                         Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Use ArmorStandEditor"),
                         Component.text("\n" + Unicode.BULLET_POINT.character
-                                       + " Purchase Creative Worlds"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Buy Creative Worlds"),
                         Component.text("\n" + Unicode.BULLET_POINT.character
                                        + " Get Married"),

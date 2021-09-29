@@ -44,8 +44,10 @@ public final class BuyGoal implements Goal {
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The market contains player created shops."
-                                       + " Starting with the Member rank,"
-                                       + " you can claim market a plot and set up shop chests there."
+                                       + " Starting with the "),
+                        Component.text("Speleologist", NamedTextColor.BLUE),
+                        Component.text("rank, you can claim a market plot"
+                                       + " and set up shop chests there."
                                        + "\n\nCommand:\n"),
                         Component.text("/market", NamedTextColor.BLUE),
                         Component.text("\nWarp to the market world\n", NamedTextColor.GRAY),

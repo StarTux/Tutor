@@ -56,8 +56,8 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
                         Component.text("There are many villagers at spawn."
                                        + " One of them can repair your gear"
                                        + " in exchange for diamonds."
-                                       + "\n\nHe's an expert and can repair anything."
-                                       + " Let's fine out where he is for future reference."),
+                                       + "\n\nThis villager an expert and can repair anything."
+                                       + " Let's find out where he is for future reference."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Warps can take you to key locations on the server."

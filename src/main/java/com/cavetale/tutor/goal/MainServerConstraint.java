@@ -19,8 +19,7 @@ public final class MainServerConstraint implements Constraint.Simple {
     }
 
     public static boolean isTrue() {
-        return Connect.getInstance().getServerName().equals("cavetale")
-            || Connect.getInstance().getServerName().equals("beta"); // DEBUG
+        return Connect.getInstance().getServerName().equals("cavetale");
     }
 
     public static MainServerConstraint instance() {

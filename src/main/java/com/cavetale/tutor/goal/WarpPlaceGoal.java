@@ -70,14 +70,14 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
         return new WarpPlaceGoal("Bazaar", "Bazaar", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This desert market is the result of a build event."
                                    + "\n\nIt is home to the merchant who sells the Dune item set."
-                                   + " Let's find him!"),
+                                   + " Let's find them!"),
                 }));
     }
 
     public static WarpPlaceGoal dwarven() {
         return new WarpPlaceGoal("DwarvenVillage", "Dwarven Village", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This underground city was made during a weeklong build event."
-                                   + "\n\nSomewhere around here, there's a salesman"
+                                   + "\n\nSomewhere around here, there's a merchant"
                                    + " who has the Dwarven Armor set in stock."
                                    + " Finding him may prove challenging, but it's worth it!"),
                 }));
@@ -96,8 +96,8 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     public static WarpPlaceGoal witch() {
         return new WarpPlaceGoal("WitchLair", "Witch Lair", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This mysterious marsh stems from a build event."
-                                   + "\n\nOne of local witches offers the Swampy Set."
-                                   + " Where could she be?"),
+                                   + "\n\nOne of local merchants offers the Swampy Set."
+                                   + " Where could they be?"),
                 }));
     }
 }
