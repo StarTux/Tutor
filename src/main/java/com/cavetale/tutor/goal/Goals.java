@@ -33,7 +33,7 @@ public final class Goals {
                            new MiningGoal(),
                            new StorageGoal(),
                            new SellItemGoal(),
-                           new BuyGoal());
+                           new ShopSearchGoal());
         case MEMBER:
             return List.of(new TicketGoal(),
                            new MenuGoal(),

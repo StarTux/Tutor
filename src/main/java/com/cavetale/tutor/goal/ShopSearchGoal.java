@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public final class BuyGoal implements Goal {
+public final class ShopSearchGoal extends AbstractGoal<ShopSearchProgress> {
     @Getter protected final String id;
     @Getter protected final Component displayName;
     @Getter protected final List<Condition> conditions;
@@ -19,8 +19,9 @@ public final class BuyGoal implements Goal {
     protected final CheckboxCondition condShopSearch;
     protected final CheckboxCondition condShopPort;
 
-    public BuyGoal() {
-        this.id = "buy";
+    public ShopSearchGoal() {
+        super(ShopSearchProgress.class, ShopSearchProgress::new);
+        this.id = "shop_search";
         this.displayName = Component.text("Spending Coin");
         condMarket = new CheckboxCondition(Component.text("Visit the Market"),
                                            playerQuest -> getProgress(playerQuest).market,
@@ -93,27 +94,17 @@ public final class BuyGoal implements Goal {
         default: break;
         }
     }
+}
+
+final class ShopSearchProgress extends GoalProgress {
+    protected boolean market;
+    protected boolean shopSearch;
+    protected boolean shopPort;
 
     @Override
-    public BuyProgress newProgress() {
-        return new BuyProgress();
-    }
-
-    @Override
-    public BuyProgress getProgress(PlayerQuest playerQuest) {
-        return playerQuest.getProgress(BuyProgress.class, BuyProgress::new);
-    }
-
-    protected static final class BuyProgress extends GoalProgress {
-        protected boolean market;
-        protected boolean shopSearch;
-        protected boolean shopPort;
-
-        @Override
-        public boolean isComplete() {
-            return market
-                && shopSearch
-                && shopPort;
-        }
+    public boolean isComplete() {
+        return market
+            && shopSearch
+            && shopPort;
     }
 }
