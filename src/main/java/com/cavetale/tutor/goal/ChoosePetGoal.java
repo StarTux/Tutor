@@ -126,11 +126,14 @@ public final class ChoosePetGoal implements Goal {
         playerQuest.getSession().spawnPet();
         playerQuest.getSession().applyPet(pet -> {
                 pet.addSpeechBubble(id, 50L, 100L, new Component[] {
-                        Component.text("Welcome to Cavetale, " + petType.speechGimmick + "!"),
+                        Component.text("Welcome to Cavetale,"),
+                        Component.text(petType.speechGimmick + "!"),
                     });
                 pet.addSpeechBubble(id, 0L, 100L, new Component[] {
-                        Component.text("I will be your personal assistant."),
-                        Component.text("Please give me a name, " + petType.speechGimmick + "."),
+                        Component.text("I will be your"),
+                        Component.text("personal assistant."),
+                        Component.text("Please give me a name,"),
+                        Component.text(petType.speechGimmick + "."),
                     });
             });
     }
