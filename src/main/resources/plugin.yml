@@ -36,3 +36,7 @@ permissions:
   tutor.admin:
     description: Use /tutoradmin
     default: op
+
+  tutor.beginner:
+    description: Auto start the beginner quest
+    default: false

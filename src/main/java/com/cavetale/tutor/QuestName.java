@@ -23,7 +23,7 @@ public enum QuestName {
              List.of(Component.text("The beginner tutorial")),
              Set.of(),
              Set.of(),
-             QuestFlag.autoStart("group.friendly")),
+             QuestFlag.autoStart("tutor.beginner")),
     WARP(Type.TUTORIAL, Component.text("Beginner Tour"),
          List.of(Component.text("Find out about the"),
                  Component.text("different places"),
