@@ -133,12 +133,12 @@ public final class MiningGoal implements Goal, Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         onBlockBreak(event.getPlayer(), event.getBlock());
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerBreakBlock(PlayerBreakBlockEvent event) {
         onBlockBreak(event.getPlayer(), event.getBlock());
     }
