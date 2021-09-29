@@ -182,7 +182,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         plugin.sessions.findOrLoad(playerCache, session -> {
                 List<Component> lines = new ArrayList<>();
                 lines.add(Component.text("Quest info for " + playerCache.name, NamedTextColor.YELLOW));
-                lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                             Component.text("Completed ", NamedTextColor.GRAY),
                             Component.text("" + session.getCompletedQuests().size() + " ", NamedTextColor.YELLOW),
                             Component.join(JoinConfiguration.separator(Component.text(", ", NamedTextColor.GRAY)),
@@ -201,12 +201,12 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                                })
                                            .collect(Collectors.toList())),
                         }));
-                lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                             Component.text("Current Quests ", NamedTextColor.GRAY),
                             Component.text("" + session.getCurrentQuests().size(), NamedTextColor.YELLOW),
                         }));
                 for (PlayerQuest playerQuest : session.getCurrentQuests().values()) {
-                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                                 Component.text(Unicode.BULLET_POINT.character + " ", NamedTextColor.GRAY),
                                 (Component.text().content(playerQuest.getQuest().getName().key)
                                  .color(NamedTextColor.YELLOW)
@@ -220,7 +220,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                  .color(NamedTextColor.GOLD)
                                  .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                  playerQuest.getCurrentGoal().getDisplayName(),
-                                                 Component.text("\n" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
+                                                 Component.text("" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
                                                                 + "/" + playerQuest.getQuest().getGoals().size(),
                                                                 NamedTextColor.GRAY),
                                              })))
@@ -230,12 +230,12 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                             }));
                 }
                 if (session.getPet() == null) {
-                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                                 Component.text("Pet ", NamedTextColor.GRAY),
                                 Component.text("None", NamedTextColor.DARK_GRAY),
                             }));
                 } else {
-                    lines.add(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                                 Component.text("Pet", NamedTextColor.GRAY),
                                 Component.space(),
                                 (Component.text()
@@ -252,7 +252,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                 Component.text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), NamedTextColor.YELLOW),
                             }));
                 }
-                sender.sendMessage(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
+                sender.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                             Component.newline(),
                             Component.join(JoinConfiguration.separator(Component.newline()), lines),
                             Component.newline(),

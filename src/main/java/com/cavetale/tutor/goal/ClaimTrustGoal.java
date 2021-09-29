@@ -54,15 +54,15 @@ public final class ClaimTrustGoal extends AbstractGoal<ClaimTrustProgress> {
                         Component.text("In order to give someone trust in a claim,"
                                        + " you must:"),
                         Component.text("\n\n" + Unicode.BULLET_POINT.character
-                                       + " be the "),
+                                       + "be the "),
                         Component.text("owner", NamedTextColor.BLUE),
                         Component.text(" of that claim,"),
-                        Component.text("\n\n" + Unicode.BULLET_POINT.character
-                                       + " or have at least "),
+                        Component.text("\n" + Unicode.BULLET_POINT.character
+                                       + "or have at least "),
                         Component.text("co-owner", NamedTextColor.BLUE),
                         Component.text(" trust."
                                        + "\n\nIf you don't, make a claim or"
-                                       + " ask your friend to promote you."),
+                                       + " ask your friend to co-owner trust you."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("To let someone build in your claim,"
@@ -113,9 +113,9 @@ public final class ClaimTrustGoal extends AbstractGoal<ClaimTrustProgress> {
                         Component.text("/claim kick <player>", NamedTextColor.BLUE),
                         Component.text("\nWarp them outside your claim borders\n", NamedTextColor.GRAY),
                         Component.text("/claim ban <player>", NamedTextColor.BLUE),
-                        Component.text("\nStop them from entering\n", NamedTextColor.GRAY),
+                        Component.text("\nStop them from entering the claim\n", NamedTextColor.GRAY),
                         Component.text("/claim unban <player>", NamedTextColor.BLUE),
-                        Component.text("\nLift the ban again", NamedTextColor.GRAY),
+                        Component.text("\nLift the ban", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -127,9 +127,6 @@ public final class ClaimTrustGoal extends AbstractGoal<ClaimTrustProgress> {
                     pet.addSpeechBubble(id, 50L, 100L, new Component[] {
                             Component.text("Your claim is your"),
                             Component.text("castle."),
-                        });
-                    pet.addSpeechBubble(id, 0L, 100L, new Component[] {
-                            Component.text("Or so they say."),
                         });
                     pet.addSpeechBubble(id, 0L, 60L, new Component[] {
                             Component.text("Or so they say."),
