@@ -554,13 +554,13 @@ public final class Session {
         }
         if (!questName.startDependencies.isEmpty()) {
             text.add(Component.empty());
-            text.add(Component.text(questName.type.upper + " Requirements", NamedTextColor.LIGHT_PURPLE));
+            text.add(Component.text(questName.type.upper + " Requirements", NamedTextColor.GRAY));
             for (QuestName dependency : questName.startDependencies) {
                 if (completedQuests.containsKey(dependency)) {
-                    text.add(Component.text(Unicode.CHECKED_CHECKBOX.character + " ", NamedTextColor.GREEN)
+                    text.add(Component.text(Unicode.CHECKED_CHECKBOX.character + " ", NamedTextColor.GRAY)
                              .append(dependency.displayName));
                 } else {
-                    text.add(Component.text(Unicode.CHECKBOX.character + " ", NamedTextColor.BLUE)
+                    text.add(Component.text(Unicode.CHECKBOX.character + " ", NamedTextColor.DARK_GRAY)
                              .append(dependency.displayName));
                 }
             }

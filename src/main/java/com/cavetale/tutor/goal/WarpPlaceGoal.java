@@ -19,7 +19,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     protected final CheckboxCondition condWarp;
     protected final CheckboxCondition condNPC;
 
-    public WarpPlaceGoal(final String name, final String displayName, final Component secondPage) {
+    public WarpPlaceGoal(final String name, final String displayName, final String merchantName, final Component secondPage) {
         super(WarpPlaceProgress.class, WarpPlaceProgress::new);
         this.name = name;
         this.id = "warp_" + name.toLowerCase();
@@ -27,7 +27,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
         condWarp = new CheckboxCondition(Component.text("Warp to " + displayName),
                                          playerQuest -> getProgress(playerQuest).warp,
                                          playerQuest -> getProgress(playerQuest).warp = true);
-        condNPC = new CheckboxCondition(Component.text("Find the " + displayName + " Merchant"),
+        condNPC = new CheckboxCondition(Component.text("Find the " + merchantName),
                                         playerQuest -> getProgress(playerQuest).npc,
                                         playerQuest -> getProgress(playerQuest).npc = true);
         condWarp.setBookPageIndex(0);
@@ -67,7 +67,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal bazaar() {
-        return new WarpPlaceGoal("Bazaar", "Bazaar", Component.join(JoinConfiguration.noSeparators(), new Component[] {
+        return new WarpPlaceGoal("Bazaar", "Bazaar", "Dune Item Shop", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This desert market is the result of a build event."
                                    + "\n\nIt is home to the merchant who sells the Dune item set."
                                    + " Let's find them!"),
@@ -75,7 +75,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal dwarven() {
-        return new WarpPlaceGoal("DwarvenVillage", "Dwarven Village", Component.join(JoinConfiguration.noSeparators(), new Component[] {
+        return new WarpPlaceGoal("DwarvenVillage", "Dwarven Village", "Dwarf Armor Shop", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This underground city was made during a weeklong build event."
                                    + "\n\nSomewhere around here, there's a merchant"
                                    + " who has the Dwarven Armor set in stock."
@@ -84,7 +84,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal cloud() {
-        return new WarpPlaceGoal("CloudVillage", "Cloud Village", Component.join(JoinConfiguration.noSeparators(), new Component[] {
+        return new WarpPlaceGoal("CloudVillage", "Cloud Village", "Cloud Item Shop", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This floating miracle was made by players for a build event."
                                    + "\n\nIt's home to a merchant who sells"
                                    + " two magical items."
@@ -94,7 +94,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
     }
 
     public static WarpPlaceGoal witch() {
-        return new WarpPlaceGoal("WitchLair", "Witch Lair", Component.join(JoinConfiguration.noSeparators(), new Component[] {
+        return new WarpPlaceGoal("WitchLair", "Witch Lair", "Swampy Armor Shop", Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("This mysterious marsh stems from a build event."
                                    + "\n\nOne of local merchants offers the Swampy Set."
                                    + " Where could they be?"),

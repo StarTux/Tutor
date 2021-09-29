@@ -49,7 +49,7 @@ public final class MiningGoal implements Goal, Listener {
         condDiamond = new NumberCondition(Component.text("Mine diamond ore"), DIAMOND,
                                           playerQuest -> getProgress(playerQuest).diamond,
                                           (playerQuest, amount) -> getProgress(playerQuest).diamond = amount);
-        condDungeon = new NumberCondition(Component.text("Loot some Dungeon"), DUNGEONS,
+        condDungeon = new NumberCondition(Component.text("Loot Dungeons"), DUNGEONS,
                                           playerQuest -> getProgress(playerQuest).dungeons,
                                           (playerQuest, amount) -> getProgress(playerQuest).dungeons = amount);
         condIron.setBookPageIndex(0);
@@ -73,14 +73,15 @@ public final class MiningGoal implements Goal, Listener {
                 // Dungeons
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("Not only are there custom caves with bonus ores in the mining world,"
-                                       + " it also offers custom dungeons,"
-                                       + " built in the past by players just like you!"
-                                       + "\nDungeon chests contain special loot."
-                                       + " Make sure to pick it up!"),
+                                       + " it also offers custom "),
+                        Component.text("dungeons", NamedTextColor.BLUE),
+                        Component.text(", built during past build events."
+                                       + "\n\nDungeon chests contain special loot."
+                                       + " Make sure to pick it up."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
-                        Component.text("Locating a dungeon:\n"),
-                        Component.text("right-click", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
+                        Component.text("Locating a dungeon:\n\n"),
+                        Component.text("Right-click", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
                         Component.text(" a "),
                         VanillaItems.componentOf(Material.COMPASS),
                         Component.text("compass", NamedTextColor.BLUE, TextDecoration.UNDERLINED),

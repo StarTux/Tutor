@@ -43,17 +43,19 @@ public final class WildGoal implements Goal {
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
-                        Component.text("You can type "),
+                        Component.text("This will teleport you to a random place"
+                                       + " in the build world to start your base:\n\n"),
                         Component.text("/wild", NamedTextColor.BLUE),
-                        Component.text(" in order to find a nice place for you to start your base."
-                                       + " This will teleport you to a random place in the main build world."
-                                       + " You can repeat the command until you find a nice place."),
+                        Component.text("\nTeleport into the wild\n\n", NamedTextColor.GRAY),
+                        Component.text("You can repeat it until you find a nice place."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
-                        Component.text("Once you have found a place you like, type "),
+                        Component.text("Once you have found a place you like, claim it:\n\n"),
                         Component.text("/claim new", NamedTextColor.BLUE),
-                        Component.text(" to claim the area as your own."
-                                       + "You can grow the claim further out later on."),
+                        Component.text("\nMake a beginner claim\n\n", NamedTextColor.GRAY),
+                        Component.text("This claim will be "),
+                        Component.text("128x128 blocks", NamedTextColor.BLUE),
+                        Component.text(" large. You can grow it later on."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("If you play with friends, all this warping"

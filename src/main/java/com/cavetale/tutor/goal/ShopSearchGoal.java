@@ -31,8 +31,7 @@ public final class ShopSearchGoal extends AbstractGoal<ShopSearchProgress> {
                                                playerQuest -> getProgress(playerQuest).shopSearch = true);
         condShopPort = new CheckboxCondition(Component.text("Port to a Shop Chest"),
                                              playerQuest -> getProgress(playerQuest).shopPort,
-                                             playerQuest -> getProgress(playerQuest).shopPort = true,
-                                             playerQuest -> getProgress(playerQuest).shopSearch);
+                                             playerQuest -> getProgress(playerQuest).shopPort = true);
         condMarket.setBookPageIndex(0);
         condShopSearch.setBookPageIndex(1);
         condShopPort.setBookPageIndex(1);
@@ -47,7 +46,7 @@ public final class ShopSearchGoal extends AbstractGoal<ShopSearchProgress> {
                         Component.text("The market contains player created shops."
                                        + " Starting with the "),
                         Component.text("Speleologist", NamedTextColor.BLUE),
-                        Component.text("rank, you can claim a market plot"
+                        Component.text(" rank, you can claim a market plot"
                                        + " and set up shop chests there."
                                        + "\n\nCommand:\n"),
                         Component.text("/market", NamedTextColor.BLUE),

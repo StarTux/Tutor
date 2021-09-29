@@ -59,7 +59,7 @@ public final class MemberAcceptGoal extends AbstractGoal<MemberAcceptProgress> {
             if (PlayerRank.MEMBER.promote(uuid)) {
                 Console.command("titles set " + name + " Member");
             }
-            Component announcement = Component.text(name + "Completed the Member Tutorial!",
+            Component announcement = Component.text(name + " Completed the Member Tutorial!",
                                                     NamedTextColor.GREEN, TextDecoration.BOLD);
             ChatPlugin.getInstance().announce("info", announcement);
         }

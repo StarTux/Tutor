@@ -30,24 +30,26 @@ public final class SetHomeGoal implements Goal {
                                          playerQuest -> getProgress(playerQuest).home = true,
                                          playerQuest -> getProgress(playerQuest).sethome);
         condSetHome.setBookPageIndex(0);
-        condHome.setBookPageIndex(0);
+        condHome.setBookPageIndex(1);
         this.conditions = List.of(new Condition[] {
                 condSetHome,
                 condHome,
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.text()
-                .append(Component.text("Set your primary home via "))
-                .append(Component.text("/sethome", NamedTextColor.BLUE))
-                .append(Component.text(". You can change it any time with the same command."))
-                .append(Component.space())
-                .append(Component.text("A home is a place you can visit any time via "))
-                .append(Component.text("/home", NamedTextColor.BLUE))
-                .append(Component.text("."))
-                .append(Component.newline())
-                .append(Component.newline())
-                .append(Component.text("If you want, you can also set additional named homes.")).build(),
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Component.text("A home is a place you can port to any time:\n\n"),
+                        Component.text("/sethome", NamedTextColor.BLUE),
+                        Component.text("\nSet your primary home\n\n", NamedTextColor.GRAY),
+                        Component.text("You can change it any time with the same command."),
+                    }),
+                Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Component.text("To visit it, use this command:\n\n"),
+                        Component.text("/home", NamedTextColor.BLUE),
+                        Component.text("\nVisit your primary home\n\n", NamedTextColor.GRAY),
+                        Component.text("You can also set named homes,"
+                                       + " which is explained in a late tutorial."),
+                    }),
             });
     }
 

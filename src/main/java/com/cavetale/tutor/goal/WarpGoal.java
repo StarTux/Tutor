@@ -34,7 +34,6 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
         condListWarps = new CheckboxCondition(Component.text("List warps"),
                                               playerQuest -> getProgress(playerQuest).listWarps,
                                               playerQuest -> getProgress(playerQuest).listWarps = true);
-
         condSpawn.setBookPageIndex(0);
         condRepairman.setBookPageIndex(1);
         condListWarps.setBookPageIndex(2);
@@ -54,10 +53,12 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
                         Component.text("There are many villagers at spawn."
-                                       + " One of them can repair your gear"
-                                       + " in exchange for diamonds."
+                                       + " One of them can "),
+                        Component.text("repair your gear", NamedTextColor.BLUE),
+                        Component.text(" in exchange for diamonds."
                                        + "\n\nThis villager an expert and can repair anything."
-                                       + " Let's find out where he is for future reference."),
+                                       + " Let's find out where to find them,"
+                                       + " for future reference."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Warps can take you to key locations on the server."

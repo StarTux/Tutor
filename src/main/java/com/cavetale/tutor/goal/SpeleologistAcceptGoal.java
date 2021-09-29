@@ -53,7 +53,7 @@ public final class SpeleologistAcceptGoal extends AbstractGoal<SpeleologistAccep
             if (PlayerRank.SPELEOLOGIST.promote(uuid)) {
                 Console.command("titles set " + name + " Speleologist");
             }
-            Component announcement = Component.text(name + "Finished the Speleologist Tutorial!",
+            Component announcement = Component.text(name + " Finished the Speleologist Tutorial!",
                                                     NamedTextColor.GREEN, TextDecoration.BOLD);
             ChatPlugin.getInstance().announce("info", announcement);
         }

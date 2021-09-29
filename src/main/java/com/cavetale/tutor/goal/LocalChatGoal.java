@@ -101,7 +101,7 @@ public final class LocalChatGoal implements Goal {
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
                         Component.text("Local chat has a range of "),
-                        Component.text("500 blocks", NamedTextColor.DARK_RED, TextDecoration.UNDERLINED),
+                        Component.text("500 blocks", NamedTextColor.BLUE),
                         Component.text(". You can focus a channel to speak in there."),
                         Component.text("\n\nCommands:\n"),
                         Component.text("/l", NamedTextColor.BLUE),
