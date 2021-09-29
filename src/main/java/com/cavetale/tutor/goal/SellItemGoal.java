@@ -105,7 +105,7 @@ public final class SellItemGoal implements Goal {
 
         @Override
         public boolean isComplete() {
-            return diamond >= DIAMONDS;
+            return diamond >= DIAMONDS && money;
         }
     }
 }
