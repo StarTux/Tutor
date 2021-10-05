@@ -135,12 +135,14 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 7
                         Component.text("If you share your birthday,"
                                        + " it will be visible on everyone's"
-                                       + " profile page as well as the website."
+                                       + " profile page as well as the website,"
+                                       + " unless you wish to keep it a secret."
                                        + "\n\nCommand:\n"),
                         Component.text("/profile", NamedTextColor.BLUE),
                         Component.text("\nView your profile,"
-                                       + " where you can set your birthday",
-                                       NamedTextColor.GRAY),
+                                       + " where you can set your birthday"
+                                       + " by clicking the ", NamedTextColor.GRAY),
+                        Mytems.STAR.component,
                     }),
             });
     }

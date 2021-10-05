@@ -56,7 +56,7 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
                                        + " One of them can "),
                         Component.text("repair your gear", NamedTextColor.BLUE),
                         Component.text(" in exchange for diamonds."
-                                       + "\n\nThis villager an expert and can repair anything."
+                                       + "\n\nThis villager is an expert and can repair anything."
                                        + " Let's find out where to find them,"
                                        + " for future reference."),
                     }),

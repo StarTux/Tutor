@@ -1,6 +1,7 @@
 package com.cavetale.tutor.session;
 
 import com.cavetale.tutor.Quest;
+import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.goal.GoalProgress;
@@ -11,8 +12,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Sound;
@@ -167,14 +166,15 @@ public final class PlayerQuest {
     }
 
     private void completeQuestReminder(Player player) {
+        QuestType type = quest.getName().getType();
         player.sendMessage(Component.text().content("You completed a " + quest.getName().type.upper + " page!")
                            .append(Component.newline())
                            .append(Component.text("Talk to your pet or type "))
-                           .append(Component.text().content("/tutor").color(NamedTextColor.YELLOW)
-                                   .clickEvent(ClickEvent.runCommand("/tutor"))
-                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor", NamedTextColor.YELLOW))))
+                           .append(Component.text().content(type.command).color(NamedTextColor.YELLOW))
                            .append(Component.text(" to continue."))
                            .color(NamedTextColor.AQUA)
+                           .clickEvent(type.clickEvent())
+                           .hoverEvent(type.hoverEvent())
                            .build());
     }
 }

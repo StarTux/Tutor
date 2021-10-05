@@ -3,7 +3,7 @@ package com.cavetale.tutor.session;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.sidebar.PlayerSidebarEvent;
 import com.cavetale.sidebar.Priority;
-import com.cavetale.tutor.QuestName;
+import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
@@ -172,16 +172,17 @@ public final class Sessions implements Listener {
         List<Component> lines = null;
         for (PlayerQuest playerQuest : session.getQuestList()) {
             lines = new ArrayList<>();
-            if (playerQuest.getQuest().getName().type == QuestName.Type.TUTORIAL) {
+            if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
                 lines.add(Component.text()
                           .append(Component.text("Your ", NamedTextColor.AQUA))
-                          .append(Component.text("/tutor", NamedTextColor.YELLOW))
-                          .append(Component.text("ial", NamedTextColor.AQUA))
+                          .append(Component.text("/tut", NamedTextColor.YELLOW))
+                          .append(Component.text("orial", NamedTextColor.AQUA))
                           .build());
             } else {
                 lines.add(Component.text()
                           .append(Component.text("Your ", NamedTextColor.AQUA))
-                          .append(Component.text("/quest", NamedTextColor.YELLOW))
+                          .append(Component.text("/q", NamedTextColor.YELLOW))
+                          .append(Component.text("uest", NamedTextColor.AQUA))
                           .build());
             }
             lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));

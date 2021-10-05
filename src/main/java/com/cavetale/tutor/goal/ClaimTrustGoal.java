@@ -48,7 +48,7 @@ public final class ClaimTrustGoal extends AbstractGoal<ClaimTrustProgress> {
                 condInteractTrust,
                 condContainerTrust,
             });
-        this.constraints = List.of();
+        this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("In order to give someone trust in a claim,"

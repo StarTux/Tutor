@@ -117,7 +117,7 @@ public final class RaidGoal extends AbstractGoal<RaidProgress> {
                         Component.text("\nReturn to the main server", NamedTextColor.GRAY),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 7
-                        Component.text("You can get a buff from starting"
+                        Component.text("You can get a health buff from starting"
                                        + " the raid together with friends."),
                         Component.text("\n\nAt the end of the raid,"
                                        + " there's a treasure chest."
