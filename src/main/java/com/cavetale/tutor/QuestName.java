@@ -64,7 +64,7 @@ public enum QuestName {
                      Component.text("power for making"),
                      Component.text("your base.")),
              Set.of(MEMBER), Set.of(MEMBER_INTRO)),
-    SPELEOLOGIST(QuestType.TUTORIAL, Component.text("Rank up to Speleologist"),
+    SPELEOLOGIST(QuestType.QUEST, Component.text("Rank up to Speleologist"),
                  List.of(Component.text("Aquire a higher rank"),
                          Component.text("and enjoy its perks.")),
                  Set.of(MEMBER),
