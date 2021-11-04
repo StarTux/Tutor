@@ -169,10 +169,12 @@ public interface Goal {
             hasMissedConstraint = true;
         }
         if (!hasMissedConstraint && playerQuest.getCurrentProgress().isComplete()) {
-            list.add(Component.text().content("[")
-                     .append(Component.text("" + Unicode.CHECKMARK.character, NamedTextColor.GOLD))
-                     .append(Component.text("Complete]"))
-                     .color(NamedTextColor.GREEN).build());
+            list.add(Component.text().color(NamedTextColor.WHITE)
+                     .append(Component.text("Type "))
+                     .append(Component.text(playerQuest.getQuest().getName().type.command,
+                                            NamedTextColor.GREEN))
+                     .append(Component.text(" to progress!"))
+                     .build());
         }
         return list;
     }
