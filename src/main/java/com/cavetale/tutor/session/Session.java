@@ -1,5 +1,6 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Quest;
@@ -252,23 +253,19 @@ public final class Session {
                      .build()),
                     Component.newline(),
                     Component.text(quest.getName().type.upper + " ", NamedTextColor.GRAY),
-                    (Component.text().content("[Back]")
-                     .color(NamedTextColor.BLUE)
+                    (DefaultFont.BACK_BUTTON.component
                      .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
-                     .build()),
+                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))),
                     Component.text("\n\nCompleted\n", NamedTextColor.GRAY),
                     Component.text(dateFormat.format(row.getTime()), NamedTextColor.DARK_AQUA),
                     Component.text("\n\n"),
-                    (Component.text().content("[Repeat]")
-                     .color(NamedTextColor.BLUE)
+                    (DefaultFont.START_BUTTON.component
                      .clickEvent(ClickEvent.runCommand("/tutor click redo " + quest.getName().key))
                      .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                      Component.text("Repeat this " + quest.getName().type.lower, NamedTextColor.BLUE),
                                      Component.text("There will not be", NamedTextColor.GRAY),
                                      Component.text("any extra rewards.", NamedTextColor.GRAY),
-                                 })))
-                     .build()),
+                                 })))),
                 }));
         for (Goal goal : quest.getGoals()) {
             pages.addAll(goal.getAdditionalBookPages());

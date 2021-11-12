@@ -1,7 +1,7 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
-import com.cavetale.core.font.Unicode;
+import com.cavetale.core.font.DefaultFont;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.session.PlayerQuest;
@@ -93,7 +93,7 @@ public interface Goal {
                   .build());
         lines.add(Component.text()
                   .append(Component.text(playerQuest.getQuest().getName().type.upper + " ", NamedTextColor.GRAY))
-                  .append(Component.text("[Back]", NamedTextColor.BLUE))
+                  .append(DefaultFont.BACK_BUTTON.component)
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
                   .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
                   .build());
@@ -134,22 +134,15 @@ public interface Goal {
             && (playerQuest.getQuest().getName().isQuittable()
                 || playerQuest.getSession().getCompletedQuests().containsKey(playerQuest.getQuest().name));
         if (complete) {
-            lines.add(Component.text().content("[")
-                      .append(Component.text("" + Unicode.CHECKMARK.character, NamedTextColor.GOLD))
-                      .append(Component.text("Complete]"))
-                      .color(NamedTextColor.DARK_GREEN)
+            lines.add(DefaultFont.OK_BUTTON.component
                       .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.GREEN)))
-                      .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key))
-                      .build());
+                      .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key)));
         } else if (abandonable) {
             lines.add(Component.empty());
-            lines.add(Component.text()
-                      .content("[Abandon]")
-                      .color(NamedTextColor.DARK_RED)
+            lines.add(DefaultFont.CANCEL_BUTTON.component
                       .hoverEvent(HoverEvent.showText(Component.text("Abandon this " + playerQuest.getQuest().getName().type.lower,
                                                                      NamedTextColor.RED)))
-                      .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key))
-                      .build());
+                      .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key)));
         }
         pages.add(Component.join(JoinConfiguration.separator(Component.newline()), lines));
         pages.addAll(getAdditionalBookPages());
