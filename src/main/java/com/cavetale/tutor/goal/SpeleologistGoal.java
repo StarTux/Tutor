@@ -50,7 +50,7 @@ public final class SpeleologistGoal extends AbstractGoal<SpeleologistProgress> {
                         Component.text(" request."
                                        + "\n\nCommands:\n"),
                         Component.text("/friends", NamedTextColor.BLUE),
-                        Component.text("\nFiew friendships\n", NamedTextColor.GRAY),
+                        Component.text("\nView friendships\n", NamedTextColor.GRAY),
                         Component.text("/friend <player>", NamedTextColor.BLUE),
                         Component.text("\nSend a friend request."
                                        + " They can accept by clicking"
