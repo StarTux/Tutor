@@ -40,7 +40,7 @@ public final class PublicHomeGoal extends AbstractGoal<PublicHomeProgress> {
                                        + " Anyone can turn their named home into a public home."
                                        + "\n\nCommand:\n"),
                         Component.text("/visit", NamedTextColor.BLUE),
-                        Component.text("\nView the public home list. Click to warp", NamedTextColor.GRAY),
+                        Component.text("\nList public homes. Click to visit", NamedTextColor.GRAY),
                     }),
             });
     }
