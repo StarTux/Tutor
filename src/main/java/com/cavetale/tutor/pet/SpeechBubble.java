@@ -67,8 +67,8 @@ public final class SpeechBubble {
                     if (!disabled) disable();
                 }, lifetime);
         }
-        final long noiseInterval = 8L;
-        final long noiseAmount = Math.min(5, lifetime / noiseInterval);
+        final long noiseInterval = 10L;
+        final long noiseAmount = Math.min(3, lifetime / noiseInterval);
         for (long i = 0; i < noiseAmount; i += 1) {
             Bukkit.getScheduler().runTaskLater(pet.pets.plugin, () -> {
                     if (disabled || !pet.isSpawned()) return;
