@@ -2,6 +2,7 @@ package com.cavetale.tutor.pet;
 
 import com.cavetale.core.event.entity.PluginEntityEvent;
 import com.cavetale.tutor.TutorPlugin;
+import com.cavetale.tutor.goal.MainServerConstraint;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -287,6 +288,7 @@ public final class Pets implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerMove(PlayerMoveEvent event) {
+        if (!MainServerConstraint.isTrue()) return;
         Player player = event.getPlayer();
         for (Pet pet : findPets(player)) {
             pet.onOwnerMove(player);

@@ -1,5 +1,6 @@
 package com.cavetale.tutor.pet;
 
+import com.cavetale.tutor.goal.MainServerConstraint;
 import com.destroystokyo.paper.entity.ai.Goal;
 import java.util.ArrayList;
 import java.util.List;
@@ -272,6 +273,7 @@ public final class Pet {
     }
 
     public boolean tryToSpawn(Player owner, SpawnRule rule) {
+        if (!MainServerConstraint.isTrue()) return false;
         switch (rule) {
         case LOOKAT: {
             RayTraceResult rayTraceResult = owner.rayTraceBlocks(6.0);
