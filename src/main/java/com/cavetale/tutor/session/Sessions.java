@@ -83,6 +83,10 @@ public final class Sessions implements Listener {
         tempSession.loadAsync(() -> callback.accept(tempSession));
     }
 
+    /**
+     * Run an operation either immediately, or schedule for later if
+     * the session isn't loaded yet.
+     */
     public boolean apply(Player player, Consumer<Session> callback) {
         Session session = sessionsMap.get(player.getUniqueId());
         if (session != null && session.ready) {
@@ -104,8 +108,7 @@ public final class Sessions implements Listener {
     }
 
     public void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
-        Session session = sessionsMap.get(player.getUniqueId());
-        session.applyGoals(callback);
+        apply(player, session -> session.applyGoals(callback));
     }
 
     public int applyClick(Player player, String token) {
