@@ -1,7 +1,7 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.connect.Connect;
 import com.cavetale.tutor.session.PlayerQuest;
-import com.winthier.connect.Connect;
 import lombok.Value;
 import net.kyori.adventure.text.Component;
 
@@ -22,7 +22,7 @@ public final class ServerNameConstraint implements Constraint.Simple {
     }
 
     public boolean isTrue() {
-        return Connect.getInstance().getServerName().equals(name);
+        return Connect.get().getServerName().equals(name);
     }
 
     public static ServerNameConstraint raid() {

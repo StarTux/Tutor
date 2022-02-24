@@ -1,7 +1,7 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.connect.ServerCategory;
 import com.cavetale.tutor.session.PlayerQuest;
-import com.winthier.connect.Connect;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 
@@ -19,7 +19,7 @@ public final class MainServerConstraint implements Constraint.Simple {
     }
 
     public static boolean isTrue() {
-        return Connect.getInstance().getServerName().equals("cavetale");
+        return ServerCategory.current().isSurvival();
     }
 
     public static MainServerConstraint instance() {

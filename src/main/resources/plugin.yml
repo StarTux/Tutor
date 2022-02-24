@@ -3,12 +3,12 @@ main: com.cavetale.tutor.TutorPlugin
 name: Tutor
 version: 0.1
 description: Player Tutorials
-api-version: 1.17
+api-version: 1.18
 
 author: StarTux
 website: https://github.com/StarTux/Tutor
 
-depend: [Core, SQL, Perm, PlayerCache, Sidebar, Mytems, ProtocolLib, Ticket, Connect]
+depend: [Core, SQL, Perm, PlayerCache, Sidebar, Mytems, ProtocolLib, Ticket]
 softdepend: []
 
 commands:

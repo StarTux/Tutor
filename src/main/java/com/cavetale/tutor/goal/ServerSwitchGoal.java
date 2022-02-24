@@ -1,10 +1,10 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
-import com.winthier.connect.Connect;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -126,22 +126,22 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
 
     @EventHandler(priority = EventPriority.MONITOR)
     void onPlayerJoin(PlayerJoinEvent event) {
-        switch (Connect.getInstance().getServerName()) {
-            case "hub":
-                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                        if (goal == this) condHub.progress(playerQuest);
-                    });
-                break;
-            case "creative":
-                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                        if (goal == this) condCreative.progress(playerQuest);
-                    });
-                break;
-            case "cavetale":
-                TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                        if (goal == this) condCavetale.progress(playerQuest);
-                    });
-                break;
+        switch (NetworkServer.current()) {
+        case HUB:
+            TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                    if (goal == this) condHub.progress(playerQuest);
+                });
+            break;
+        case CREATIVE:
+            TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                    if (goal == this) condCreative.progress(playerQuest);
+                });
+            break;
+        case CAVETALE:
+            TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
+                    if (goal == this) condCavetale.progress(playerQuest);
+                });
+            break;
         default: break;
         }
     }
