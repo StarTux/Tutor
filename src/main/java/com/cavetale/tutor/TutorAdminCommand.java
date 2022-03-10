@@ -302,22 +302,22 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         deleted += plugin.database.delete(playerPetUnlockList);
         deleted += plugin.database.delete(playerQuestList);
         for (SQLCompletedQuest it : completedQuestList) {
-            it.setId(0);
+            it.setId(null);
             it.setPlayer(to.uuid);
         }
         plugin.database.save(completedQuestList);
         for (SQLPlayerPet it : playerPetList) {
-            it.setId(0);
+            it.setId(null);
             it.setPlayer(to.uuid);
         }
         plugin.database.save(playerPetList);
         for (SQLPlayerPetUnlock it : playerPetUnlockList) {
-            it.setId(0);
+            it.setId(null);
             it.setPlayer(to.uuid);
         }
         plugin.database.save(playerPetUnlockList);
         for (SQLPlayerQuest it : playerQuestList) {
-            it.setId(0);
+            it.setId(null);
             it.setPlayer(to.uuid);
         }
         plugin.database.save(playerQuestList);
