@@ -146,7 +146,7 @@ public final class PlayerQuest {
             });
         player.sendMessage(msg);
         player.showTitle(Title.title(Component.empty(), msg,
-                                     Title.Times.of(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+                                     Title.Times.times(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
     }
 

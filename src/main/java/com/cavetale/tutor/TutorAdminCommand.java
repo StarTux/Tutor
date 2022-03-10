@@ -7,6 +7,10 @@ import com.cavetale.core.font.Unicode;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
+import com.cavetale.tutor.sql.SQLCompletedQuest;
+import com.cavetale.tutor.sql.SQLPlayerPet;
+import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
+import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.winthier.playercache.PlayerCache;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,11 +19,12 @@ import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
@@ -54,6 +59,10 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .description("Player quest info")
             .completers(CommandArgCompleter.NULL)
             .senderCaller(this::info);
+        rootNode.addChild("transfer").arguments("<from> <to>")
+            .description("Account transfer")
+            .completers(PlayerCache.NAME_COMPLETER, PlayerCache.NAME_COMPLETER)
+            .senderCaller(this::transfer);
     }
 
     private Player requirePlayer(String arg) {
@@ -89,9 +98,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             throw new CommandWarn(session.getName() + " already has quest " + quest.getName().key + "!");
         }
         session.startQuest(quest);
-        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
-                           .append(Component.text(session.getName()))
-                           .append(Component.text(" started quest: "))
+        sender.sendMessage(text().color(YELLOW)
+                           .append(text(session.getName()))
+                           .append(text(" started quest: "))
                            .append(quest.name.displayName)
                            .build());
         return true;
@@ -104,9 +113,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         if (session.removeQuest(quest.name) == null) {
             throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
         }
-        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
-                           .append(Component.text(session.getName()))
-                           .append(Component.text(" stopped quest: "))
+        sender.sendMessage(text().color(YELLOW)
+                           .append(text(session.getName()))
+                           .append(text(" stopped quest: "))
                            .append(quest.name.displayName)
                            .build());
         return true;
@@ -120,9 +129,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
         }
         session.startQuest(quest);
-        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
-                           .append(Component.text(session.getName()))
-                           .append(Component.text(" restarted quest: "))
+        sender.sendMessage(text().color(YELLOW)
+                           .append(text(session.getName()))
+                           .append(text(" restarted quest: "))
                            .append(quest.name.displayName)
                            .build());
         return true;
@@ -136,11 +145,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         if (playerQuest == null) {
             throw new CommandWarn(session.getName() + " does not have quest " + quest.getName().key + "!");
         }
-        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
-                           .append(Component.text(session.getName()))
-                           .append(Component.text(" skipping quest goal: "))
+        sender.sendMessage(text().color(YELLOW)
+                           .append(text(session.getName()))
+                           .append(text(" skipping quest goal: "))
                            .append(quest.name.displayName)
-                           .append(Component.text(", "))
+                           .append(text(", "))
                            .append(playerQuest.getCurrentGoal().getDisplayName())
                            .build());
         playerQuest.onGoalComplete(session.getPlayer());
@@ -168,9 +177,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         if (completedCondition == null) {
             throw new CommandWarn("No completable goal was found!");
         }
-        sender.sendMessage(Component.text().color(NamedTextColor.YELLOW)
-                           .append(Component.text(session.getName()))
-                           .append(Component.text(" completed condition: "))
+        sender.sendMessage(text().color(YELLOW)
+                           .append(text(session.getName()))
+                           .append(text(" completed condition: "))
                            .append(completedCondition.getDescription())
                            .build());
         return true;
@@ -181,75 +190,75 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         PlayerCache playerCache = requirePlayerCache(args[0]);
         plugin.sessions.findOrLoad(playerCache, session -> {
                 List<Component> lines = new ArrayList<>();
-                lines.add(Component.text("Quest info for " + playerCache.name, NamedTextColor.YELLOW));
+                lines.add(text("Quest info for " + playerCache.name, YELLOW));
                 lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                            Component.text("Completed ", NamedTextColor.GRAY),
-                            Component.text("" + session.getCompletedQuests().size() + " ", NamedTextColor.YELLOW),
-                            Component.join(JoinConfiguration.separator(Component.text(", ", NamedTextColor.GRAY)),
+                            text("Completed ", GRAY),
+                            text("" + session.getCompletedQuests().size() + " ", YELLOW),
+                            Component.join(JoinConfiguration.separator(text(", ", GRAY)),
                                            session.getCompletedQuests().entrySet().stream()
                                            .map(entry -> {
                                                    Component tooltip = Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                            plugin.getQuests().get(entry.getKey()).name.displayName,
-                                                           Component.text("\nCompleted "
+                                                           text("\nCompleted "
                                                                           + dateFormat.format(entry.getValue().getTime()),
-                                                                          NamedTextColor.GRAY),
+                                                                          GRAY),
                                                        });
-                                                   return Component.text().content(entry.getKey().key)
-                                                       .color(NamedTextColor.GOLD)
+                                                   return text().content(entry.getKey().key)
+                                                       .color(GOLD)
                                                        .hoverEvent(HoverEvent.showText(tooltip))
                                                        .build();
                                                })
                                            .collect(Collectors.toList())),
                         }));
                 lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                            Component.text("Current Quests ", NamedTextColor.GRAY),
-                            Component.text("" + session.getCurrentQuests().size(), NamedTextColor.YELLOW),
+                            text("Current Quests ", GRAY),
+                            text("" + session.getCurrentQuests().size(), YELLOW),
                         }));
                 for (PlayerQuest playerQuest : session.getCurrentQuests().values()) {
                     lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                Component.text(Unicode.BULLET_POINT.character + " ", NamedTextColor.GRAY),
-                                (Component.text().content(playerQuest.getQuest().getName().key)
-                                 .color(NamedTextColor.YELLOW)
+                                text(Unicode.BULLET_POINT.character + " ", GRAY),
+                                (text().content(playerQuest.getQuest().getName().key)
+                                 .color(YELLOW)
                                  .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                  playerQuest.getQuest().name.displayName,
-                                                 Component.text("\n" + playerQuest.getQuest().getName().type.upper, NamedTextColor.GRAY),
+                                                 text("\n" + playerQuest.getQuest().getName().type.upper, GRAY),
                                              })))
                                  .build()),
                                 Component.space(),
-                                (Component.text().content(playerQuest.getCurrentGoal().getId())
-                                 .color(NamedTextColor.GOLD)
+                                (text().content(playerQuest.getCurrentGoal().getId())
+                                 .color(GOLD)
                                  .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
                                                  playerQuest.getCurrentGoal().getDisplayName(),
-                                                 Component.text("" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
+                                                 text("" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
                                                                 + "/" + playerQuest.getQuest().getGoals().size(),
-                                                                NamedTextColor.GRAY),
+                                                                GRAY),
                                              })))
                                  .build()),
                                 Component.space(),
-                                Component.text(playerQuest.getCurrentProgress().serialize(), NamedTextColor.GRAY),
+                                text(playerQuest.getCurrentProgress().serialize(), GRAY),
                             }));
                 }
                 if (session.getPet() == null) {
                     lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                Component.text("Pet ", NamedTextColor.GRAY),
-                                Component.text("None", NamedTextColor.DARK_GRAY),
+                                text("Pet ", GRAY),
+                                text("None", DARK_GRAY),
                             }));
                 } else {
                     lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                Component.text("Pet", NamedTextColor.GRAY),
+                                text("Pet", GRAY),
                                 Component.space(),
-                                (Component.text()
+                                (text()
                                  .append(session.getPlayerPetRow().parsePetType().displayName)
-                                 .color(NamedTextColor.YELLOW)
+                                 .color(YELLOW)
                                  .build()),
                                 Component.space(),
                                 session.getPlayerPetRow().getNameComponent(),
                                 Component.space(),
-                                Component.text(session.getPet().isSpawned()
+                                text(session.getPet().isSpawned()
                                                ? stringify(session.getPet().getEntity().getLocation())
-                                               : "despawned", NamedTextColor.GRAY),
+                                               : "despawned", GRAY),
                                 Component.space(),
-                                Component.text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), NamedTextColor.YELLOW),
+                                text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), YELLOW),
                             }));
                 }
                 sender.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
@@ -258,6 +267,69 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                             Component.newline(),
                         }));
             });
+        return true;
+    }
+
+    /**
+     * Account transfer.
+     * This will corrupt cached sessions in case any of the players
+     * are online!
+     */
+    private boolean transfer(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        PlayerCache from = PlayerCache.forArg(args[0]);
+        if (from == null) throw new CommandWarn("Player not found: " + args[0]);
+        PlayerCache to = PlayerCache.forArg(args[1]);
+        if (to == null) throw new CommandWarn("Player not found: " + args[1]);
+        if (from.equals(to)) throw new CommandWarn("Players are identical: " + from.getName());
+        Player fromPlayer = Bukkit.getPlayer(from.uuid);
+        Player toPlayer = Bukkit.getPlayer(to.uuid);
+        if (fromPlayer != null) plugin.sessions.removeSession(fromPlayer);
+        if (toPlayer != null) plugin.sessions.removeSession(toPlayer);
+        List<SQLCompletedQuest> completedQuestList = plugin.database.find(SQLCompletedQuest.class).eq("player", from.uuid).findList();
+        List<SQLPlayerPet> playerPetList = plugin.database.find(SQLPlayerPet.class).eq("player", from.uuid).findList();
+        List<SQLPlayerPetUnlock> playerPetUnlockList = plugin.database.find(SQLPlayerPetUnlock.class).eq("player", from.uuid).findList();
+        List<SQLPlayerQuest> playerQuestList = plugin.database.find(SQLPlayerQuest.class).eq("player", from.uuid).findList();
+        if (completedQuestList.isEmpty()
+            && playerPetList.isEmpty()
+            && playerPetUnlockList.isEmpty()
+            && playerQuestList.isEmpty()) {
+            throw new CommandWarn(from.name + " does not have any quest data");
+        }
+        int deleted = 0;
+        deleted += plugin.database.delete(completedQuestList);
+        deleted += plugin.database.delete(playerPetList);
+        deleted += plugin.database.delete(playerPetUnlockList);
+        deleted += plugin.database.delete(playerQuestList);
+        for (SQLCompletedQuest it : completedQuestList) {
+            it.setId(0);
+            it.setPlayer(to.uuid);
+        }
+        plugin.database.save(completedQuestList);
+        for (SQLPlayerPet it : playerPetList) {
+            it.setId(0);
+            it.setPlayer(to.uuid);
+        }
+        plugin.database.save(playerPetList);
+        for (SQLPlayerPetUnlock it : playerPetUnlockList) {
+            it.setId(0);
+            it.setPlayer(to.uuid);
+        }
+        plugin.database.save(playerPetUnlockList);
+        for (SQLPlayerQuest it : playerQuestList) {
+            it.setId(0);
+            it.setPlayer(to.uuid);
+        }
+        plugin.database.save(playerQuestList);
+        sender.sendMessage(text("Transferred quest data from " + from.name + " to " + to.name + ":"
+                                + " completed=" + completedQuestList.size()
+                                + " pets=" + playerPetList.size()
+                                + " petUnlocks=" + playerPetUnlockList.size()
+                                + " quests=" + playerQuestList.size()
+                                + " deleted=" + deleted,
+                                YELLOW));
+        if (fromPlayer != null) plugin.sessions.createSession(fromPlayer);
+        if (toPlayer != null) plugin.sessions.createSession(toPlayer);
         return true;
     }
 

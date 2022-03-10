@@ -129,7 +129,7 @@ public final class Sessions implements Listener {
         return result;
     }
 
-    private void createSession(Player player) {
+    public void createSession(Player player) {
         UUID uuid = player.getUniqueId();
         if (sessionsMap.containsKey(uuid)) {
             throw new IllegalStateException("Session already exists: " + player.getName());
