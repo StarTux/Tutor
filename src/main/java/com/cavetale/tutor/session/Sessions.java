@@ -170,6 +170,7 @@ public final class Sessions implements Listener {
 
     @EventHandler
     void onPlayerSidebar(PlayerSidebarEvent event) {
+        if (!event.getPlayer().hasPermission("tutor.tutor")) return;
         Session session = find(event.getPlayer());
         if (session == null) return;
         List<Component> lines = null;
