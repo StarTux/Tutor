@@ -6,9 +6,11 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class StorageGoal implements Goal {
     @Getter protected final String id;
@@ -19,57 +21,71 @@ public final class StorageGoal implements Goal {
     protected final CheckboxCondition condMs;
     protected final CheckboxCondition condDiamonds;
     protected final CheckboxCondition condSearch;
+    protected final CheckboxCondition condBack;
     protected final CheckboxCondition condStash;
 
     public StorageGoal() {
         this.id = "storage";
-        this.displayName = Component.text("Extra Storage");
-        condMs = new CheckboxCondition(Component.text("Open Mass Storage"),
+        this.displayName = text("Extra Storage");
+        condMs = new CheckboxCondition(text("Open Mass Storage"),
                                        playerQuest -> getProgress(playerQuest).ms,
                                        playerQuest -> getProgress(playerQuest).ms = true);
-        condDiamonds = new CheckboxCondition(Component.text("Store some Diamonds"),
+        condDiamonds = new CheckboxCondition(text("Store some Diamonds"),
                                              playerQuest -> getProgress(playerQuest).msDiamonds,
                                              playerQuest -> getProgress(playerQuest).msDiamonds = true);
-        condSearch = new CheckboxCondition(Component.text("Find your Diamonds"),
+        condSearch = new CheckboxCondition(text("Find your Diamonds"),
                                            playerQuest -> getProgress(playerQuest).msSearch,
                                            playerQuest -> getProgress(playerQuest).msSearch = true);
-        condStash = new CheckboxCondition(Component.text("Open Stash"),
+        condBack = new CheckboxCondition(text("Explore the MS Menu"),
+                                         playerQuest -> getProgress(playerQuest).msBack,
+                                         playerQuest -> getProgress(playerQuest).msBack = true);
+        condStash = new CheckboxCondition(text("Open Stash"),
                                           playerQuest -> getProgress(playerQuest).stash,
                                           playerQuest -> getProgress(playerQuest).stash = true);
         condMs.setBookPageIndex(0);
         condDiamonds.setBookPageIndex(0);
         condSearch.setBookPageIndex(1);
-        condStash.setBookPageIndex(2);
+        condBack.setBookPageIndex(2);
+        condStash.setBookPageIndex(3);
         this.conditions = List.of(new Condition[] {
                 condMs,
                 condDiamonds,
                 condSearch,
+                condBack,
                 condStash,
             });
         this.constraints = List.of(MainServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Component.text("Mass Storage is an infinite store for simple items,"
-                                       + " from cobblestone to diamonds."
-                                       + "\n\nCommand:\n"),
-                        Component.text("/ms", NamedTextColor.BLUE),
-                        Component.text("\nOpen the Mass Storage menu\n", NamedTextColor.GRAY),
+                join(noSeparators(), new Component[] {
+                        text("Mass Storage (MS) is an infinite store for simple items,"
+                             + " from cobblestone to diamonds,"
+                             + " and have it available wherever you go."
+                             + "\n\nCommand:\n"),
+                        text("/ms", BLUE),
+                        text("\nOpen the Mass Storage menu\n", GRAY),
                     }),
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Component.text("Finding items in MS is easy."
-                                       + " You can click your way through the menu,"
-                                       + " or enter the name of what you're looking for."
-                                       + "\n\nCommand:\n"),
-                        Component.text("/ms diamond", NamedTextColor.BLUE),
-                        Component.text("\nSearch for diamonds\n", NamedTextColor.GRAY),
+                join(noSeparators(), new Component[] {
+                        text("Finding items in MS is easy."
+                             + " You can click your way through the menu,"
+                             + " or enter the name of what you're looking for."
+                             + "\n\nCommand:\n"),
+                        text("/ms diamond", BLUE),
+                        text("\nSearch for diamonds\n", GRAY),
                     }),
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Component.text("Your stash can hold any item (except shulker boxes),"
-                                       + " just like your ender chest."
-                                       + " It can transport items to the raid server."
-                                       + "\n\nCommand:\n"),
-                        Component.text("/st", NamedTextColor.BLUE),
-                        Component.text("\nOpen your stash", NamedTextColor.GRAY),
+                join(noSeparators(), new Component[] {
+                        text("Menu navigation is key."
+                             + " On Cavetale, you can return to the previous"
+                             + " menu by clicking outside the menu window."
+                             + "\n\n"
+                             + "Open MS, explore the categories,"
+                             + " and use this back function by clicking outside."),
+                    }),
+                join(noSeparators(), new Component[] {
+                        text("Your stash can hold any item (except shulker boxes),"
+                             + " just like your ender chest."
+                             + "\n\nCommand:\n"),
+                        text("/st", BLUE),
+                        text("\nOpen your stash", GRAY),
                     }),
             });
     }
@@ -79,14 +95,14 @@ public final class StorageGoal implements Goal {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 50L, 100,
-                                        Component.text("Need a place to store"),
-                                        Component.text("all your items?"));
+                                        text("Need a place to store"),
+                                        text("all your items?"));
                     pet.addSpeechBubble(id, 0L, 100L,
-                                        Component.text("No need for a massive"),
-                                        Component.text("storage room!"));
+                                        text("No need for a massive"),
+                                        text("storage room!"));
                     pet.addSpeechBubble(id, 0L, 100L,
-                                        Component.text("Mass Storage and the"),
-                                        Component.text("Stash have you covered!"));
+                                        text("Mass Storage and the"),
+                                        text("Stash have you covered!"));
                 });
         }
     }
@@ -119,6 +135,10 @@ public final class StorageGoal implements Goal {
             }
             break;
         }
+        case MASS_STORAGE_GO_BACK: {
+            condBack.progress(playerQuest);
+            break;
+        }
         case OPEN_STASH:
             condStash.progress(playerQuest);
             break;
@@ -137,10 +157,11 @@ public final class StorageGoal implements Goal {
     }
 
     protected static final class StorageProgress extends GoalProgress {
-        boolean ms;
-        boolean msDiamonds;
-        boolean msSearch;
-        boolean stash;
+        protected boolean ms;
+        protected boolean msDiamonds;
+        protected boolean msSearch;
+        protected boolean msBack;
+        protected boolean stash;
 
         @Override
         public boolean isComplete() {
