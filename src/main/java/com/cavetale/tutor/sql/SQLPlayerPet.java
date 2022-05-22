@@ -1,7 +1,8 @@
 package com.cavetale.tutor.sql;
 
-import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.pet.PetGender;
+import com.cavetale.tutor.pet.PetType;
+import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -14,7 +15,7 @@ import net.kyori.adventure.text.Component;
 /**
  * The progress of one player within a certain quest (tutorial).
  */
-public final class SQLPlayerPet {
+public final class SQLPlayerPet implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false, unique = true)

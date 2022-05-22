@@ -1,6 +1,7 @@
 package com.cavetale.tutor.sql;
 
 import com.cavetale.tutor.pet.PetType;
+import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.Data;
 /**
  * The progress of one player within a certain quest (tutorial).
  */
-public final class SQLPlayerPetUnlock {
+public final class SQLPlayerPetUnlock implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false)
