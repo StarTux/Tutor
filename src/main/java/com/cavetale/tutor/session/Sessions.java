@@ -24,6 +24,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -89,8 +90,8 @@ public final class Sessions implements Listener {
      */
     public boolean apply(Player player, Consumer<Session> callback) {
         Session session = sessionsMap.get(player.getUniqueId());
-        if (session != null && session.ready) {
-            callback.accept(session);
+        if (session != null) {
+            session.apply(callback);
             return true;
         } else {
             return false;
@@ -149,7 +150,7 @@ public final class Sessions implements Listener {
         return session;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         createSession(player);
