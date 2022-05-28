@@ -1,5 +1,6 @@
 package com.cavetale.tutor.pet;
 
+import com.cavetale.tutor.event.PetSpawnEvent;
 import com.cavetale.tutor.goal.MainServerConstraint;
 import com.destroystokyo.paper.entity.ai.Goal;
 import java.util.ArrayList;
@@ -58,6 +59,10 @@ public final class Pet {
 
     public void spawn(Location location) {
         if (isSpawned()) despawn();
+        if (!new PetSpawnEvent(this, location).callEvent()) {
+            autoRespawnCooldown = System.currentTimeMillis() + 10000L;
+            return;
+        }
         entity = Objects.requireNonNull(type).spawn(location, this::prepLivingEntity);
         spawnOnce = false;
         triggerSpeechBubble();
@@ -67,6 +72,11 @@ public final class Pet {
         if (entity == null) {
             spawn(location);
         } else {
+            if (!new PetSpawnEvent(this, location).callEvent()) {
+                despawn();
+                autoRespawnCooldown = System.currentTimeMillis() + 10000L;
+                return;
+            }
             teleporting = true;
             entity.teleport(location);
             teleporting = false;
