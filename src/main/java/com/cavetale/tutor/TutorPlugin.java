@@ -10,6 +10,7 @@ import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import com.winthier.sql.SQLDatabase;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,10 +29,10 @@ public final class TutorPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         database = new SQLDatabase(this);
-        database.registerTables(SQLPlayerQuest.class,
-                                SQLCompletedQuest.class,
-                                SQLPlayerPet.class,
-                                SQLPlayerPetUnlock.class);
+        database.registerTables(List.of(SQLPlayerQuest.class,
+                                        SQLCompletedQuest.class,
+                                        SQLPlayerPet.class,
+                                        SQLPlayerPetUnlock.class));
         if (!database.createAllTables()) {
             throw new IllegalStateException("Table creation failed!");
         }

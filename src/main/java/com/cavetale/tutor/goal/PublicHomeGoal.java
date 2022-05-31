@@ -33,7 +33,7 @@ public final class PublicHomeGoal extends AbstractGoal<PublicHomeProgress> {
                 condListVisits,
                 condUseVisit,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of(SurvivalServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Public homes are made by players."

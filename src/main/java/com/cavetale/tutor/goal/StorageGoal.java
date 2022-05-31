@@ -54,7 +54,7 @@ public final class StorageGoal implements Goal {
                 condBack,
                 condStash,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of(SurvivalServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 join(noSeparators(), new Component[] {
                         text("Mass Storage (MS) is an infinite store for simple items,"

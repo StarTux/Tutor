@@ -45,7 +45,7 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                 condCatch,
                 condRelease,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of(SurvivalServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Mob Catchers"),

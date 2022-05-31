@@ -184,7 +184,7 @@ public final class FriendsGoal extends AbstractGoal<FriendsProgress> {
             condGift.progress(playerQuest);
             break;
         case INTERACT_NPC:
-            if (Detail.NAME.is(event, "WeddingRing") && MainServerConstraint.isTrue()) {
+            if (Detail.NAME.is(event, "WeddingRing")) {
                 condPriest.progress(playerQuest);
             }
             break;

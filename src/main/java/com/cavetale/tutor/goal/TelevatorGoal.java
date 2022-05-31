@@ -53,7 +53,7 @@ public final class TelevatorGoal extends AbstractGoal<TelevatorProgress> impleme
                 condUp,
                 condDown,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of(SurvivalServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Place two or more "),

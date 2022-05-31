@@ -42,7 +42,7 @@ public final class WarpGoal extends AbstractGoal<WarpProgress> {
                 condRepairman,
                 condListWarps,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Get back to the place you started any time."

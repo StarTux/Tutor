@@ -36,7 +36,7 @@ public final class WarpPlaceGoal extends AbstractGoal<WarpPlaceProgress> {
                 condWarp,
                 condNPC,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Like all warps, find this place in the warp list.\n\n"),
