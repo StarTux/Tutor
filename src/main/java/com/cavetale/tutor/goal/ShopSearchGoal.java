@@ -40,7 +40,7 @@ public final class ShopSearchGoal extends AbstractGoal<ShopSearchProgress> {
                 condShopSearch,
                 condShopPort,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("The market contains player created shops."
