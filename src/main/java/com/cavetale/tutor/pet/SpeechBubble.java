@@ -97,7 +97,7 @@ public final class SpeechBubble {
             final Component line = lines.get(i);
             Location location = getArmorStandLocation(i, lines.size());
             ArmorStand armorStand = location.getWorld().spawn(location, ArmorStand.class, as -> {
-                    pet.pets.armorStandMap.put(as.getEntityId(), pet);
+                    pet.pets.registerArmorStand(as, pet);
                     as.setMetadata("nomap", new FixedMetadataValue(pet.pets.plugin, true));
                     as.setVisible(false);
                     as.setPersistent(false);

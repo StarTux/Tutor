@@ -37,7 +37,7 @@ public final class Pet {
     protected final int petId;
     @Setter protected String tag;
     @Setter protected PetType type;
-    @Setter protected boolean exclusive;
+    @Setter protected boolean exclusive = true;
     @Setter protected boolean autoRespawn;
     @Setter protected boolean spawnOnce;
     @Setter protected SpawnRule autoSpawnRule = SpawnRule.NEARBY;
@@ -70,6 +70,9 @@ public final class Pet {
 
     public void teleport(Location location) {
         if (entity == null) {
+            spawn(location);
+        } else if (!entity.getWorld().equals(location.getWorld())) {
+            despawn();
             spawn(location);
         } else {
             if (!new PetSpawnEvent(this, location).callEvent()) {
@@ -107,6 +110,10 @@ public final class Pet {
 
     public Player getOwner() {
         return Bukkit.getPlayer(ownerId);
+    }
+
+    public boolean isOwner(Player player) {
+        return Objects.equals(player.getUniqueId(), ownerId);
     }
 
     /**
@@ -174,7 +181,7 @@ public final class Pet {
     }
 
     private void prepLivingEntity(LivingEntity living) {
-        pets.entityPetMap.put(living.getEntityId(), this);
+        pets.registerLivingEntity(living, this);
         living.setMetadata("nomap", new FixedMetadataValue(pets.plugin, true));
         living.setPersistent(false);
         living.setSilent(true);
@@ -335,9 +342,5 @@ public final class Pet {
         default:
             throw new IllegalStateException("rule=" + rule);
         }
-    }
-
-    public boolean isValid() {
-        return pets.petMap.containsKey(this.petId);
     }
 }

@@ -3,10 +3,6 @@ package com.cavetale.tutor.pet;
 import com.cavetale.core.event.entity.PluginEntityEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.MainServerConstraint;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
@@ -15,16 +11,17 @@ import com.destroystokyo.paper.event.entity.TurtleStartDiggingEvent;
 import io.papermc.paper.event.entity.EntityInsideBlockEvent;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -57,6 +54,7 @@ import org.bukkit.event.entity.StriderTemperatureChangeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -67,56 +65,13 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 @RequiredArgsConstructor
 public final class Pets implements Listener {
     protected final TutorPlugin plugin;
-    protected final Map<Integer, Pet> petMap = new HashMap<>();
-    // updated by Pet
-    protected final Map<Integer, Pet> entityPetMap = Collections.synchronizedMap(new HashMap<>());
-    protected final Map<Integer, Pet> armorStandMap = new HashMap<>();
+    private final Map<Integer, Pet> petMap = new TreeMap<>();
+    private final Map<UUID, Pet> entityPetMap = new TreeMap<>();
     private final Map<UUID, List<Pet>> ownerPetMap = new HashMap<>();
     private int nextPetId = 0;
-    private static final PacketType[] ENTITY_PACKETS = {
-        PacketType.Play.Server.ANIMATION,
-        PacketType.Play.Server.ATTACH_ENTITY,
-        PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
-        PacketType.Play.Server.COLLECT,
-        PacketType.Play.Server.ENTITY_EFFECT,
-        PacketType.Play.Server.ENTITY_EQUIPMENT,
-        PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-        PacketType.Play.Server.ENTITY_LOOK,
-        PacketType.Play.Server.ENTITY_METADATA,
-        PacketType.Play.Server.ENTITY_STATUS,
-        PacketType.Play.Server.ENTITY_TELEPORT,
-        PacketType.Play.Server.ENTITY_VELOCITY,
-        PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-        PacketType.Play.Server.REL_ENTITY_MOVE,
-        PacketType.Play.Server.REMOVE_ENTITY_EFFECT,
-        PacketType.Play.Server.SPAWN_ENTITY,
-        PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
-        PacketType.Play.Server.SPAWN_ENTITY_LIVING,
-        PacketType.Play.Server.SPAWN_ENTITY_PAINTING,
-        PacketType.Play.Server.ENTITY_DESTROY,
-    };
 
     public void enable() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        PacketAdapter packetAdapter = new PacketAdapter(plugin, ENTITY_PACKETS) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    if (event.getPacketType() == PacketType.Play.Server.ENTITY_DESTROY) {
-                        for (int entityId : event.getPacket().getIntLists().read(0)) {
-                            if (shouldCancelPacket(entityId, event)) {
-                                event.setCancelled(true);
-                                return;
-                            }
-                        }
-                    } else {
-                        int entityId = event.getPacket().getIntegers().read(0);
-                        if (shouldCancelPacket(entityId, event)) {
-                            event.setCancelled(true);
-                        }
-                    }
-                }
-            };
-        ProtocolLibrary.getProtocolManager().addPacketListener(packetAdapter);
     }
 
     public void disable() {
@@ -153,7 +108,7 @@ public final class Pets implements Listener {
             findPets(pet.ownerId).add(pet);
         }
         if (pet.entity != null) {
-            entityPetMap.put(pet.entity.getEntityId(), pet);
+            registerLivingEntity(pet.entity, pet);
         }
     }
 
@@ -181,8 +136,7 @@ public final class Pets implements Listener {
     public void removeOwnerTag(UUID owner, String tag) {
         List<Pet> pets = findPets(owner);
         if (pets == null) return;
-        pets = new ArrayList<>(pets);
-        for (Pet pet : pets) {
+        for (Pet pet : List.copyOf(pets)) {
             if (Objects.equals(pet.getTag(), tag)) {
                 removePet(pet);
             }
@@ -195,17 +149,6 @@ public final class Pets implements Listener {
         }
     }
 
-    private boolean shouldCancelPacket(int entityId, PacketEvent event) {
-        Pet pet = entityPetMap.get(entityId);
-        if (pet == null) {
-            pet = armorStandMap.get(entityId);
-        }
-        if (pet == null) return false;
-        if (!pet.exclusive) return false;
-        if (pet.ownerId.equals(event.getPlayer().getUniqueId())) return false;
-        return true;
-    }
-
     /**
      * Quick generic event checker. Cancels the event if entity is a
      * pet and event is not null.
@@ -214,7 +157,7 @@ public final class Pets implements Listener {
      * @return The pet if the entity is a pet, null otherwise.
      */
     protected Pet handleEventEntity(Entity entity, Cancellable event) {
-        Pet pet = entityPetMap.get(entity.getEntityId());
+        Pet pet = entityPetMap.get(entity.getUniqueId());
         if (pet == null) return null;
         if (event != null) event.setCancelled(true);
         return pet;
@@ -222,13 +165,11 @@ public final class Pets implements Listener {
 
     @EventHandler
     void onEntityRemoveFromWorld(EntityRemoveFromWorldEvent event) {
-        int entityId = event.getEntity().getEntityId();
-        Pet pet = entityPetMap.remove(entityId);
-        if (pet != null) {
+        Pet pet = entityPetMap.remove(event.getEntity().getUniqueId());
+        if (pet != null && Objects.equals(pet.entity, event.getEntity())) {
             pet.entity = null;
             return;
         }
-        armorStandMap.remove(entityId);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -258,6 +199,16 @@ public final class Pets implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     void onEntityPortal(EntityPortalEvent event) {
         handleEventEntity(event.getEntity(), event);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        entityPetMap.forEach((uuid, pet) -> {
+                if (pet.exclusive && !pet.isOwner(player)) {
+                    player.hideEntity(plugin, Bukkit.getEntity(uuid));
+                }
+            });
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -445,5 +396,20 @@ public final class Pets implements Listener {
     @EventHandler
     protected void onStriderTemperatureChange(StriderTemperatureChangeEvent event) {
         handleEventEntity(event.getEntity(), event);
+    }
+
+    protected void registerLivingEntity(LivingEntity living, Pet pet) {
+        entityPetMap.put(living.getUniqueId(), pet);
+        if (pet.exclusive) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (!pet.isOwner(player)) {
+                    player.hideEntity(plugin, living);
+                }
+            }
+        }
+    }
+
+    protected void registerArmorStand(ArmorStand armorStand, Pet pet) {
+        registerLivingEntity(armorStand, pet);
     }
 }
