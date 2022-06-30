@@ -312,7 +312,7 @@ public final class Session {
             if (currentQuests.containsKey(questName)) continue;
             if (completedQuests.containsKey(questName)) continue;
             if (questName.getAutoStartPermission() != null) {
-                if (Perm.has(uuid, questName.getAutoStartPermission().permission)) {
+                if (Perm.has(uuid, questName.getAutoStartPermission())) {
                     startQuest(questName);
                     return;
                 }
@@ -463,14 +463,14 @@ public final class Session {
     }
 
     private boolean canSee(QuestName questName) {
-        for (QuestName dep : questName.seeDependencies) {
+        for (QuestName dep : questName.getSeeDependencies()) {
             if (!completedQuests.containsKey(dep)) return false;
         }
         return true;
     }
 
     private boolean canStart(QuestName questName) {
-        for (QuestName dep : questName.startDependencies) {
+        for (QuestName dep : questName.getStartDependencies()) {
             if (!completedQuests.containsKey(dep)) return false;
         }
         return true;
@@ -545,14 +545,14 @@ public final class Session {
             item = new ItemStack(Material.CHEST);
             text.add(Component.text("Locked", NamedTextColor.DARK_RED));
         }
-        if (!questName.description.isEmpty()) {
+        if (!questName.getDescription().isEmpty()) {
             text.add(Component.empty());
-            text.addAll(questName.description);
+            text.addAll(questName.getDescription());
         }
-        if (!questName.startDependencies.isEmpty()) {
+        if (!questName.getStartDependencies().isEmpty()) {
             text.add(Component.empty());
             text.add(Component.text(questName.type.upper + " Requirements", NamedTextColor.GRAY));
-            for (QuestName dependency : questName.startDependencies) {
+            for (QuestName dependency : questName.getStartDependencies()) {
                 if (completedQuests.containsKey(dependency)) {
                     text.add(Component.text(Unicode.CHECKED_CHECKBOX.character + " ", NamedTextColor.GRAY)
                              .append(dependency.displayName));

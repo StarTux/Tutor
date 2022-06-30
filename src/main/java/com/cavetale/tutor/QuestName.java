@@ -1,6 +1,7 @@
 package com.cavetale.tutor;
 
-import com.cavetale.tutor.goal.Goals;
+import com.cavetale.tutor.goal.*;
+import com.cavetale.tutor.goal.Goal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -8,96 +9,218 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
+import static net.kyori.adventure.text.Component.text;
 
 /**
  * A QuestName is the static configuration of all quests, with display
- * name, description, requirements, flags.  Actual goals are set in
- * `goal.Goals`.
+ * name, description, requirements, flags.
  */
 @Getter
 public enum QuestName {
     // Beginner
-    BEGINNER(QuestType.TUTORIAL, Component.text("Welcome to Cavetale!"),
-             List.of(Component.text("The beginner tutorial")),
-             Set.of(),
-             Set.of(),
-             QuestFlag.autoStart("tutor.beginner")),
-    WARP(QuestType.TUTORIAL, Component.text("Beginner Tour"),
-         List.of(Component.text("Find out about the"),
-                 Component.text("different places"),
-                 Component.text("Cavetale has to offer,"),
-                 Component.text("and how to get there.")),
-         Set.of(BEGINNER),
-         Set.of(BEGINNER)),
-    CHAT(QuestType.TUTORIAL, Component.text("Chatting 101"),
-         List.of(Component.text("On using our"),
-                 Component.text("chat channels.")),
-         Set.of(BEGINNER),
-         Set.of(BEGINNER)),
-    MONEY(QuestType.TUTORIAL, Component.text("All About Money"),
-          List.of(Component.text("Learn how to earn"),
-                  Component.text("and spend money.")),
-          Set.of(BEGINNER),
-          Set.of(BEGINNER)),
-    MEMBER(QuestType.TUTORIAL, Component.text("The Road to Member"),
-           List.of(Component.text("Graduate from the"),
-                   Component.text("Beginner Tutorial and"),
-                   Component.text("and become a Member.")),
-           Set.of(BEGINNER),
-           Set.of(MONEY, WARP, CHAT)),
-    // Member
-    MEMBER_INTRO(QuestType.TUTORIAL, Component.text("New Members Introduction"),
-                 List.of(Component.text("Explore some of the"),
-                         Component.text("features you want to"),
-                         Component.text("know when you play"),
-                         Component.text("on Cavetale")),
-                 Set.of(MEMBER), Set.of(MEMBER)),
-    HOME(QuestType.TUTORIAL, Component.text("Advanced Claims and Homes"),
-         List.of(Component.text("How to grow your"),
-                 Component.text("claim and trust your"),
-                 Component.text("friends in it."),
-                 Component.text("Share your homes.")),
-         Set.of(MEMBER), Set.of(MEMBER_INTRO)),
-    MOBILITY(QuestType.TUTORIAL, Component.text("Mobility"),
-             List.of(Component.text("These systems"),
-                     Component.text("give you more"),
-                     Component.text("power for making"),
-                     Component.text("your base.")),
-             Set.of(MEMBER), Set.of(MEMBER_INTRO)),
-    SPELEOLOGIST(QuestType.QUEST, Component.text("Rank up to Speleologist"),
-                 List.of(Component.text("Aquire a higher rank"),
-                         Component.text("and enjoy its perks.")),
-                 Set.of(MEMBER),
-                 Set.of(MEMBER_INTRO, HOME, MOBILITY));
+    BEGINNER(QuestType.TUTORIAL, text("Welcome to Cavetale!")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("The beginner tutorial"));
+        }
+
+        @Override public String getAutoStartPermission() {
+            return "tutor.beginner";
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new ChoosePetGoal(),
+                           new WildGoal(),
+                           new SetHomeGoal());
+        }
+    },
+    WARP(QuestType.TUTORIAL, text("Beginner Tour")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Find out about the"),
+                           text("different places"),
+                           text("Cavetale has to offer,"),
+                           text("and how to get there."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new PublicHomeGoal(),
+                           new WarpGoal(),
+                           WarpPlaceGoal.bazaar(),
+                           WarpPlaceGoal.dwarven(),
+                           WarpPlaceGoal.cloud(),
+                           WarpPlaceGoal.witch(),
+                           new ServerSwitchGoal());
+        }
+    },
+    CHAT(QuestType.TUTORIAL, text("Chatting 101")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("On using our"),
+                           text("chat channels."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new LocalChatGoal(),
+                           new PrivateChatGoal(),
+                           new PartyChatGoal());
+        }
+    },
+    MONEY(QuestType.TUTORIAL, text("All About Money")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Learn how to earn"),
+                           text("and spend money."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new MineGoal(),
+                           new MiningGoal(),
+                           new StorageGoal(),
+                           new SellItemGoal(),
+                           new ShopSearchGoal());
+        }
+    },
+    MEMBER(QuestType.TUTORIAL, text("The Road to Member")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Graduate from the"),
+                           text("Beginner Tutorial and"),
+                           text("and become a Member."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(BEGINNER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(MONEY, WARP, CHAT);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new TicketGoal(),
+                           new MenuGoal(),
+                           new MemberAcceptGoal());
+        }
+    },
+    MEMBER_INTRO(QuestType.TUTORIAL, text("New Members Introduction")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Explore some of the"),
+                           text("features you want to"),
+                           text("know when you play"),
+                           text("on Cavetale"));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MEMBER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(MEMBER);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new MailGoal(),
+                           new TitleGoal(),
+                           new FriendsGoal(),
+                           new RaidGoal());
+        }
+    },
+    HOME(QuestType.TUTORIAL, text("Advanced Claims and Homes")) {
+         @Override public List<Component> getDescription() {
+             return List.of(text("How to grow your"),
+                            text("claim and trust your"),
+                            text("friends in it."),
+                            text("Share your homes."));
+         }
+
+         @Override public Set<QuestName> getSeeDependencies() {
+             return Set.of(MEMBER);
+         }
+
+         @Override public Set<QuestName> getStartDependencies() {
+             return Set.of(MEMBER_INTRO);
+         }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new ClaimTrustGoal(),
+                           new ClaimGrowGoal(),
+                           new SetNamedHomeGoal(),
+                           new InviteHomeGoal());
+        }
+    },
+    MOBILITY(QuestType.TUTORIAL, text("Mobility")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("These systems"),
+                           text("give you more"),
+                           text("power for making"),
+                           text("your base."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MEMBER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(MEMBER_INTRO);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new TelevatorGoal(),
+                           new LinkPortalGoal(),
+                           new PocketMobGoal());
+        }
+    },
+    SPELEOLOGIST(QuestType.QUEST, text("Rank up to Speleologist")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Aquire a higher rank"),
+                           text("and enjoy its perks."));
+        }
+
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MEMBER);
+        }
+
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(MEMBER_INTRO, HOME, MOBILITY);
+        }
+
+        @Override protected List<Goal> createGoals() {
+            return List.of(new SpeleologistGoal(),
+                           new SpeleologistAcceptGoal());
+        }
+    },
+    ;
+
     public static final List<String> KEY_LIST;
 
-    public final QuestType type;
     public final String key;
+    public final QuestType type;
     public final Component displayName;
-    public final List<Component> description;
-    public final Set<QuestName> seeDependencies;
-    public final Set<QuestName> startDependencies;
-    public final List<QuestFlag> flags;
-    @Getter protected QuestFlag.AutoStartPermission autoStartPermission;
 
-    QuestName(final QuestType type,
-              final Component displayName,
-              final List<Component> description,
-              final Set<QuestName> seeDependencies,
-              final Set<QuestName> startDependencies,
-              final QuestFlag... flags) {
-        this.type = type;
+    QuestName(final QuestType type, final Component displayName) {
         this.key = name().toLowerCase();
+        this.type = type;
         this.displayName = displayName;
-        this.description = description;
-        this.seeDependencies = seeDependencies;
-        this.startDependencies = startDependencies;
-        this.flags = List.of(flags);
-        for (QuestFlag flag : flags) {
-            if (flag instanceof QuestFlag.AutoStartPermission) {
-                this.autoStartPermission = (QuestFlag.AutoStartPermission) flag;
-            }
-        }
     }
 
     static {
@@ -114,10 +237,26 @@ public enum QuestName {
     }
 
     protected Quest create() {
-        return new Quest(this, Goals.create(this));
+        return new Quest(this, createGoals());
     }
 
     public boolean isQuittable() {
         return this != QuestName.BEGINNER;
     }
+
+    public abstract List<Component> getDescription();
+
+    public Set<QuestName> getSeeDependencies() {
+        return Set.of();
+    }
+
+    public Set<QuestName> getStartDependencies() {
+        return Set.of();
+    }
+
+    public String getAutoStartPermission() {
+        return null;
+    }
+
+    protected abstract List<Goal> createGoals();
 }
