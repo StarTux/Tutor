@@ -39,7 +39,7 @@ public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Your claim starts off small "),
-                        Component.text("(128x128 blocks)", NamedTextColor.GRAY),
+                        Component.text("(100x100 blocks)", NamedTextColor.GRAY),
                         Component.text(" but you can grow it."
                                        + "\n\nTo grow it to a certain spot,"
                                        + " move outside near your claim and type:\n\n"),

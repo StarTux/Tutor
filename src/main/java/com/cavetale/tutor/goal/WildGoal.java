@@ -54,7 +54,7 @@ public final class WildGoal implements Goal {
                         Component.text("/claim new", NamedTextColor.BLUE),
                         Component.text("\nMake a beginner claim\n\n", NamedTextColor.GRAY),
                         Component.text("This claim will be "),
-                        Component.text("128x128 blocks", NamedTextColor.BLUE),
+                        Component.text("100x100 blocks", NamedTextColor.BLUE),
                         Component.text(" large. You can grow it later on."),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
