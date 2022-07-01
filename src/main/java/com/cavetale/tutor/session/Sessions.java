@@ -112,7 +112,10 @@ public final class Sessions implements Listener {
     }
 
     public void applyGoals(Player player,  BiConsumer<PlayerQuest, Goal> callback) {
-        apply(player, session -> session.applyGoals(callback));
+        // Delaying by a tick because Connect handles joins early (LOWEST)
+        Bukkit.getScheduler().runTask(plugin, () -> {
+                apply(player, session -> session.applyGoals(callback));
+            });
     }
 
     public int applyClick(Player player, String token) {
