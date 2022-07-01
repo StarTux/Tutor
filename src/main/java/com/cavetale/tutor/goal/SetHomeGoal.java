@@ -48,7 +48,7 @@ public final class SetHomeGoal implements Goal {
                         Component.text("/home", NamedTextColor.BLUE),
                         Component.text("\nVisit your primary home\n\n", NamedTextColor.GRAY),
                         Component.text("You can also set named homes,"
-                                       + " which is explained in a late tutorial."),
+                                       + " which is explained in a later tutorial."),
                     }),
             });
     }
