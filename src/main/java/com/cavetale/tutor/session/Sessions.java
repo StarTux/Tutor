@@ -1,8 +1,8 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.event.hud.PlayerHudEvent;
+import com.cavetale.core.event.hud.PlayerHudPriority;
 import com.cavetale.core.event.player.PluginPlayerEvent;
-import com.cavetale.sidebar.PlayerSidebarEvent;
-import com.cavetale.sidebar.Priority;
 import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
@@ -20,7 +20,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +27,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 /**
  * A session is created for every player who logs in and destroyed
@@ -170,7 +173,7 @@ public final class Sessions implements Listener {
     }
 
     @EventHandler
-    void onPlayerSidebar(PlayerSidebarEvent event) {
+    void onPlayerHud(PlayerHudEvent event) {
         if (!event.getPlayer().hasPermission("tutor.tutor")) return;
         Session session = find(event.getPlayer());
         if (session == null) return;
@@ -178,23 +181,15 @@ public final class Sessions implements Listener {
         for (PlayerQuest playerQuest : session.getQuestList()) {
             lines = new ArrayList<>();
             if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
-                lines.add(Component.text()
-                          .append(Component.text("Your ", NamedTextColor.AQUA))
-                          .append(Component.text("/tut", NamedTextColor.YELLOW))
-                          .append(Component.text("orial", NamedTextColor.AQUA))
-                          .build());
+                lines.add(join(noSeparators(), text("Your ", AQUA), text("/tut", YELLOW), text("orial", AQUA)));
             } else {
-                lines.add(Component.text()
-                          .append(Component.text("Your ", NamedTextColor.AQUA))
-                          .append(Component.text("/q", NamedTextColor.YELLOW))
-                          .append(Component.text("uest", NamedTextColor.AQUA))
-                          .build());
+                lines.add(join(noSeparators(), text("Your ", AQUA), text("/q", YELLOW), text("uest", AQUA)));
             }
             lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
             break;
         }
         if (lines == null) return;
-        event.add(plugin, Priority.DEFAULT, lines);
+        event.sidebar(PlayerHudPriority.DEFAULT, lines);
     }
 
     @EventHandler

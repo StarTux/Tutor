@@ -118,8 +118,7 @@ public enum QuestName {
 
         @Override protected List<Goal> createGoals() {
             return List.of(new TicketGoal(),
-                           new MenuGoal(),
-                           new MemberAcceptGoal());
+                           new MenuGoal());
         }
     },
     MEMBER_INTRO(QuestType.TUTORIAL, text("New Members Introduction")) {
@@ -205,8 +204,7 @@ public enum QuestName {
         }
 
         @Override protected List<Goal> createGoals() {
-            return List.of(new SpeleologistGoal(),
-                           new SpeleologistAcceptGoal());
+            return List.of(new SpeleologistGoal());
         }
     },
     ;

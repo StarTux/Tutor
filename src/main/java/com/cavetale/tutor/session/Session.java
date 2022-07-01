@@ -1,7 +1,9 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.core.perm.Perm;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
@@ -19,7 +21,6 @@ import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import com.cavetale.tutor.util.Items;
-import com.winthier.perm.Perm;
 import com.winthier.playercache.PlayerCache;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -200,7 +201,11 @@ public final class Session {
         if (!completedQuests.containsKey(questName)) {
             SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
             completedQuests.put(questName, newRow);
-            plugin.getDatabase().insertAsync(newRow, null);
+            plugin.getDatabase().insertAsync(newRow, r -> {
+                    if (r != 0 && ServerGroup.current() != ServerGroup.MUSEUM) {
+                        Perm.get().addLevelProgress(player.getUniqueId());
+                    }
+                });
         }
         triggerAutomaticQuests();
         triggerQuestReminder();
@@ -312,7 +317,7 @@ public final class Session {
             if (currentQuests.containsKey(questName)) continue;
             if (completedQuests.containsKey(questName)) continue;
             if (questName.getAutoStartPermission() != null) {
-                if (Perm.has(uuid, questName.getAutoStartPermission())) {
+                if (Perm.get().has(uuid, questName.getAutoStartPermission())) {
                     startQuest(questName);
                     return;
                 }
