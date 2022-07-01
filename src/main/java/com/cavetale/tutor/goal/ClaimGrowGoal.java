@@ -35,7 +35,7 @@ public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
                 condGrowClaim,
                 condBuyClaimBlocks,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Your claim starts off small "),
