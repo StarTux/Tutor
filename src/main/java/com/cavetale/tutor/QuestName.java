@@ -158,7 +158,7 @@ public enum QuestName {
                            new InviteHomeGoal());
         }
     },
-    ADVANCED_CLAIMS(QuestType.TUTORIAL, text("Advanced Claims and Homes")) {
+    ADVANCED_CLAIMS(QuestType.TUTORIAL, text("Advanced Claims")) {
          @Override public List<Component> getDescription() {
              return List.of(text("How to grow your"),
                             text("claim and trust your"),
@@ -174,7 +174,7 @@ public enum QuestName {
         @Override public List<Component> getDescription() {
             return List.of(text("Make quick elevators"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(ADVANCED_HOMES);}
+        @Override public Set<QuestName> getSeeDependencies() {return Set.of(ADVANCED_CLAIMS);}
         @Override protected List<Goal> createGoals() {
             return List.of(new TelevatorGoal());
         }

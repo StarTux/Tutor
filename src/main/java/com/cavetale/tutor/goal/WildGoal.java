@@ -40,7 +40,7 @@ public final class WildGoal implements Goal {
                 condSkip,
                 condClaim,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("This will teleport you to a random place"
