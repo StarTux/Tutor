@@ -20,8 +20,8 @@ public final class MainServerConstraint implements Constraint.Simple {
 
     public static boolean isTrue() {
         switch (NetworkServer.current()) {
-        case CAVETALE:
-        case BETA:
+        case EINS:
+        case ZWEI:
         case HUB:
             return true;
         default:

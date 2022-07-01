@@ -38,7 +38,7 @@ public final class SetNamedHomeGoal extends AbstractGoal<SetNamedHomeProgress> {
                 condHome,
                 condList,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("You can set as many homes as you like."

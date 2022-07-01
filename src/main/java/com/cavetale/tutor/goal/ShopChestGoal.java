@@ -31,7 +31,7 @@ public final class ShopChestGoal extends AbstractGoal<ShopChestProgress> {
         this.conditions = List.of(new Condition[] {
                 condShopChest,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of(SurvivalServerConstraint.instance());
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
                         Component.text("Making a Chest Shop is simple."

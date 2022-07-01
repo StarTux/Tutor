@@ -35,7 +35,7 @@ public final class SetHomeGoal implements Goal {
                 condSetHome,
                 condHome,
             });
-        this.constraints = List.of(MainServerConstraint.instance());
+        this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("A home is a place you can port to any time:\n\n"),
