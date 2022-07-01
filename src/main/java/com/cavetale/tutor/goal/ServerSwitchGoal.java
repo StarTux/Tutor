@@ -37,7 +37,8 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
                                              playerQuest -> getProgress(playerQuest).creative = true);
         condHub = new CheckboxCondition(Component.text("Return to the Hub"),
                                         playerQuest -> getProgress(playerQuest).hub,
-                                        playerQuest -> getProgress(playerQuest).hub = true);
+                                        playerQuest -> getProgress(playerQuest).hub = true,
+                                        playerQuest -> getProgress(playerQuest).creative);
         condList.setBookPageIndex(0);
         condCreative.setBookPageIndex(1);
         condHub.setBookPageIndex(1);
