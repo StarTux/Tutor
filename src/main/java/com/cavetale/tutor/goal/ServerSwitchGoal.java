@@ -20,42 +20,32 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
     @Getter private final String id;
     @Getter private final Component displayName;
     @Getter private final List<Condition> conditions;
-    @Getter protected final List<Constraint> constraints;
+    @Getter protected final List<Constraint> constraints = List.of();
     @Getter private final List<Component> additionalBookPages;
     protected final CheckboxCondition condList;
-    protected final CheckboxCondition condHub;
     protected final CheckboxCondition condCreative;
-    protected final CheckboxCondition condCavetale;
+    protected final CheckboxCondition condHub;
 
     public ServerSwitchGoal() {
         super(ServerSwitchProgress.class, ServerSwitchProgress::new);
         this.id = "server_switch";
         condList = new CheckboxCondition(Component.text("View Server List"),
-                                        playerQuest -> getProgress(playerQuest).list,
-                                        playerQuest -> getProgress(playerQuest).list = true);
-        condHub = new CheckboxCondition(Component.text("Visit the Hub"),
-                                        playerQuest -> getProgress(playerQuest).hub,
-                                        playerQuest -> getProgress(playerQuest).hub = true,
-                                        playerQuest -> getProgress(playerQuest).list);
+                                         playerQuest -> getProgress(playerQuest).list,
+                                         playerQuest -> getProgress(playerQuest).list = true);
         condCreative = new CheckboxCondition(Component.text("Visit Creative"),
                                              playerQuest -> getProgress(playerQuest).creative,
-                                             playerQuest -> getProgress(playerQuest).creative = true,
-                                             playerQuest -> getProgress(playerQuest).list);
-        condCavetale = new CheckboxCondition(Component.text("Return to Cavetale"),
-                                             playerQuest -> getProgress(playerQuest).cavetale,
-                                             playerQuest -> getProgress(playerQuest).cavetale = true,
-                                             playerQuest -> getProgress(playerQuest).readyForCavetale());
+                                             playerQuest -> getProgress(playerQuest).creative = true);
+        condHub = new CheckboxCondition(Component.text("Return to the Hub"),
+                                        playerQuest -> getProgress(playerQuest).hub,
+                                        playerQuest -> getProgress(playerQuest).hub = true);
         condList.setBookPageIndex(0);
-        condHub.setBookPageIndex(1);
         condCreative.setBookPageIndex(1);
-        condCavetale.setBookPageIndex(1);
+        condHub.setBookPageIndex(1);
         this.conditions = List.of(new Condition[] {
                 condList,
-                condHub,
                 condCreative,
-                condCavetale,
+                condHub,
             });
-        this.constraints = List.of();
         this.displayName = Component.text("Server switching");
         this.additionalBookPages = List.of(new Component[] {
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {
@@ -69,11 +59,9 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {
                         Component.text("Server Commands:\n"),
                         Component.text("/hub", NamedTextColor.BLUE),
-                        Component.text("\nThe lobby between our servers\n\n", NamedTextColor.GRAY),
+                        Component.text("\nThe spawn world\n\n", NamedTextColor.GRAY),
                         Component.text("/creative", NamedTextColor.BLUE),
                         Component.text("\nOur creative mode server\n\n", NamedTextColor.GRAY),
-                        Component.text("/cavetale", NamedTextColor.BLUE),
-                        Component.text("\nThe main server", NamedTextColor.GRAY),
                     }),
             });
     }
@@ -81,6 +69,26 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
     @Override
     public void enable() {
         Bukkit.getPluginManager().registerEvents(this, TutorPlugin.getInstance());
+    }
+
+    @Override
+    public void onEnable(PlayerQuest playerQuest) {
+        ServerSwitchProgress progress = getProgress(playerQuest);
+        switch (NetworkServer.current()) {
+        case CREATIVE:
+            if (!progress.creative) {
+                progress.creative = true;
+                playerQuest.onProgress();
+            }
+            break;
+        case HUB:
+            if (!progress.hub) {
+                progress.hub = true;
+                playerQuest.onProgress();
+            }
+            break;
+        default: break;
+        }
     }
 
     @Override
@@ -108,14 +116,11 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
             break;
         case SWITCH_SERVER:
             switch (Detail.NAME.get(event, "")) {
-            case "hub":
-                condHub.progress(playerQuest);
-                break;
             case "creative":
                 condCreative.progress(playerQuest);
                 break;
-            case "cavetale":
-                condCavetale.progress(playerQuest);
+            case "hub":
+                condHub.progress(playerQuest);
                 break;
             default: break;
             }
@@ -127,19 +132,14 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
     @EventHandler(priority = EventPriority.MONITOR)
     void onPlayerJoin(PlayerJoinEvent event) {
         switch (NetworkServer.current()) {
-        case HUB:
-            TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                    if (goal == this) condHub.progress(playerQuest);
-                });
-            break;
         case CREATIVE:
             TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
                     if (goal == this) condCreative.progress(playerQuest);
                 });
             break;
-        case CAVETALE:
+        case HUB:
             TutorPlugin.getInstance().getSessions().applyGoals(event.getPlayer(), (playerQuest, goal) -> {
-                    if (goal == this) condCavetale.progress(playerQuest);
+                    if (goal == this) condHub.progress(playerQuest);
                 });
             break;
         default: break;
@@ -149,18 +149,11 @@ public final class ServerSwitchGoal extends AbstractGoal<ServerSwitchProgress> i
 
 final class ServerSwitchProgress extends GoalProgress {
     protected boolean list;
-    protected boolean hub;
     protected boolean creative;
-    protected boolean cavetale;
+    protected boolean hub;
 
     @Override
     public boolean isComplete() {
-        return hub
-            && creative
-            && cavetale;
-    }
-
-    protected boolean readyForCavetale() {
-        return hub && creative;
+        return list && creative && hub;
     }
 }
