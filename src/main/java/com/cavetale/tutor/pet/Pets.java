@@ -206,7 +206,10 @@ public final class Pets implements Listener {
         Player player = event.getPlayer();
         entityPetMap.forEach((uuid, pet) -> {
                 if (pet.exclusive && !pet.isOwner(player)) {
-                    player.hideEntity(plugin, Bukkit.getEntity(uuid));
+                    Entity entity = Bukkit.getEntity(uuid);
+                    if (entity != null) {
+                        player.hideEntity(plugin, entity);
+                    }
                 }
             });
     }
