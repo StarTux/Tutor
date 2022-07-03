@@ -51,9 +51,9 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                         Component.text("Mob Catchers"),
                         Mytems.MOB_CATCHER.component,
                         Component.text(" can be bought at Spawn."
-                                       + "\n\nFind the store near the "),
-                        Component.text("Player Heads", NamedTextColor.BLUE),
-                        Component.text(" marketplace and bring the required resources."
+                                       + "\n\nFind the store in the "),
+                        Component.text("Merchant Corner", NamedTextColor.BLUE),
+                        Component.text(" and bring the required resources."
                                        + "\n\nWiki Page:"),
                         Component.text("cavetale.com/wiki/pocket-mob",
                                        NamedTextColor.BLUE, TextDecoration.UNDERLINED)
