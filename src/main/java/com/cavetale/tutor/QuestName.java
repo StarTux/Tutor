@@ -1,7 +1,32 @@
 package com.cavetale.tutor;
 
-import com.cavetale.tutor.goal.*;
+//import com.cavetale.tutor.goal.RaidGoal;
+import com.cavetale.tutor.goal.ChoosePetGoal;
+import com.cavetale.tutor.goal.ClaimGrowGoal;
+import com.cavetale.tutor.goal.ClaimTrustGoal;
+import com.cavetale.tutor.goal.FriendsGoal;
 import com.cavetale.tutor.goal.Goal;
+import com.cavetale.tutor.goal.InviteHomeGoal;
+import com.cavetale.tutor.goal.LocalChatGoal;
+import com.cavetale.tutor.goal.MailGoal;
+import com.cavetale.tutor.goal.MineGoal;
+import com.cavetale.tutor.goal.MiningGoal;
+import com.cavetale.tutor.goal.PartyChatGoal;
+import com.cavetale.tutor.goal.PocketMobGoal;
+import com.cavetale.tutor.goal.PrivateChatGoal;
+import com.cavetale.tutor.goal.PublicHomeGoal;
+import com.cavetale.tutor.goal.ServerSwitchGoal;
+import com.cavetale.tutor.goal.SetHomeGoal;
+import com.cavetale.tutor.goal.SetNamedHomeGoal;
+import com.cavetale.tutor.goal.ShopChestGoal;
+import com.cavetale.tutor.goal.ShopSearchGoal;
+import com.cavetale.tutor.goal.StorageGoal;
+import com.cavetale.tutor.goal.TelevatorGoal;
+import com.cavetale.tutor.goal.TicketGoal;
+import com.cavetale.tutor.goal.TitleGoal;
+import com.cavetale.tutor.goal.TypeTierGoal;
+import com.cavetale.tutor.goal.WarpGoal;
+import com.cavetale.tutor.goal.WildGoal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,11 +47,9 @@ public enum QuestName {
         @Override public List<Component> getDescription() {
             return List.of(text("The beginner tutorial"));
         }
-
         @Override public String getAutoStartPermission() {
             return "tutor.beginner";
         }
-
         @Override protected List<Goal> createGoals() {
             return List.of(new ChoosePetGoal(),
                            new WildGoal(),
@@ -41,11 +64,9 @@ public enum QuestName {
                            text("Cavetale has to offer,"),
                            text("and how to get there"));
         }
-
         @Override public Set<QuestName> getSeeDependencies() {
             return Set.of(BEGINNER);
         }
-
         @Override protected List<Goal> createGoals() {
             return List.of(new PublicHomeGoal(),
                            new WarpGoal(),
@@ -57,11 +78,9 @@ public enum QuestName {
             return List.of(text("On using our"),
                            text("chat channels"));
         }
-
         @Override public Set<QuestName> getSeeDependencies() {
             return Set.of(BEGINNER);
         }
-
         @Override protected List<Goal> createGoals() {
             return List.of(new LocalChatGoal(),
                            new PrivateChatGoal(),
@@ -73,12 +92,12 @@ public enum QuestName {
             return List.of(text("Visit the mining world"),
                            text("and gather resources"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(BEGINNER);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(BEGINNER);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new MineGoal(),
-                           new MiningGoal(),
-                           new StorageGoal(),
-                           new ShopSearchGoal());
+                           new MiningGoal());
         }
     },
     MASS_STORAGE(QuestType.TUTORIAL, text("Mass Storage")) {
@@ -87,7 +106,9 @@ public enum QuestName {
                            text("system so you never"),
                            text("lose your items"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(MINING_WORLD);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MINING_WORLD);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new StorageGoal());
         }
@@ -98,9 +119,27 @@ public enum QuestName {
                            text("to buy and sell"),
                            text("items"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(MINING_WORLD);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MINING_WORLD);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new ShopSearchGoal());
+        }
+        @Override public String getStartPermission() {
+            return "shop.create";
+        }
+    },
+    CHEST_SHOP(QuestType.TUTORIAL, text("Chest Shops")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Learn how to sell"),
+                           text("items with Chest"),
+                           text("Shops"));
+        }
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MARKET);
+        }
+        @Override protected List<Goal> createGoals() {
+            return List.of(new ShopChestGoal());
         }
     },
     TICKETS(QuestType.TUTORIAL, text("Tickets")) {
@@ -109,7 +148,9 @@ public enum QuestName {
                            text("to contact staff"),
                            text("members"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(CHAT);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(CHAT);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new TicketGoal());
         }
@@ -120,8 +161,12 @@ public enum QuestName {
                            text("your friends while"),
                            text("they are not online"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(CHAT);}
-        @Override public Set<QuestName> getStartDependencies() {return Set.of(CHAT);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(CHAT);
+        }
+        @Override public Set<QuestName> getStartDependencies() {
+            return Set.of(CHAT);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new MailGoal());
         }
@@ -131,7 +176,9 @@ public enum QuestName {
             return List.of(text("Select a title"),
                            text("to display in chat"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(CHAT);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(CHAT);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new TitleGoal());
         }
@@ -141,44 +188,64 @@ public enum QuestName {
             return List.of(text("Check out the friends"),
                            text("system"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(CHAT);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(CHAT);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new FriendsGoal());
         }
     },
     ADVANCED_HOMES(QuestType.TUTORIAL, text("Advanced Homes")) {
-         @Override public List<Component> getDescription() {
-             return List.of(text("Learn more about"),
-                            text("homes and how"),
-                            text("to share them"));
-         }
-         @Override public Set<QuestName> getSeeDependencies() {return Set.of(MINING_WORLD);}
-         @Override protected List<Goal> createGoals() {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Learn more about"),
+                           text("homes and how"),
+                           text("to share them"));
+        }
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MINING_WORLD);
+        }
+        @Override protected List<Goal> createGoals() {
             return List.of(new SetNamedHomeGoal(),
                            new InviteHomeGoal());
         }
     },
     ADVANCED_CLAIMS(QuestType.TUTORIAL, text("Advanced Claims")) {
-         @Override public List<Component> getDescription() {
-             return List.of(text("How to grow your"),
-                            text("claim and trust your"),
-                            text("friends in it"));
-         }
-         @Override public Set<QuestName> getSeeDependencies() {return Set.of(MINING_WORLD);}
-         @Override protected List<Goal> createGoals() {
-             return List.of(new ClaimTrustGoal(),
-                            new ClaimGrowGoal());
-         }
+        @Override public List<Component> getDescription() {
+            return List.of(text("How to grow your"),
+                           text("claim and trust your"),
+                           text("friends in it"));
+        }
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MINING_WORLD);
+        }
+        @Override protected List<Goal> createGoals() {
+            return List.of(new ClaimTrustGoal(),
+                           new ClaimGrowGoal());
+        }
     },
     TELEVATOR(QuestType.TUTORIAL, text("Televator")) {
         @Override public List<Component> getDescription() {
             return List.of(text("Make quick elevators"));
         }
-        @Override public Set<QuestName> getSeeDependencies() {return Set.of(ADVANCED_CLAIMS);}
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(ADVANCED_CLAIMS);
+        }
         @Override protected List<Goal> createGoals() {
             return List.of(new TelevatorGoal());
         }
     },
+    POCKET_MOB(QuestType.TUTORIAL, text("Pocket Mob")) {
+        @Override public List<Component> getDescription() {
+            return List.of(text("Catch mobs in eggs and"),
+                           text("collect them all"));
+        }
+        @Override public Set<QuestName> getSeeDependencies() {
+            return Set.of(MINING_WORLD);
+        }
+        @Override protected List<Goal> createGoals() {
+            return List.of(new PocketMobGoal());
+        }
+    }
     ;
 
     public static final List<String> KEY_LIST;
@@ -225,6 +292,10 @@ public enum QuestName {
     }
 
     public String getAutoStartPermission() {
+        return null;
+    }
+
+    public String getStartPermission() {
         return null;
     }
 

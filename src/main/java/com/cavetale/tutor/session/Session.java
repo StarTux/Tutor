@@ -471,6 +471,9 @@ public final class Session {
         for (QuestName dep : questName.getSeeDependencies()) {
             if (!completedQuests.containsKey(dep)) return false;
         }
+        if (questName.getStartPermission() != null && !Perm.get().has(uuid, questName.getStartPermission())) {
+            return false;
+        }
         return true;
     }
 
