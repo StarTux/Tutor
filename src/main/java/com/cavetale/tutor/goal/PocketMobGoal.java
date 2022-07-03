@@ -77,7 +77,7 @@ public final class PocketMobGoal extends AbstractGoal<PocketMobProgress> {
                         Component.text(" Your Pets\n"),
                     }),
                 Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
-                        Component.text("To catch a mob, throw the the "),
+                        Component.text("To catch a mob, throw the "),
                         Mytems.MOB_CATCHER.component,
                         Component.text("catcher at it."
                                        + "\nIf "),
