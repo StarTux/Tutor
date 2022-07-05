@@ -2,12 +2,15 @@ package com.cavetale.tutor.goal;
 
 import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
     protected static final int CLAIM_BLOCKS = 1024;
@@ -22,11 +25,11 @@ public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
     public ClaimGrowGoal() {
         super(ClaimGrowProgress.class, ClaimGrowProgress::new);
         this.id = "claim_grow";
-        this.displayName = Component.text("Growing Claims");
-        condGrowClaim = new CheckboxCondition(Component.text("Grow your Claim"),
+        this.displayName = text("Growing Claims");
+        condGrowClaim = new CheckboxCondition(text("Grow your Claim"),
                                               playerQuest -> getProgress(playerQuest).growClaim,
                                               playerQuest -> getProgress(playerQuest).growClaim = true);
-        condBuyClaimBlocks = new NumberCondition(Component.text("Buy Claim Blocks"), CLAIM_BLOCKS,
+        condBuyClaimBlocks = new NumberCondition(text("Buy Claim Blocks"), CLAIM_BLOCKS,
                                                  playerQuest -> getProgress(playerQuest).buyClaimBlocks,
                                                  (playerQuest, amount) -> getProgress(playerQuest).buyClaimBlocks = amount);
         condGrowClaim.setBookPageIndex(0);
@@ -37,21 +40,21 @@ public final class ClaimGrowGoal extends AbstractGoal<ClaimGrowProgress> {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
-                        Component.text("Your claim starts off small "),
-                        Component.text("(100x100 blocks)", NamedTextColor.GRAY),
-                        Component.text(" but you can grow it."
-                                       + "\n\nTo grow it to a certain spot,"
-                                       + " move outside near your claim and type:\n\n"),
-                        Component.text("/claim grow", NamedTextColor.BLUE),
-                        Component.text("\nGrow claim to your location", NamedTextColor.GRAY),
-                    }),
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
-                        Component.text("For a claim to grow, it requires enough claim blocks."
-                                       + " Claim blocks are added with the following command:\n\n"),
-                        Component.text("/claim buy <amount>", NamedTextColor.BLUE),
-                        Component.text("\nEach block costs 10 Cents", NamedTextColor.GRAY),
-                    }),
+                join(noSeparators(), // 0
+                     text("Your claim starts off small "),
+                     text("(100x100 blocks)", GRAY),
+                     text(" but you can grow it."
+                          + "\n\nTo grow it to a certain spot,"
+                          + " move outside near your claim and type:\n\n"),
+                     text("/claim grow", BLUE),
+                     text("\nGrow claim to your location", GRAY)),
+                join(noSeparators(), // 2
+                     text("For a claim to grow, it requires enough claim blocks."
+                          + " Claim blocks are added with the following command:\n\n"),
+                     text("/claim buy <amount>", BLUE),
+                     text("\nEach block costs ", GRAY),
+                     Mytems.COPPER_COIN,
+                     text("one coin.", GRAY)),
             });
     }
 
