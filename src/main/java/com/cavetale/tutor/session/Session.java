@@ -193,15 +193,18 @@ public final class Session {
         currentQuests.put(quest.getName(), playerQuest);
         playerQuest.onQuestStart();
         playerQuest.save();
+        plugin.getLogger().info(name + " started " + quest.name);
         return playerQuest;
     }
 
     public void questComplete(QuestName questName, Player player) {
+        plugin.getLogger().info(name + " completed " + questName);
         removeQuest(questName);
         if (!completedQuests.containsKey(questName)) {
             SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
             completedQuests.put(questName, newRow);
             plugin.getDatabase().insertAsync(newRow, r -> {
+                    plugin.getLogger().info(name + " insert complete " + questName + " => " + r);
                     if (r != 0 && ServerGroup.current() != ServerGroup.MUSEUM) {
                         Perm.get().addLevelProgress(player.getUniqueId());
                     }
@@ -212,6 +215,7 @@ public final class Session {
     }
 
     public PlayerQuest removeQuest(QuestName questName) {
+        plugin.getLogger().info(name + " remove " + questName);
         PlayerQuest playerQuest = currentQuests.remove(questName);
         if (playerQuest != null) {
             playerQuest.disable();

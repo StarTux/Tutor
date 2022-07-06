@@ -17,6 +17,7 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import static com.cavetale.tutor.TutorPlugin.database;
 
 @Getter @RequiredArgsConstructor
 public final class PlayerQuest {
@@ -81,11 +82,13 @@ public final class PlayerQuest {
     public void save() {
         row.setNow();
         row.setProgress(currentProgress != null ? currentProgress.serialize() : null);
-        if (row.getId() == null) {
-            session.sessions.plugin.getDatabase().insertAsync(row, null);
-        } else {
-            session.sessions.plugin.getDatabase().updateAsync(row, null, "goal", "progress", "updated");
-        }
+        database().scheduleAsyncTask(() -> {
+                if (row.getId() == null) {
+                    database().insert(row);
+                } else {
+                    database().update(row, "goal", "progress", "updated");
+                }
+            });
     }
 
     public Player getPlayer() {

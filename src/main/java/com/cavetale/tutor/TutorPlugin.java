@@ -56,4 +56,8 @@ public final class TutorPlugin extends JavaPlugin {
         pets.disable();
         sessions.disable();
     }
+
+    public static SQLDatabase database() {
+        return instance.database;
+    }
 }
