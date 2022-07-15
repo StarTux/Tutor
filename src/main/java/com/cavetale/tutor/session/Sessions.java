@@ -2,15 +2,15 @@ package com.cavetale.tutor.session;
 
 import com.cavetale.core.event.hud.PlayerHudEvent;
 import com.cavetale.core.event.hud.PlayerHudPriority;
+import com.cavetale.core.event.perm.PlayerPermissionUpdateEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pet;
-import com.winthier.perm.event.PlayerPermissionUpdateEvent;
-import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
