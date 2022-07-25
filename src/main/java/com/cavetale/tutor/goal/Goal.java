@@ -93,7 +93,7 @@ public interface Goal {
                   .build());
         lines.add(Component.text()
                   .append(Component.text(playerQuest.getQuest().getName().type.upper + " ", NamedTextColor.GRAY))
-                  .append(DefaultFont.BACK_BUTTON.component)
+                  .append(DefaultFont.BACK_BUTTON.forPlayer(playerQuest.getPlayer()))
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
                   .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
                   .build());
@@ -134,12 +134,12 @@ public interface Goal {
             && (playerQuest.getQuest().getName().isQuittable()
                 || playerQuest.getSession().getCompletedQuests().containsKey(playerQuest.getQuest().name));
         if (complete) {
-            lines.add(DefaultFont.OK_BUTTON.component
+            lines.add(DefaultFont.OK_BUTTON.forPlayer(playerQuest.getPlayer())
                       .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.GREEN)))
                       .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key)));
         } else if (abandonable) {
             lines.add(Component.empty());
-            lines.add(DefaultFont.CANCEL_BUTTON.component
+            lines.add(DefaultFont.CANCEL_BUTTON.forPlayer(playerQuest.getPlayer())
                       .hoverEvent(HoverEvent.showText(Component.text("Abandon this " + playerQuest.getQuest().getName().type.lower,
                                                                      NamedTextColor.RED)))
                       .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key)));
