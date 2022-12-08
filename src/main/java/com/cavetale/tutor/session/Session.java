@@ -249,6 +249,7 @@ public final class Session {
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         itemStack.setItemMeta(meta);
+        player.closeInventory();
         player.openBook(itemStack);
     }
 
@@ -286,6 +287,7 @@ public final class Session {
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         itemStack.setItemMeta(meta);
+        player.closeInventory();
         player.openBook(itemStack);
     }
 
