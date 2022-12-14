@@ -23,6 +23,7 @@ public final class MainServerConstraint implements Constraint.Simple {
         case EINS:
         case ZWEI:
         case HUB:
+        case BETA:
             return true;
         default:
             return false;
