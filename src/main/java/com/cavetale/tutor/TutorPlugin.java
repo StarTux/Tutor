@@ -3,17 +3,13 @@ package com.cavetale.tutor;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pets;
 import com.cavetale.tutor.session.Sessions;
-import com.cavetale.tutor.sql.SQLCompletedQuest;
-import com.cavetale.tutor.sql.SQLPlayerPet;
-import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
-import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
 import com.winthier.sql.SQLDatabase;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
+import static com.cavetale.tutor.sql.SQLStatic.getAllTableClasses;
 
 @Getter
 public final class TutorPlugin extends JavaPlugin {
@@ -29,10 +25,7 @@ public final class TutorPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         database = new SQLDatabase(this);
-        database.registerTables(List.of(SQLPlayerQuest.class,
-                                        SQLCompletedQuest.class,
-                                        SQLPlayerPet.class,
-                                        SQLPlayerPetUnlock.class));
+        database.registerTables(getAllTableClasses());
         if (!database.createAllTables()) {
             throw new IllegalStateException("Table creation failed!");
         }

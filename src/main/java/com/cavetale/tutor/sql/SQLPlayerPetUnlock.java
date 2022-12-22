@@ -2,30 +2,24 @@ package com.cavetale.tutor.sql;
 
 import com.cavetale.tutor.pet.PetType;
 import com.winthier.sql.SQLRow;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
+import com.winthier.sql.SQLRow.UniqueKey;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
-@Table(name = "player_pet_unlocks",
-       uniqueConstraints = {
-           @UniqueConstraint(columnNames = {"player", "pet_type"}),
-       })
+@Name("player_pet_unlocks")
+@NotNull
+@UniqueKey({"player", "pet_type"})
 /**
  * The progress of one player within a certain quest (tutorial).
  */
 public final class SQLPlayerPetUnlock implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false)
+    @Id private Integer id;
     private UUID player;
-    @Column(nullable = false, length = 31)
-    private String petType;
-    @Column(nullable = false)
+    @VarChar(31) private String petType;
     private Date created;
 
     public SQLPlayerPetUnlock() { }

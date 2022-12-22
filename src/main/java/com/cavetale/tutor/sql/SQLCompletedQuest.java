@@ -1,28 +1,25 @@
 package com.cavetale.tutor.sql;
 
 import com.cavetale.tutor.QuestName;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
+import com.winthier.sql.SQLRow.UniqueKey;
 import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
-@Table(name = "completed_quests", uniqueConstraints = {@UniqueConstraint(columnNames = {"player", "quest"})})
+@NotNull
+@Name("completed_quests")
+@UniqueKey({"player", "quest"})
 /**
  * The progress of one player within a certain quest (tutorial).
  */
 public final class SQLCompletedQuest implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false)
+    @Id private Integer id;
     private UUID player;
-    @Column(nullable = false)
     private String quest;
-    @Column(nullable = false)
     private Date time;
 
     public SQLCompletedQuest() { }
