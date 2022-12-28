@@ -169,14 +169,14 @@ public final class Sessions implements Listener {
     }
 
     @EventHandler
-    void onPluginPlayer(PluginPlayerEvent event) {
+    private void onPluginPlayer(PluginPlayerEvent event) {
         applyGoals(event.getPlayer(), (playerQuest, goal) -> {
                 goal.onPluginPlayer(playerQuest, event);
             });
     }
 
     @EventHandler
-    void onPlayerHud(PlayerHudEvent event) {
+    private void onPlayerHud(PlayerHudEvent event) {
         if (!event.getPlayer().hasPermission("tutor.tutor")) return;
         Session session = find(event.getPlayer());
         if (session == null) return;
@@ -196,7 +196,7 @@ public final class Sessions implements Listener {
     }
 
     @EventHandler
-    void onPlayerPermissionUpdate(PlayerPermissionUpdateEvent event) {
+    private void onPlayerPermissionUpdate(PlayerPermissionUpdateEvent event) {
         Session session = find(event.getPlayer());
         if (session == null) return;
         if (event.getPlayer().hasPermission("tutor.tutor")) {

@@ -8,11 +8,14 @@ import com.cavetale.tutor.session.PlayerQuest;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 /**
  * A Goal represents a currently active goal for the player. A goal is
@@ -87,19 +90,19 @@ public interface Goal {
         List<Component> lines = new ArrayList<>();
         final int index = playerQuest.getQuest().goalIndex(getId());
         final int size = playerQuest.getQuest().getGoals().size();
-        lines.add(Component.text().append(playerQuest.getQuest().name.displayName)
-                  .color(NamedTextColor.DARK_AQUA)
-                  .decorate(TextDecoration.BOLD)
+        lines.add(text().append(playerQuest.getQuest().name.displayName)
+                  .color(DARK_AQUA)
+                  .decorate(BOLD)
                   .build());
-        lines.add(Component.text()
-                  .append(Component.text(playerQuest.getQuest().getName().type.upper + " ", NamedTextColor.GRAY))
+        lines.add(text()
+                  .append(text(playerQuest.getQuest().getName().type.upper + " ", GRAY))
                   .append(DefaultFont.BACK_BUTTON.forPlayer(playerQuest.getPlayer()))
                   .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                  .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))
+                  .hoverEvent(HoverEvent.showText(text("Open Tutor Menu", BLUE)))
                   .build());
-        lines.add(Component.text()
+        lines.add(text()
                   .append(getDisplayName())
-                  .append(Component.text(" (" + (index + 1) + "/" + size + ") ", NamedTextColor.DARK_GRAY))
+                  .append(text(" (" + (index + 1) + "/" + size + ") ", DARK_GRAY))
                   .build());
         lines.add(Component.empty());
         for (Condition condition : getConditions()) {
@@ -111,9 +114,9 @@ public interface Goal {
                     // With book page changer
                     int toPage = condition.getBookPageIndex() + 2;
                     conditionComponent = conditionComponent
-                        .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()),
-                                                                       condition.toComponent(playerQuest, Background.DARK),
-                                                                       Component.text("Page " + toPage, NamedTextColor.GRAY))))
+                        .hoverEvent(HoverEvent.showText(join(separator(newline()),
+                                                             condition.toComponent(playerQuest, Background.DARK),
+                                                             text("Page " + toPage, GRAY))))
                         .clickEvent(ClickEvent.changePage(toPage));
                 } else {
                     // Without book page changer
@@ -135,16 +138,16 @@ public interface Goal {
                 || playerQuest.getSession().getCompletedQuests().containsKey(playerQuest.getQuest().name));
         if (complete) {
             lines.add(DefaultFont.OK_BUTTON.forPlayer(playerQuest.getPlayer())
-                      .hoverEvent(HoverEvent.showText(Component.text("Complete this part", NamedTextColor.GREEN)))
+                      .hoverEvent(HoverEvent.showText(text("Complete this part", GREEN)))
                       .clickEvent(ClickEvent.runCommand("/tutor click complete " + playerQuest.getQuest().getName().key)));
         } else if (abandonable) {
             lines.add(Component.empty());
             lines.add(DefaultFont.CANCEL_BUTTON.forPlayer(playerQuest.getPlayer())
-                      .hoverEvent(HoverEvent.showText(Component.text("Abandon this " + playerQuest.getQuest().getName().type.lower,
-                                                                     NamedTextColor.RED)))
+                      .hoverEvent(HoverEvent.showText(text("Abandon this " + playerQuest.getQuest().getName().type.lower,
+                                                           RED)))
                       .clickEvent(ClickEvent.runCommand("/tutor click quit " + playerQuest.getQuest().getName().key)));
         }
-        pages.add(Component.join(JoinConfiguration.separator(Component.newline()), lines));
+        pages.add(join(separator(newline()), lines));
         pages.addAll(getAdditionalBookPages());
         return pages;
     }
@@ -162,11 +165,11 @@ public interface Goal {
             hasMissedConstraint = true;
         }
         if (!hasMissedConstraint && playerQuest.getCurrentProgress().isComplete()) {
-            list.add(Component.text().color(NamedTextColor.WHITE)
-                     .append(Component.text("Type "))
-                     .append(Component.text(playerQuest.getQuest().getName().type.command,
-                                            NamedTextColor.GREEN))
-                     .append(Component.text(" to progress!"))
+            list.add(text().color(WHITE)
+                     .append(text("Type "))
+                     .append(text(playerQuest.getQuest().getName().type.command,
+                                  GREEN))
+                     .append(text(" to progress!"))
                      .build());
         }
         return list;

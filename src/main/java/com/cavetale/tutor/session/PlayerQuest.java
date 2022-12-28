@@ -11,14 +11,19 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import static com.cavetale.tutor.TutorPlugin.database;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.title.Title.Times.times;
 
+/**
+ * Manage one named quest for one player.
+ */
 @Getter @RequiredArgsConstructor
 public final class PlayerQuest {
     protected final Session session;
@@ -42,10 +47,8 @@ public final class PlayerQuest {
         currentGoal = quest.getGoals().get(0);
         initializeCurrentGoal();
         Player player = getPlayer();
-        Component msg = Component.text()
-            .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
-            .append(currentGoal.getDisplayName())
-            .build();
+        Component msg = textOfChildren(text("New goal: ", DARK_AQUA),
+                                       currentGoal.getDisplayName());
         player.sendMessage(msg);
         player.sendActionBar(msg);
         currentGoal.onEnable(this);
@@ -130,10 +133,8 @@ public final class PlayerQuest {
             currentGoal = newGoal;
             initializeCurrentGoal();
             save();
-            Component msg = Component.text()
-                .append(Component.text("New goal: ", NamedTextColor.DARK_AQUA))
-                .append(newGoal.getDisplayName())
-                .build();
+            Component msg = textOfChildren(text("New goal: ", DARK_AQUA),
+                                           newGoal.getDisplayName());
             player.sendMessage(msg);
             player.sendActionBar(msg);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
@@ -143,13 +144,11 @@ public final class PlayerQuest {
 
     public void onQuestComplete(Player player) {
         session.questComplete(quest.getName(), player);
-        Component msg = Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                Component.text(quest.getName().type.upper + " complete: ", NamedTextColor.DARK_AQUA),
-                quest.name.displayName,
-            });
+        Component msg = textOfChildren(text(quest.getName().type.upper + " complete: ", DARK_AQUA),
+                                       quest.name.displayName);
         player.sendMessage(msg);
         player.showTitle(Title.title(Component.empty(), msg,
-                                     Title.Times.times(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
+                                     times(Duration.ZERO, Duration.ofSeconds(SECS), Duration.ZERO)));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.2f, 2.0f);
     }
 
@@ -170,14 +169,13 @@ public final class PlayerQuest {
 
     private void completeQuestReminder(Player player) {
         QuestType type = quest.getName().getType();
-        player.sendMessage(Component.text().content("You completed a " + quest.getName().type.upper + " page!")
-                           .append(Component.newline())
-                           .append(Component.text("Talk to your pet or type "))
-                           .append(Component.text().content(type.command).color(NamedTextColor.YELLOW))
-                           .append(Component.text(" to continue."))
-                           .color(NamedTextColor.AQUA)
+        player.sendMessage(textOfChildren(text("You completed a " + quest.getName().type.upper + " page!"),
+                                          Component.newline(),
+                                          text("Talk to your pet or type "),
+                                          text().content(type.command).color(YELLOW),
+                                          text(" to continue."))
+                           .color(AQUA)
                            .clickEvent(type.clickEvent())
-                           .hoverEvent(type.hoverEvent())
-                           .build());
+                           .hoverEvent(type.hoverEvent()));
     }
 }
