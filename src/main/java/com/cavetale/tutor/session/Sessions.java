@@ -5,8 +5,9 @@ import com.cavetale.core.event.hud.PlayerHudPriority;
 import com.cavetale.core.event.perm.PlayerPermissionUpdateEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.playercache.PlayerCache;
-import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
+import com.cavetale.tutor.daily.DailyQuest;
+import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.goal.ClickableCondition;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.goal.Goal;
@@ -27,9 +28,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import static net.kyori.adventure.text.Component.join;
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 /**
@@ -118,6 +116,13 @@ public final class Sessions implements Listener {
             });
     }
 
+    /**
+     * Apply to all active daily quests.
+     */
+    public void applyDailyQuests(Player player, Consumer<PlayerDailyQuest> callback) {
+        apply(player, session -> session.applyDailyQuests(callback));
+    }
+
     public int applyClick(Player player, String token) {
         Session session = sessionsMap.get(player.getUniqueId());
         if (session == null) return 0;
@@ -180,18 +185,9 @@ public final class Sessions implements Listener {
         if (!event.getPlayer().hasPermission("tutor.tutor")) return;
         Session session = find(event.getPlayer());
         if (session == null) return;
-        List<Component> lines = null;
-        for (PlayerQuest playerQuest : session.getQuestList()) {
-            lines = new ArrayList<>();
-            if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
-                lines.add(join(noSeparators(), text("Your ", AQUA), text("/tut", YELLOW), text("orial", AQUA)));
-            } else {
-                lines.add(join(noSeparators(), text("Your ", AQUA), text("/q", YELLOW), text("uest", AQUA)));
-            }
-            lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
-            break;
-        }
-        if (lines == null) return;
+        List<Component> lines = new ArrayList<>();
+        session.sidebar(lines);
+        if (lines.isEmpty()) return;
         event.sidebar(PlayerHudPriority.DEFAULT, lines);
     }
 
@@ -201,6 +197,18 @@ public final class Sessions implements Listener {
         if (session == null) return;
         if (event.getPlayer().hasPermission("tutor.tutor")) {
             session.triggerAutomaticQuests();
+        }
+    }
+
+    public void expireDailyQuests(final int newDayId) {
+        for (Session session : sessionsMap.values()) {
+            session.apply(s -> s.expireDailyQuests(newDayId));
+        }
+    }
+
+    public void loadDailyQuest(DailyQuest dailyQuest) {
+        for (Session session : sessionsMap.values()) {
+            session.apply(s -> s.loadDailyQuest(dailyQuest));
         }
     }
 }

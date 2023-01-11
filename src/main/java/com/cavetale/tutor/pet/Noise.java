@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 @Value
 public final class Noise {
-    public static final Noise CAT = Noise.of(Sound.ENTITY_CAT_AMBIENT, 1.2f);
-    public static final Noise DOG = Noise.of(Sound.ENTITY_WOLF_AMBIENT, 1.2f);
+    public static final Noise CAT = new Noise(Sound.ENTITY_CAT_AMBIENT, SoundCategory.NEUTRAL, 0.5f, 1.2f);
+    public static final Noise DOG = new Noise(Sound.ENTITY_WOLF_AMBIENT, SoundCategory.NEUTRAL, 0.5f, 1.2f);
     public static final Noise CLICK = Noise.of(Sound.UI_BUTTON_CLICK);
     public static final Noise FAIL = Noise.of(Sound.UI_BUTTON_CLICK, 0.5f);
     public final Sound sound;

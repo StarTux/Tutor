@@ -1,26 +1,23 @@
 package com.cavetale.tutor;
 
-import com.cavetale.core.command.CommandNode;
+import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.SpawnRule;
+import com.cavetale.tutor.session.MenuSection;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-@RequiredArgsConstructor
-public final class TutorCommand implements TabExecutor {
-    private final TutorPlugin plugin;
-    private CommandNode rootNode = new CommandNode("tutor");
+public final class TutorCommand extends AbstractCommand<TutorPlugin> {
+    public TutorCommand(final TutorPlugin plugin) {
+        super(plugin, "tutor");
+    }
 
-    public void enable() {
+    @Override
+    protected void onEnable() {
         rootNode.description("Tutor Menu")
             .playerCaller(this::tutor);
         rootNode.addChild("click").hidden(true)
@@ -34,17 +31,6 @@ public final class TutorCommand implements TabExecutor {
         rootNode.addChild("spawn").denyTabCompletion()
             .description("Spawn your pet")
             .playerCaller(this::spawn);
-        plugin.getCommand("tutor").setExecutor(this);
-    }
-
-    @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return rootNode.call(sender, command, alias, args);
-    }
-
-    @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return rootNode.complete(sender, command, alias, args);
     }
 
     private boolean tutor(Player player, String[] args) {
@@ -98,6 +84,9 @@ public final class TutorCommand implements TabExecutor {
                 player.sendMessage(Component.text().content(questName.type.upper + " abandoned: ")
                                    .color(NamedTextColor.YELLOW)
                                    .append(playerQuest.getQuest().name.displayName));
+                if (questName.type == QuestType.TUTORIAL) {
+                    session.openMenu(player, MenuSection.TUTORIALS);
+                }
                 return true;
             }
             default: return true;
@@ -108,7 +97,7 @@ public final class TutorCommand implements TabExecutor {
 
     private boolean menu(Player player, String[] args) {
         if (args.length != 0) return false;
-        if (!plugin.sessions.apply(player, session -> session.overviewMenu(player))) {
+        if (!plugin.sessions.apply(player, session -> session.openMenu(player))) {
             throw new CommandWarn("Session loading. Please try again later!");
         }
         return true;

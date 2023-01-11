@@ -1,6 +1,8 @@
 package com.cavetale.tutor.util;
 
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.TutorPlugin;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ public final class Gui implements InventoryHolder {
     @Getter private int size = 3 * 9;
     @Getter private Component title = Component.empty();
     boolean locked = false;
+    @Getter @Setter private GuiOverlay.Builder overlay;
 
     @RequiredArgsConstructor
     public static final class Slot {
@@ -77,6 +80,7 @@ public final class Gui implements InventoryHolder {
 
     public Inventory getInventory() {
         if (inventory == null) {
+            if (overlay != null) title = overlay.build();
             inventory = Bukkit.getServer().createInventory(this, size, title);
             for (int i = 0; i < size; i += 1) {
                 Slot slot = slots.get(i);

@@ -1,5 +1,6 @@
 package com.cavetale.tutor;
 
+import com.cavetale.tutor.daily.DailyQuests;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pets;
 import com.cavetale.tutor.session.Sessions;
@@ -14,11 +15,13 @@ import static com.cavetale.tutor.sql.SQLStatic.getAllTableClasses;
 @Getter
 public final class TutorPlugin extends JavaPlugin {
     protected SQLDatabase database;
-    protected TutorCommand tutorCommand = new TutorCommand(this);
-    protected TutorAdminCommand adminCommand = new TutorAdminCommand(this);
-    protected Map<QuestName, Quest> quests = new EnumMap<>(QuestName.class);
-    protected Sessions sessions = new Sessions(this);
-    protected Pets pets = new Pets(this);
+    protected final TutorCommand tutorCommand = new TutorCommand(this);
+    protected final DailyCommand dailyCommand = new DailyCommand(this);
+    protected final TutorAdminCommand adminCommand = new TutorAdminCommand(this);
+    protected final Map<QuestName, Quest> quests = new EnumMap<>(QuestName.class);
+    protected final Sessions sessions = new Sessions(this);
+    protected final Pets pets = new Pets(this);
+    protected final DailyQuests dailyQuests = new DailyQuests(this);
     @Getter protected static TutorPlugin instance;
 
     @Override
@@ -37,7 +40,9 @@ public final class TutorPlugin extends JavaPlugin {
             }
             quests.put(questName, quest);
         }
+        dailyQuests.enable();
         tutorCommand.enable();
+        dailyCommand.enable();
         adminCommand.enable();
         sessions.enable();
         pets.enable();
@@ -50,7 +55,15 @@ public final class TutorPlugin extends JavaPlugin {
         sessions.disable();
     }
 
+    public static TutorPlugin plugin() {
+        return instance;
+    }
+
     public static SQLDatabase database() {
         return instance.database;
+    }
+
+    public static DailyQuests dailyQuests() {
+        return instance.dailyQuests;
     }
 }

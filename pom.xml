@@ -114,5 +114,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Inventory -->
+    <dependency>
+      <groupId>com.cavetale.inventory</groupId>
+      <artifactId>inventory</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 </project>

@@ -10,6 +10,8 @@ public final class SQLStatic {
         return List.of(SQLPlayerQuest.class,
                        SQLCompletedQuest.class,
                        SQLPlayerPet.class,
-                       SQLPlayerPetUnlock.class);
+                       SQLPlayerPetUnlock.class,
+                       SQLDailyQuest.class,
+                       SQLPlayerDailyQuest.class);
     }
 }

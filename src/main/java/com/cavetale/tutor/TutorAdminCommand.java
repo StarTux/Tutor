@@ -2,9 +2,11 @@ package com.cavetale.tutor;
 
 import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
+import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
+import com.cavetale.tutor.daily.DailyQuest;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
@@ -63,6 +65,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .description("Account transfer")
             .completers(PlayerCache.NAME_COMPLETER, PlayerCache.NAME_COMPLETER)
             .senderCaller(this::transfer);
+        CommandNode dailyNode = rootNode.addChild("daily")
+            .description("Daily quest commands");
+        dailyNode.addChild("list").denyTabCompletion()
+            .description("List daily quests")
+            .senderCaller(this::dailyList);
     }
 
     private Player requirePlayer(String arg) {
@@ -338,5 +345,13 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             + " " + location.getBlockX()
             + " " + location.getBlockY()
             + " " + location.getBlockZ();
+    }
+
+    private void dailyList(CommandSender sender) {
+        int index = 0;
+        for (DailyQuest it : plugin.getDailyQuests().getDailyQuests()) {
+            sender.sendMessage((index++) + ") " + it);
+        }
+        sender.sendMessage("Total " + index);
     }
 }

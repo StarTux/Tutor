@@ -2,13 +2,18 @@ package com.cavetale.tutor.session;
 
 import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
+import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
+import com.cavetale.tutor.daily.DailyQuest;
+import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.goal.Constraint;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Noise;
@@ -21,7 +26,6 @@ import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
-import com.cavetale.tutor.util.Items;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -33,18 +37,25 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import static com.cavetale.core.font.Unicode.tiny;
+import static com.cavetale.tutor.TutorPlugin.database;
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
+import static net.kyori.adventure.text.event.ClickEvent.runCommand;
+import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextColor.color;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 /**
  * Cache data on a player, logged in or not.
@@ -58,6 +69,7 @@ public final class Session {
     protected final Map<QuestName, PlayerQuest> currentQuests = new EnumMap<>(QuestName.class);
     protected final Map<QuestName, SQLCompletedQuest> completedQuests = new EnumMap<>(QuestName.class);
     protected final Map<PetType, SQLPlayerPetUnlock> unlockedPets = new EnumMap<>(PetType.class);
+    protected final List<PlayerDailyQuest> dailyQuests = new ArrayList<>();
     protected SQLPlayerPet playerPetRow = null;
     protected boolean ready;
     protected boolean disabled;
@@ -65,6 +77,7 @@ public final class Session {
     protected Pet pet;
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
     private Cache cache;
+    private MenuSection section = MenuSection.TUTORIALS;
 
     /**
      * This is the constructor for a regular session which will be
@@ -93,22 +106,25 @@ public final class Session {
         List<SQLPlayerQuest> playerQuestRows;
         List<SQLCompletedQuest> completedQuestRows;
         List<SQLPlayerPetUnlock> playerPetUnlockRows;
+        // Dailies are not loaded here because we rely on the
+        // DailyQuests class to tell us which dailies are live so we
+        // can load or create them later.
     }
 
     protected void loadAsync(Runnable callback) {
-        plugin.getDatabase().scheduleAsyncTask(() -> {
+        database().scheduleAsyncTask(() -> {
                 this.cache = new Cache();
-                cache.playerQuestRows = plugin.getDatabase().find(SQLPlayerQuest.class)
+                cache.playerQuestRows = database().find(SQLPlayerQuest.class)
                     .eq("player", uuid).findList();
-                cache.completedQuestRows = plugin.getDatabase().find(SQLCompletedQuest.class)
+                cache.completedQuestRows = database().find(SQLCompletedQuest.class)
                     .eq("player", uuid).findList();
-                cache.playerPetUnlockRows = plugin.getDatabase().find(SQLPlayerPetUnlock.class)
+                cache.playerPetUnlockRows = database().find(SQLPlayerPetUnlock.class)
                     .eq("player", uuid).findList();
-                this.playerPetRow = plugin.getDatabase().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
+                this.playerPetRow = database().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
                 if (playerPetRow == null) {
                     playerPetRow = new SQLPlayerPet(uuid);
                     playerPetRow.setAutoSpawn(true);
-                    plugin.getDatabase().insert(playerPetRow);
+                    database().insert(playerPetRow);
                 }
                 if (callback != null) {
                     Bukkit.getScheduler().runTask(plugin, callback);
@@ -147,6 +163,10 @@ public final class Session {
             }
             unlockedPets.put(petType, row);
         }
+        for (DailyQuest dailyQuest : plugin.getDailyQuests().getDailyQuests()) {
+            if (!dailyQuest.isActive()) continue;
+            loadDailyQuest(dailyQuest);
+        }
         cache = null;
         ready = true;
         for (Runnable callback : deferredCallbacks) {
@@ -165,6 +185,10 @@ public final class Session {
                 playerQuest.disable();
             }
             currentQuests.clear();
+            for (PlayerDailyQuest playerDailyQuest : dailyQuests) {
+                playerDailyQuest.disable();
+            }
+            dailyQuests.clear();
         }
         disabled = true;
     }
@@ -203,7 +227,7 @@ public final class Session {
         if (!completedQuests.containsKey(questName)) {
             SQLCompletedQuest newRow = new SQLCompletedQuest(uuid, questName);
             completedQuests.put(questName, newRow);
-            plugin.getDatabase().insertAsync(newRow, r -> {
+            database().insertAsync(newRow, r -> {
                     plugin.getLogger().info(name + " insert complete " + questName + " => " + r);
                     if (r != 0 && ServerGroup.current() != ServerGroup.MUSEUM) {
                         Perm.get().addLevelProgress(player.getUniqueId());
@@ -219,7 +243,7 @@ public final class Session {
         PlayerQuest playerQuest = currentQuests.remove(questName);
         if (playerQuest != null) {
             playerQuest.disable();
-            plugin.getDatabase().deleteAsync(playerQuest.getRow(), null);
+            database().deleteAsync(playerQuest.getRow(), null);
         }
         return playerQuest;
     }
@@ -236,7 +260,7 @@ public final class Session {
         List<PlayerQuest> quests = getQuestList();
         List<Component> pages = new ArrayList<>();
         if (quests.isEmpty()) {
-            pages.add(Component.text("No quests to show!", NamedTextColor.DARK_RED));
+            pages.add(text("No quests to show!", DARK_RED));
         } else {
             for (PlayerQuest playerQuest : quests) {
                 pages.addAll(playerQuest.getCurrentGoal().getBookPages(playerQuest));
@@ -245,7 +269,7 @@ public final class Session {
         BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
         meta.addPages(pages.toArray(new Component[0]));
         meta.setTitle("Quests");
-        meta.author(Component.text("Cavetale"));
+        meta.author(text("Cavetale"));
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         itemStack.setItemMeta(meta);
@@ -255,35 +279,33 @@ public final class Session {
 
     public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
         List<Component> pages = new ArrayList<>();
-        pages.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                    (Component.text()
-                     .append(quest.name.displayName)
-                     .color(NamedTextColor.DARK_AQUA)
-                     .decorate(TextDecoration.BOLD)
-                     .build()),
-                    Component.newline(),
-                    Component.text(quest.getName().type.upper + " ", NamedTextColor.GRAY),
-                    (DefaultFont.BACK_BUTTON.component
-                     .clickEvent(ClickEvent.runCommand("/tutor menu"))
-                     .hoverEvent(HoverEvent.showText(Component.text("Open Tutor Menu", NamedTextColor.BLUE)))),
-                    Component.text("\n\nCompleted\n", NamedTextColor.GRAY),
-                    Component.text(dateFormat.format(row.getTime()), NamedTextColor.DARK_AQUA),
-                    Component.text("\n\n"),
-                    (DefaultFont.START_BUTTON.component
-                     .clickEvent(ClickEvent.runCommand("/tutor click redo " + quest.getName().key))
-                     .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
-                                     Component.text("Repeat this " + quest.getName().type.lower, NamedTextColor.BLUE),
-                                     Component.text("There will not be", NamedTextColor.GRAY),
-                                     Component.text("any extra rewards.", NamedTextColor.GRAY),
-                                 })))),
-                }));
+        pages.add(textOfChildren((text()
+                                  .append(quest.name.displayName)
+                                  .color(DARK_AQUA)
+                                  .decorate(BOLD)
+                                  .build()),
+                                 newline(),
+                                 text(quest.getName().type.upper + " ", GRAY),
+                                 (DefaultFont.BACK_BUTTON.component
+                                  .clickEvent(runCommand("/tutor menu"))
+                                  .hoverEvent(showText(text("Open Tutor Menu", BLUE)))),
+                                 text("\n\nCompleted\n", GRAY),
+                                 text(dateFormat.format(row.getTime()), DARK_AQUA),
+                                 text("\n\n"),
+                                 (DefaultFont.START_BUTTON.component
+                                  .clickEvent(runCommand("/tutor click redo " + quest.getName().key))
+                                  .hoverEvent(showText(join(separator(newline()), new Component[] {
+                                                  text("Repeat this " + quest.getName().type.lower, BLUE),
+                                                  text("There will not be", GRAY),
+                                                  text("any extra rewards.", GRAY),
+                                              }))))));
         for (Goal goal : quest.getGoals()) {
             pages.addAll(goal.getAdditionalBookPages());
         }
         BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
         meta.addPages(pages.toArray(new Component[0]));
         meta.setTitle("Tutor");
-        meta.author(Component.text("Cavetale"));
+        meta.author(text("Cavetale"));
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         itemStack.setItemMeta(meta);
@@ -337,18 +359,18 @@ public final class Session {
             if (!completedQuests.containsKey(questName) && canSee(questName)) {
                 if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
                     pet.addSpeechBubble("session", 60L, 150L,
-                                        Component.text("There is another"),
-                                        Component.text(questName.type.lower + " waiting"),
-                                        Component.text("for you!"));
+                                        text("There is another"),
+                                        text(questName.type.lower + " waiting"),
+                                        text("for you!"));
                     pet.addSpeechBubble("session", 0L, 150L,
-                                        Component.text("Click me or type"),
-                                        Component.text(questName.type.command, NamedTextColor.YELLOW));
+                                        text("Click me or type"),
+                                        text(questName.type.command, YELLOW));
                 } else {
-                    getPlayer().sendMessage(Component.text()
+                    getPlayer().sendMessage(text()
                                             .content("There is another " + questName.type.lower
                                                      + " waiting for you! Type ")
-                                            .append(Component.text(questName.type.command, NamedTextColor.YELLOW))
-                                            .color(NamedTextColor.AQUA)
+                                            .append(text(questName.type.command, YELLOW))
+                                            .color(AQUA)
                                             .clickEvent(questName.type.clickEvent())
                                             .hoverEvent(questName.type.hoverEvent()));
                 }
@@ -392,7 +414,7 @@ public final class Session {
         if (petType == playerPetRow.parsePetType()) return;
         playerPetRow.setPetType(petType);
         playerPetRow.setNow();
-        plugin.getDatabase().updateAsync(playerPetRow, null, "pet", "updated");
+        database().updateAsync(playerPetRow, null, "pet", "updated");
     }
 
     public void renamePet(String petName) {
@@ -401,7 +423,7 @@ public final class Session {
         if (pet != null) {
             pet.setCustomName(playerPetRow.getNameComponent());
         }
-        plugin.getDatabase().updateAsync(playerPetRow, null, "name", "updated");
+        database().updateAsync(playerPetRow, null, "name", "updated");
     }
 
     /**
@@ -413,7 +435,7 @@ public final class Session {
         if (!currentQuests.isEmpty()) {
             openQuestBook(player);
         } else {
-            overviewMenu(player);
+            openMenu(player);
         }
     }
 
@@ -422,54 +444,45 @@ public final class Session {
         Player player = getPlayer();
         if (player == null) return;
         if (!playerPetRow.isAutoSpawn()) {
-            Component msg = Component.text()
+            Component msg = text()
                 .append(playerPetRow.getNameComponent())
-                .append(Component.text(" despawned. Bring it back via "))
-                .append(Component.text("/tutor", NamedTextColor.YELLOW))
-                .color(NamedTextColor.GRAY)
-                .clickEvent(ClickEvent.runCommand("/tutor"))
-                .hoverEvent(HoverEvent.showText(Component.text("/tutor", NamedTextColor.YELLOW)))
+                .append(text(" despawned. Bring it back via "))
+                .append(text("/tutor", YELLOW))
+                .color(GRAY)
+                .clickEvent(runCommand("/tutor"))
+                .hoverEvent(showText(text("/tutor", YELLOW)))
                 .build();
             player.sendMessage(msg);
         }
     }
 
-    public void overviewMenu(Player player) {
+    public void openMenu(Player player, MenuSection theSection) {
+        this.section = theSection;
+        openMenu(player);
+    }
+
+    public void openMenu(Player player) {
         if (pet == null) return;
-        int size = 3 * 9;
-        Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.AQUA, playerPetRow.getNameComponent());
-        // Pet Item
-        ItemStack petItem = pet.getType().mytems.createIcon();
-        petItem.editMeta(meta -> {
-                meta.displayName(playerPetRow.getNameComponent());
-                meta.lore(List.of(new Component[] {
-                            Component.text("Access Pet Options", NamedTextColor.GRAY),
-                        }));
-            });
-        gui.setItem(9 + 5, petItem, click -> {
-                if (!click.isLeftClick()) return;
-                Noise.CLICK.play(player);
-                openPetSettingsMenu(player);
-            });
-        // Quests Item
-        ItemStack questsItem = new ItemStack(Material.WRITTEN_BOOK);
-        questsItem.editMeta(meta -> {
-                meta.displayName(Component.text("Tutorials", NamedTextColor.YELLOW));
-                meta.lore(List.of(new Component[] {
-                            Component.text("Tutorial Menu", NamedTextColor.GRAY),
-                        }));
-                meta.addItemFlags(ItemFlag.values());
-            });
-        gui.setItem(9 + 3, questsItem, click -> {
-                if (!click.isLeftClick()) return;
-                Noise.CLICK.play(player);
-                openQuestsMenu(player);
-            });
-        gui.setItem(Gui.OUTSIDE, null, click -> {
-                Noise.CLICK.play(player);
-                player.closeInventory();
-            });
+        final int size = 4 * 9;
+        final Gui gui = new Gui().size(size);
+        gui.setOverlay(GuiOverlay.BLANK.builder(size, section.backgroundColor)
+                       .layer(GuiOverlay.TOP_BAR, section.backgroundColor)
+                       .title(section.title));
+        List<MenuSection> sectionList = List.of(MenuSection.values());
+        final int menuOffset = 4 - (sectionList.size() / 2);
+        for (int i = 0; i < sectionList.size(); i += 1) {
+            MenuSection menuSection = sectionList.get(i);
+            gui.setItem(menuOffset + i, menuSection.createIcon(this), click -> {
+                    if (!click.isLeftClick()) return;
+                    Noise.CLICK.play(player);
+                    openMenu(player, menuSection);
+                });
+            if (section == menuSection) {
+                gui.getOverlay().highlightSlot(menuOffset + i, section.backgroundColor);
+            }
+        }
+        section.makeGui(gui, player, this);
+        gui.setItem(Gui.OUTSIDE, null, click -> Noise.FAIL.play(player));
         gui.open(player);
     }
 
@@ -490,9 +503,7 @@ public final class Session {
         return true;
     }
 
-    public void openQuestsMenu(Player player) {
-        Gui gui = new Gui();
-        gui.withOverlay(3 * 9, TextColor.color(0x400000), Component.text("Quests", NamedTextColor.WHITE));
+    protected void makeTutorialMenu(Gui gui, Player player) {
         // Current Quest
         if (!currentQuests.isEmpty()) {
             QuestName questName = currentQuests.keySet().iterator().next();
@@ -525,20 +536,14 @@ public final class Session {
                     if (!currentQuests.isEmpty()) {
                         Noise.FAIL.play(player);
                         QuestName active = currentQuests.keySet().iterator().next();
-                        player.sendMessage(Component.text("You already have an active " + active.type.lower + "!", NamedTextColor.RED));
+                        player.sendMessage(text("You already have an active " + active.type.lower + "!", RED));
                         return;
                     }
                     Noise.CLICK.play(player);
                     startQuest(questName);
-                    player.closeInventory();
+                    openMenu(player);
                 });
         }
-        //
-        gui.setItem(Gui.OUTSIDE, null, click -> {
-                Noise.CLICK.play(player);
-                overviewMenu(player);
-            });
-        gui.open(player);
     }
 
     protected ItemStack makeQuestItem(QuestName questName) {
@@ -547,31 +552,31 @@ public final class Session {
         final List<Component> text = new ArrayList<>();
         text.add(quest.name.displayName);
         if (currentQuests.containsKey(questName)) {
-            item = new ItemStack(Material.WRITABLE_BOOK);
-            text.add(Component.text("Current Quest", NamedTextColor.GOLD));
-        } else if (completedQuests.containsKey(questName)) {
-            item = new ItemStack(Material.WRITTEN_BOOK);
-            text.add(Component.text("Completed", NamedTextColor.GOLD));
-        } else if (canStart(questName)) {
             item = Mytems.STAR.createIcon();
-            text.add(Component.text("Start this " + questName.type.lower + "?", NamedTextColor.GOLD));
+            text.add(text("Current Quest", GOLD));
+        } else if (completedQuests.containsKey(questName)) {
+            item = Mytems.CHECKED_CHECKBOX.createIcon();
+            text.add(text("Completed", GOLD));
+        } else if (canStart(questName)) {
+            item = Mytems.CHECKBOX.createIcon();
+            text.add(text("Start this " + questName.type.lower + "?", GOLD));
         } else {
-            item = new ItemStack(Material.CHEST);
-            text.add(Component.text("Locked", NamedTextColor.DARK_RED));
+            item = Mytems.COPPER_KEYHOLE.createIcon();
+            text.add(text("Locked", DARK_RED));
         }
         if (!questName.getDescription().isEmpty()) {
-            text.add(Component.empty());
+            text.add(empty());
             text.addAll(questName.getDescription());
         }
         if (!questName.getStartDependencies().isEmpty()) {
-            text.add(Component.empty());
-            text.add(Component.text(questName.type.upper + " Requirements", NamedTextColor.GRAY));
+            text.add(empty());
+            text.add(text(questName.type.upper + " Requirements", GRAY));
             for (QuestName dependency : questName.getStartDependencies()) {
                 if (completedQuests.containsKey(dependency)) {
-                    text.add(Component.text(Unicode.CHECKED_CHECKBOX.character + " ", NamedTextColor.GRAY)
+                    text.add(text(Unicode.CHECKED_CHECKBOX.character + " ", GRAY)
                              .append(dependency.displayName));
                 } else {
-                    text.add(Component.text(Unicode.CHECKBOX.character + " ", NamedTextColor.DARK_GRAY)
+                    text.add(text(Unicode.CHECKBOX.character + " ", DARK_GRAY)
                              .append(dependency.displayName));
                 }
             }
@@ -580,10 +585,10 @@ public final class Session {
         return item;
     }
 
-    public void openPetSettingsMenu(Player player) {
+    protected void makePetMenu(Gui gui, Player player) {
         if (pet == null) return;
-        List<Integer> indexes = List.of(0 + 4,
-                                        9 + 1, 9 + 3, 9 + 5, 9 + 7);
+        List<Integer> indexes = List.of(9 + 4,
+                                        18 + 1, 18 + 3, 18 + 5, 18 + 7);
         final boolean on = playerPetRow.isAutoSpawn();
         Component petName = playerPetRow.getNameComponent();
         PetType petType = playerPetRow.parsePetType();
@@ -591,7 +596,7 @@ public final class Session {
         List<Gui.Slot> slots = List.of(new Gui.Slot[] {
                 // Pet Type
                 Gui.Slot.of(petType.mytems.createIcon(),
-                            List.of(Component.text("Choose Pet", NamedTextColor.GREEN)),
+                            List.of(text("Choose Pet", GREEN)),
                             click -> {
                                 if (!click.isLeftClick()) return;
                                 Noise.CLICK.play(player);
@@ -599,27 +604,27 @@ public final class Session {
                             }),
                 // Spawn
                 Gui.Slot.of(Mytems.STAR.createIcon(),
-                            List.of(Component.text().content("Spawn ").color(NamedTextColor.GREEN)
+                            List.of(text().content("Spawn ").color(GREEN)
                                     .append(petName).build()),
                             click -> {
                                 if (!click.isLeftClick()) return;
                                 Noise.CLICK.play(player);
                                 if (!pet.tryToSpawn(player, SpawnRule.LOOKAT)) {
                                     if (!pet.tryToSpawn(player, SpawnRule.NEARBY)) {
-                                        player.sendMessage(Component.text("Could not spawn your pet!",
-                                                                          NamedTextColor.RED));
+                                        player.sendMessage(text("Could not spawn your pet!",
+                                                                RED));
                                     }
                                 }
-                                player.sendMessage(Component.text().append(petName)
-                                                   .append(Component.text(" appeared!"))
-                                                   .color(NamedTextColor.GREEN));
+                                player.sendMessage(text().append(petName)
+                                                   .append(text(" appeared!"))
+                                                   .color(GREEN));
                                 pet.setAutoDespawn(false);
                             }),
                 // Auto Respawn
                 Gui.Slot.of(on ? Mytems.OK.createIcon() : Mytems.NO.createIcon(),
                             List.of(playerPetRow.isAutoSpawn()
-                                    ? Component.text("Auto Respawn Enabled", NamedTextColor.GREEN)
-                                    : Component.text("Auto Respawn Disabled", NamedTextColor.RED)),
+                                    ? text("Auto Respawn Enabled", GREEN)
+                                    : text("Auto Respawn Disabled", RED)),
                             click -> {
                                 if (!click.isLeftClick()) return;
                                 if (on == playerPetRow.isAutoSpawn()) {
@@ -627,23 +632,23 @@ public final class Session {
                                     playerPetRow.setAutoSpawn(!on);
                                     playerPetRow.setNow();
                                     pet.setAutoRespawn(!on);
-                                    plugin.getDatabase().updateAsync(playerPetRow, null, "auto_spawn", "updated");
+                                    database().updateAsync(playerPetRow, null, "auto_spawn", "updated");
                                 }
-                                openPetSettingsMenu(player);
+                                openMenu(player, MenuSection.PET);
                             }),
                 // Name
                 Gui.Slot.of(new ItemStack(Material.NAME_TAG),
-                            List.of(Component.text("Change Name", NamedTextColor.GREEN)),
+                            List.of(text("Change Name", GREEN)),
                             click -> {
                                 if (!click.isLeftClick()) return;
                                 Noise.CLICK.play(player);
                                 player.closeInventory();
-                                player.sendMessage(Component.text().content("\n  Click here to change the name of your pet\n")
-                                                   .color(NamedTextColor.BLUE)
-                                                   .decorate(TextDecoration.BOLD)
-                                                   .clickEvent(ClickEvent.suggestCommand("/tutor rename "))
-                                                   .hoverEvent(HoverEvent.showText(Component.text("/tutor rename",
-                                                                                                  NamedTextColor.YELLOW))));
+                                player.sendMessage(text().content("\n  Click here to change the name of your pet\n")
+                                                   .color(BLUE)
+                                                   .decorate(BOLD)
+                                                   .clickEvent(suggestCommand("/tutor rename "))
+                                                   .hoverEvent(showText(text("/tutor rename",
+                                                                             YELLOW))));
                             }),
                 // Gender
                 Gui.Slot.of(petGender.itemStack,
@@ -658,22 +663,100 @@ public final class Session {
                                 PetGender newGender = allGenders[(petGender.ordinal() + 1) % allGenders.length];
                                 playerPetRow.setGender(newGender);
                                 playerPetRow.setNow();
-                                plugin.getDatabase().updateAsync(playerPetRow, null, "gender", "updated");
+                                database().updateAsync(playerPetRow, null, "gender", "updated");
                                 if (pet != null) {
                                     pet.setCustomName(playerPetRow.getNameComponent());
                                 }
-                                openPetSettingsMenu(player);
+                                openMenu(player, MenuSection.PET);
                             }),
             });
-        int size = 3 * 9;
-        Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.DARK_AQUA, petName);
         gui.setSlots(indexes, slots);
-        gui.setOutsideClick(click -> {
-                Noise.CLICK.play(player);
-                overviewMenu(player);
+        gui.getOverlay().title(playerPetRow.getNameComponent());
+    }
+
+    protected void makeDailyQuestGui(Gui gui, Player player) {
+        List<PlayerDailyQuest> visibleDailies = getVisibleDailies();
+        final int offset = 4 - (visibleDailies.size() / 2);
+        for (int i = 0; i < visibleDailies.size(); i += 1) {
+            PlayerDailyQuest playerDailyQuest = visibleDailies.get(i);
+            final ItemStack icon;
+            final DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+            if (playerDailyQuest.isComplete()) {
+                icon = Mytems.CHECKED_CHECKBOX.createIcon();
+            } else {
+                icon = dailyQuest.createIcon(playerDailyQuest);
+            }
+            List<Component> text = new ArrayList<>();
+            text.add(dailyQuest.getDescription(playerDailyQuest));
+            final int hours = 24 - plugin.getDailyQuests().getTimer().getHour();
+            final String box = "\u2588";
+            final int fullBars;
+            final int emptyBars;
+            final int maxBars = 12;
+            if (dailyQuest.getTotal() <= maxBars) {
+                fullBars = playerDailyQuest.getScore();
+                emptyBars = dailyQuest.getTotal() - fullBars;
+            } else {
+                fullBars = (playerDailyQuest.getScore() * maxBars) / dailyQuest.getTotal();
+                emptyBars = maxBars - fullBars;
+            }
+            String fullBarString = "";
+            String emptyBarString = "";
+            for (int j = 0; j < fullBars; j += 1) fullBarString += box;
+            for (int j = 0; j < emptyBars; j += 1) emptyBarString += box;
+            text.add(textOfChildren(text(fullBarString, GREEN), text(emptyBarString, GRAY)));
+            text.add(textOfChildren(text("Progress ", GRAY), text(playerDailyQuest.getScore() + "/" + dailyQuest.getTotal(), WHITE)));
+            text.add(textOfChildren(text("Time left ", GRAY), text(hours + "h", WHITE)));
+            if (playerDailyQuest.isComplete()) {
+                text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", GREEN)));
+            }
+            Items.text(icon, text);
+            gui.setItem(offset + i, 2, icon, click -> {
+                    if (!click.isLeftClick()) return;
+                    Noise.CLICK.play(player);
+                    openDailyQuestBook(player, dailyQuest, playerDailyQuest);
+                });
+        }
+    }
+
+    public void openDailyQuestBook(Player player, DailyQuest dailyQuest, PlayerDailyQuest playerDailyQuest) {
+        List<Component> text = new ArrayList<>();
+        text.add(DefaultFont.BACK_BUTTON.component
+                 .hoverEvent(showText(text("Go back", BLUE)))
+                 .clickEvent(runCommand("/daily")));
+        text.add(empty());
+        text.add(dailyQuest.getDetailedDescription(playerDailyQuest));
+        final int hours = 24 - plugin.getDailyQuests().getTimer().getHour();
+        final String box = "\u2588";
+        final int fullBars;
+        final int emptyBars;
+        final int maxBars = 12;
+        if (dailyQuest.getTotal() <= maxBars) {
+            fullBars = playerDailyQuest.getScore();
+            emptyBars = dailyQuest.getTotal() - fullBars;
+        } else {
+            fullBars = (playerDailyQuest.getScore() * maxBars) / dailyQuest.getTotal();
+            emptyBars = maxBars - fullBars;
+        }
+        String fullBarString = "";
+        String emptyBarString = "";
+        for (int j = 0; j < fullBars; j += 1) fullBarString += box;
+        for (int j = 0; j < emptyBars; j += 1) emptyBarString += box;
+        text.add(textOfChildren(text(fullBarString, BLUE), text(emptyBarString, GRAY)));
+        text.add(textOfChildren(text("Progress ", DARK_GRAY), text(playerDailyQuest.getScore() + "/" + dailyQuest.getTotal())));
+        text.add(textOfChildren(text("Time left ", DARK_GRAY), text(hours + "h")));
+        if (playerDailyQuest.isComplete()) {
+            text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", BLUE)));
+        }
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        book.editMeta(m -> {
+                BookMeta meta = (BookMeta) m;
+                meta.author(text("Cavetale"));
+                meta.title(text("Tutor"));
+                meta.pages(List.of(join(separator(newline()), text)));
             });
-        gui.open(player);
+        player.closeInventory();
+        player.openBook(book);
     }
 
     public void openPetTypeSelectionMenu(Player player) {
@@ -681,13 +764,13 @@ public final class Session {
         PetType[] allTypes = PetType.values();
         int rows = (allTypes.length - 1) / 9 + 1;
         int size = rows * 9;
-        gui.withOverlay(size, TextColor.color(0x008888), Component.text("Choose a Pet", NamedTextColor.WHITE));
+        gui.withOverlay(size, color(0x008888), text("Choose a Pet", WHITE));
         for (int index = 0; index < size; index += 1) {
             PetType petType = index < allTypes.length ? allTypes[index] : null;
             if (petType != null && petType.unlocked || unlockedPets.containsKey(petType)) {
                 gui.setSlot(index,
                             Gui.Slot.of(petType.mytems.createIcon(),
-                                        List.of(petType.displayName.color(NamedTextColor.GREEN)),
+                                        List.of(petType.displayName.color(GREEN)),
                                         click -> {
                                             if (!click.isLeftClick()) return;
                                             Noise.CLICK.play(player);
@@ -696,14 +779,14 @@ public final class Session {
                                                 pet.setType(petType);
                                                 pet.despawn();
                                             }
-                                            openPetSettingsMenu(player);
+                                            openMenu(player, MenuSection.PET);
                                         }));
             } else {
                 // petType may be null!
                 gui.setSlot(index,
                             Gui.Slot.of(Mytems.QUESTION_MARK.createIcon(),
-                                        List.of(Component.text("???", NamedTextColor.DARK_RED),
-                                                Component.text("Not yet unlocked", NamedTextColor.DARK_GRAY)),
+                                        List.of(text("???", DARK_RED),
+                                                text("Not yet unlocked", DARK_GRAY)),
                                         click -> {
                                             if (!click.isLeftClick()) return;
                                             Noise.FAIL.play(player);
@@ -712,12 +795,87 @@ public final class Session {
         }
         gui.setOutsideClick(click -> {
                 Noise.CLICK.play(player);
-                openPetSettingsMenu(player);
+                openMenu(player, MenuSection.PET);
             });
         gui.open(player);
     }
 
     public boolean hasPet() {
         return pet != null;
+    }
+
+    protected void expireDailyQuests(final int newDayId) {
+        for (PlayerDailyQuest playerDailyQuest : List.copyOf(dailyQuests)) {
+            if (playerDailyQuest.getDailyQuest().getDayId() == newDayId) continue;
+            playerDailyQuest.saveAsync();
+            dailyQuests.remove(playerDailyQuest);
+        }
+    }
+
+    /**
+     * Call this after a daily quest row was loaded from the database,
+     * OR created and activated.
+     */
+    protected void loadDailyQuest(final DailyQuest<?, ?> dailyQuest) {
+        for (PlayerDailyQuest playerDailyQuest : dailyQuests) {
+            if (playerDailyQuest.getDailyQuest().getRowId() == dailyQuest.getRowId()) {
+                return;
+            }
+        }
+        PlayerDailyQuest playerDailyQuest = new PlayerDailyQuest(this, dailyQuest);
+        dailyQuests.add(playerDailyQuest);
+        database().scheduleAsyncTask(() -> {
+                do {
+                    if (playerDailyQuest.loadRow()) break;
+                    if (playerDailyQuest.makeRow()) break;
+                    if (playerDailyQuest.loadRow()) break;
+                    throw new IllegalStateException("loadDailyQuest() fail: " + dailyQuest);
+                } while (false);
+                Bukkit.getScheduler().runTask(plugin, playerDailyQuest::enable);
+            });
+    }
+
+    public List<PlayerDailyQuest> getVisibleDailies() {
+        List<PlayerDailyQuest> result = new ArrayList<>();
+        for (PlayerDailyQuest playerDailyQuest : dailyQuests) {
+            if (!playerDailyQuest.isReady()) continue;
+            if (!playerDailyQuest.getDailyQuest().isActive()) continue;
+            if (!playerDailyQuest.getDailyQuest().hasPermission(uuid)) continue;
+            result.add(playerDailyQuest);
+        }
+        return result;
+    }
+
+    protected void sidebar(List<Component> lines) {
+        for (PlayerQuest playerQuest : getQuestList()) {
+            if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
+                lines.add(textOfChildren(text(tiny("your "), AQUA), text("/tut", YELLOW), text(tiny("orial"), AQUA)));
+            } else {
+                lines.add(textOfChildren(text(tiny("your "), AQUA), text("/q", YELLOW), text(tiny("uest"), AQUA)));
+            }
+            lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
+            break;
+        }
+        List<PlayerDailyQuest> visibleDailies = getVisibleDailies();
+        int unfinished = 0;
+        for (var it : visibleDailies) {
+            if (!it.isComplete()) unfinished += 1;
+        }
+        if (unfinished > 0) {
+            lines.add(text(tiny("dailies (" + visibleDailies.size() + ")"), AQUA));
+            for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
+                lines.addAll(playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest));
+            }
+        }
+    }
+
+    protected void applyDailyQuests(Consumer<PlayerDailyQuest> callback) {
+        for (PlayerDailyQuest playerDailyQuest : dailyQuests) {
+            if (!playerDailyQuest.isReady()) continue;
+            if (!playerDailyQuest.getDailyQuest().isActive()) continue;
+            if (playerDailyQuest.isComplete()) continue;
+            if (!playerDailyQuest.getDailyQuest().hasPermission(uuid)) continue;
+            callback.accept(playerDailyQuest);
+        }
     }
 }

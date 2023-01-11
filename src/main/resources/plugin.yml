@@ -8,7 +8,7 @@ description: Player Tutorials
 author: StarTux
 website: https://github.com/StarTux/Tutor
 
-depend: [Core, SQL, Mytems, Ticket]
+depend: [Core, SQL, Mytems, Ticket, Inventory]
 softdepend: []
 
 commands:
@@ -17,15 +17,19 @@ commands:
     aliases: [tut, quest, q]
     description: Tutor Command
     permission: tutor.tutor
-    usage: |-
-      /tutor
+    usage: /tutor
+
+  daily:
+    aliases: []
+    description: Daily Quest Menu
+    permission: tutor.daily
+    usage: /daily
 
   tutoradmin:
     aliases: [tutoradm]
     description: Admin command
     permission: tutor.admin
-    usage: |-
-      /tutoradmin
+    usage: /tutoradmin
 
 permissions:
 
@@ -39,4 +43,20 @@ permissions:
 
   tutor.beginner:
     description: Auto start the beginner quest
+    default: false
+
+  tutor.daily:
+    description: Access to daily quests
+    default: op
+
+  tutor.daily.1:
+    description: Get the first daily quest
+    default: false
+
+  tutor.daily.2:
+    description: Get the second daily quest
+    default: false
+
+  tutor.daily.3:
+    description: Get the third daily quest
     default: false
