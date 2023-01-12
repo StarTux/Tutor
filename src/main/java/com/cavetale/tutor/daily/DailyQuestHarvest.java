@@ -54,8 +54,8 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
         GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
         BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
         RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
-        CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungus", VanillaItems.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
-        WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungus", VanillaItems.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
+        CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
+        WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
         SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Set.of(Material.SEA_PICKLE)), // up to 3?
         ;
 

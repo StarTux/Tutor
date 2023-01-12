@@ -5,6 +5,7 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.connect.ConnectMessageEvent;
+import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
 import com.cavetale.tutor.time.Timer;
@@ -213,6 +214,17 @@ public final class DailyQuests implements Listener {
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 dailyQuest.onPlayerFish(player, playerDailyQuest, event);
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onTreeChop(TreeChopEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestTreeChopper treeChopper) {
+                    treeChopper.onTreeChop(player, playerDailyQuest, event);
+                }
             });
     }
 }
