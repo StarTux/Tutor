@@ -1,21 +1,21 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.connect.NetworkServer;
+import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
-import com.destroystokyo.paper.MaterialSetTag;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.exploits.PlayerPlacedBlocks.isPlayerPlaced;
@@ -31,21 +31,20 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
 
     @RequiredArgsConstructor
     protected enum Ore {
-        COAL("Coal Ore", VanillaItems.COAL_ORE, Tag.COAL_ORES),
-        COPPER("Copper Ore", VanillaItems.COPPER_ORE, Tag.COPPER_ORES),
-        DIAMOND("Diamond Ore", VanillaItems.DIAMOND_ORE, Tag.DIAMOND_ORES),
-        EMERALD("Emerald Ore", VanillaItems.EMERALD_ORE, Tag.EMERALD_ORES),
-        GOLD("Gold Ore", VanillaItems.GOLD_ORE, Tag.GOLD_ORES),
-        IRON("Iron Ore", VanillaItems.IRON_ORE, Tag.IRON_ORES),
-        LAPIS("Lapis Ore", VanillaItems.LAPIS_ORE, Tag.LAPIS_ORES),
-        QUARTZ("Nether Quartz Ore", VanillaItems.NETHER_QUARTZ_ORE,
-               new MaterialSetTag(new NamespacedKey("tutor", "quartz"), List.of(Material.NETHER_QUARTZ_ORE))),
-        REDSTONE("Redstone Ore", VanillaItems.REDSTONE_ORE, Tag.REDSTONE_ORES),
+        COAL("Coal Ore", VanillaItems.COAL_ORE, Tag.COAL_ORES.getValues()),
+        COPPER("Copper Ore", VanillaItems.COPPER_ORE, Tag.COPPER_ORES.getValues()),
+        DIAMOND("Diamond Ore", VanillaItems.DIAMOND_ORE, Tag.DIAMOND_ORES.getValues()),
+        EMERALD("Emerald Ore", VanillaItems.EMERALD_ORE, Tag.EMERALD_ORES.getValues()),
+        GOLD("Gold Ore", VanillaItems.GOLD_ORE, Tag.GOLD_ORES.getValues()),
+        IRON("Iron Ore", VanillaItems.IRON_ORE, Tag.IRON_ORES.getValues()),
+        LAPIS("Lapis Ore", VanillaItems.LAPIS_ORE, Tag.LAPIS_ORES.getValues()),
+        QUARTZ("Nether Quartz Ore", VanillaItems.NETHER_QUARTZ_ORE, Set.of(Material.NETHER_QUARTZ_ORE)),
+        REDSTONE("Redstone Ore", VanillaItems.REDSTONE_ORE, Tag.REDSTONE_ORES.getValues()),
         ;
 
         protected final String displayName;
         protected final ComponentLike chatIcon;
-        protected final Tag<Material> materialTag;
+        protected final Set<Material> blockMaterials;
     }
 
     @Override
@@ -76,11 +75,25 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
         return result;
     }
 
-    public void onMine(PlayerDailyQuest playerDailyQuest, Player player, Block block) {
+    @Override
+    protected void onBlockBreak(Player player, PlayerDailyQuest playerDailyQuest, BlockBreakEvent event) {
         if (!NetworkServer.current().isSurvival()) return;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
+        Block block = event.getBlock();
+        if (!details.ore.blockMaterials.contains(block.getType())) return;
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        if (tool == null || !block.isPreferredTool(tool)) return;
         if (isPlayerPlaced(block)) return;
-        if (!details.ore.materialTag.isTagged(block.getType())) return;
+        makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected void onPlayerBreakBlock(Player player, PlayerDailyQuest playerDailyQuest, PlayerBreakBlockEvent event) {
+        if (!NetworkServer.current().isSurvival()) return;
+        if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
+        Block block = event.getBlock();
+        if (!details.ore.blockMaterials.contains(block.getType())) return;
+        if (isPlayerPlaced(block)) return;
         makeProgress(playerDailyQuest, 1);
     }
 

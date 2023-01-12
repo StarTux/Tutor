@@ -1,5 +1,6 @@
 package com.cavetale.tutor.daily;
 
+import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.util.Json;
 import com.cavetale.inventory.mail.ItemMail;
@@ -15,6 +16,13 @@ import lombok.Setter;
 import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import static com.cavetale.core.font.Unicode.subscript;
@@ -214,15 +222,32 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         return row != null ? row.getDailyIndex() : -1;
     }
 
+    /** Event Handler. */
+    protected void onBlockBreak(Player player, PlayerDailyQuest playerDailyQuest, BlockBreakEvent event) { }
+    /** Event Handler. */
+    protected void onBlockDropItem(Player player, PlayerDailyQuest playerDailyQuest, BlockDropItemEvent event) { }
+    /** Event Handler. */
+    protected void onPlayerBreakBlock(Player player, PlayerDailyQuest playerDailyQuest, PlayerBreakBlockEvent event) { }
+    /** Event Handler. */
+    protected void onPlayerHarvestBlock(Player player, PlayerDailyQuest playerDailyQuest, PlayerHarvestBlockEvent event) { }
+    /** Event Handler. */
+    protected void onPlayerFish(Player player, PlayerDailyQuest playerDailyQuest, PlayerFishEvent event) { }
+
     /**
      * To print in the sidebar.
      */
-    public List<Component> getSidebarLines(PlayerDailyQuest playerDailyQuest) {
+    public final List<Component> getSidebarLines(PlayerDailyQuest playerDailyQuest) {
         if (!active) return List.of();
-        final TextColor color = playerDailyQuest.isComplete() ? GREEN : GRAY;
-        return List.of(textOfChildren(text(superscript(playerDailyQuest.getScore()) + "/" + subscript(total), color),
-                                      space(),
-                                      getDescription(playerDailyQuest)));
+        if (playerDailyQuest.isComplete()) {
+            return List.of(textOfChildren(Mytems.CHECKED_CHECKBOX, space(), getDescription(playerDailyQuest)));
+        } else {
+            TextColor color = playerDailyQuest.progressTimer > System.currentTimeMillis()
+                ? GREEN
+                : GRAY;
+            return List.of(textOfChildren(text(superscript(playerDailyQuest.getScore()) + "/" + subscript(total), color),
+                                          space(),
+                                          getDescription(playerDailyQuest)));
+        }
     }
 
     /**
@@ -240,8 +265,19 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
                           List.of(Mytems.RUBY.createItemStack()),
                           textOfChildren(text("Daily Quest " + dailyQuests().getTimer().getTodaysName() + ": ", GRAY),
                                          getDescription(playerDailyQuest)));
+            Player player = playerDailyQuest.getSession().getPlayer();
+            if (player != null) {
+                player.sendMessage(textOfChildren(text("Daily Quest Complete: ", GRAY), getDescription(playerDailyQuest)));
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
+            }
+        } else {
+            Player player = playerDailyQuest.getSession().getPlayer();
+            if (player != null) {
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 0.5f, 2.0f);
+            }
         }
         playerDailyQuest.saveAsync();
+        playerDailyQuest.progressTimer = System.currentTimeMillis() + 5_000L;
     }
 
     public final boolean hasPermission(Permissible player) {

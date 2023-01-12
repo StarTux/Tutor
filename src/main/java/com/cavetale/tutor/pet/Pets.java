@@ -5,7 +5,6 @@ import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.goal.MainServerConstraint;
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.destroystokyo.paper.event.entity.TurtleLayEggEvent;
 import com.destroystokyo.paper.event.entity.TurtleStartDiggingEvent;
 import io.papermc.paper.event.entity.EntityInsideBlockEvent;
@@ -309,11 +308,6 @@ public final class Pets implements Listener {
     }
 
     @EventHandler
-    protected void onProjectileCollide(ProjectileCollideEvent event) {
-        handleEventEntity(event.getCollidedWith(), event);
-    }
-
-    @EventHandler
     protected void onTurtleLayEgg(TurtleLayEggEvent event) {
         handleEventEntity(event.getEntity(), event);
     }
@@ -383,7 +377,8 @@ public final class Pets implements Listener {
 
     @EventHandler
     protected void onProjectileHit(ProjectileHitEvent event) {
-        handleEventEntity(event.getEntity(), event);
+        if (event.getHitEntity() == null) return;
+        handleEventEntity(event.getHitEntity(), event);
     }
 
     @EventHandler

@@ -9,11 +9,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.*;
 
 public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Details, DailyQuest.Progress> {
     public DailyQuestFishing() {
@@ -24,10 +29,11 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
 
     @RequiredArgsConstructor
     protected enum Fish {
-        COD(3, "Cod", VanillaItems.COD, Material.COD),
+        COD(5, "Cod", VanillaItems.COD, Material.COD),
         SALMON(3, "Salmon", VanillaItems.SALMON, Material.SALMON),
         PUFFERFISH(1, "Pufferfish", VanillaItems.PUFFERFISH, Material.PUFFERFISH),
         TROPICAL_FISH(1, "Tropical Fish", VanillaItems.TROPICAL_FISH, Material.TROPICAL_FISH),
+        TRASH(3, "Trash Items", text("Trash", RED, ITALIC), Material.AIR),
         ;
 
         protected final int total;
@@ -50,10 +56,13 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
-        return textOfChildren(text("Catch " + total + " "),
-                              details.fish.chatIcon,
-                              text(" " + details.fish.displayName + "."
-                                   + " Fishing must be done in survival mode."));
+        if (details.fish == Fish.TRASH) {
+            return text("Catch " + total + " items which are not fish in survival mode.");
+        } else {
+            return textOfChildren(text("Catch " + total + " "),
+                                  details.fish.chatIcon,
+                                  text(" " + details.fish.displayName + " in survival mode."));
+        }
     }
 
     @Override
@@ -63,10 +72,20 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
         return result;
     }
 
-    public void onCatch(PlayerDailyQuest playerDailyQuest, Player player, ItemStack item) {
+    @Override
+    protected void onPlayerFish(Player player, PlayerDailyQuest playerDailyQuest, PlayerFishEvent event) {
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
+            return;
+        }
         if (!NetworkServer.current().isSurvival()) return;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
-        if (details.fish.fishMaterial != item.getType()) return;
+        if (!(event.getCaught() instanceof Item entity)) return;
+        final ItemStack item = entity.getItemStack();
+        if (details.fish == Fish.TRASH) {
+            if (Tag.ITEMS_FISHES.isTagged(item.getType())) return;
+        } else {
+            if (details.fish.fishMaterial != item.getType()) return;
+        }
         makeProgress(playerDailyQuest, 1);
     }
 

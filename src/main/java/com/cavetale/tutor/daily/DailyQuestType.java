@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public enum DailyQuestType {
     DUMMY(DailyQuestDummy::new, List.of(-1)),
     MINING(DailyQuestMining::new, List.of(0)),
+    HARVEST(DailyQuestHarvest::new, List.of(0)),
     FISHING(DailyQuestFishing::new, List.of(0)),
     ;
 

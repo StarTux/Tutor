@@ -16,13 +16,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import static com.cavetale.tutor.TutorPlugin.database;
 
 @Getter @RequiredArgsConstructor
@@ -170,14 +171,21 @@ public final class DailyQuests implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
-                if (dailyQuest instanceof DailyQuestMining mining) {
-                    mining.onMine(playerDailyQuest, player, event.getBlock());
-                }
+                dailyQuest.onBlockBreak(player, playerDailyQuest, event);
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onBlockDropItem(BlockDropItemEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                dailyQuest.onBlockDropItem(player, playerDailyQuest, event);
             });
     }
 
@@ -186,25 +194,25 @@ public final class DailyQuests implements Listener {
         Player player = event.getPlayer();
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
-                if (dailyQuest instanceof DailyQuestMining mining) {
-                    mining.onMine(playerDailyQuest, player, event.getBlock());
-                }
+                dailyQuest.onPlayerBreakBlock(player, playerDailyQuest, event);
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onPlayerHarvestBlock(PlayerHarvestBlockEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                dailyQuest.onPlayerHarvestBlock(player, playerDailyQuest, event);
             });
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onPlayerFish(PlayerFishEvent event) {
-        switch (event.getState()) {
-        case CAUGHT_FISH: break;
-        default: return;
-        }
-        if (!(event.getCaught() instanceof Item entity)) return;
         Player player = event.getPlayer();
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
-                if (dailyQuest instanceof DailyQuestFishing fishing) {
-                    fishing.onCatch(playerDailyQuest, player, entity.getItemStack());
-                }
+                dailyQuest.onPlayerFish(player, playerDailyQuest, event);
             });
     }
 }

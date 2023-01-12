@@ -18,6 +18,7 @@ public final class PlayerDailyQuest {
     protected int score;
     @Setter protected boolean complete;
     protected boolean ready; // Implies row != null!
+    protected long progressTimer;
 
     public boolean isCompletable() {
         return !complete && dailyQuest.active;
