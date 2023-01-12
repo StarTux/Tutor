@@ -25,6 +25,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import static com.cavetale.tutor.TutorPlugin.database;
 
 @Getter @RequiredArgsConstructor
@@ -224,6 +225,17 @@ public final class DailyQuests implements Listener {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestTreeChopper treeChopper) {
                     treeChopper.onTreeChop(player, playerDailyQuest, event);
+                }
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onPlayerShearEntity(PlayerShearEntityEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestShearSheep shearSheep) {
+                    shearSheep.shearSheep(player, playerDailyQuest, event);
                 }
             });
     }

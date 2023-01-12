@@ -19,6 +19,7 @@ public enum DailyQuestType {
     HARVEST(DailyQuestHarvest::new, List.of(0)),
     FISHING(DailyQuestFishing::new, List.of(0)),
     TREE_CHOPPER(DailyQuestTreeChopper::new, List.of(0)),
+    SHEAR_SHEEP(DailyQuestShearSheep::new, List.of(0)),
     ;
 
     protected final String key = name().toLowerCase();
