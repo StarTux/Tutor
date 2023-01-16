@@ -15,11 +15,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DailyQuestType {
     DUMMY(DailyQuestDummy::new, List.of(-1)),
-    MINING(DailyQuestMining::new, List.of(0)),
-    HARVEST(DailyQuestHarvest::new, List.of(0)),
-    FISHING(DailyQuestFishing::new, List.of(0)),
-    TREE_CHOPPER(DailyQuestTreeChopper::new, List.of(0)),
-    SHEAR_SHEEP(DailyQuestShearSheep::new, List.of(0)),
+    // 0 Peaceful
+    MINING(DailyQuestMining::new, Group.PEACEFUL),
+    HARVEST(DailyQuestHarvest::new, Group.PEACEFUL),
+    FISHING(DailyQuestFishing::new, Group.PEACEFUL),
+    TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL),
+    SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL),
+    // 1 Adventure
+    KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE),
+    // 2 Community
     ;
 
     protected final String key = name().toLowerCase();
@@ -45,5 +49,13 @@ public enum DailyQuestType {
             if (k.equals(it.key)) return it;
         }
         return null;
+    }
+
+    // Dodge the forward reference error.
+    public static final class Group {
+        public static final List<Integer> PEACEFUL = List.of(0);
+        public static final List<Integer> ADVENTURE = List.of(1);
+        public static final List<Integer> COMMUNITY = List.of(2);
+        public static final List<Integer> TESTING = List.of(0, 1, 2);
     }
 }
