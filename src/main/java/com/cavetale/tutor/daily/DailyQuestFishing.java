@@ -13,7 +13,6 @@ import org.bukkit.Tag;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -67,9 +66,7 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        ItemStack result = new ItemStack(Material.FISHING_ROD);
-        result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
-        return result;
+        return new ItemStack(details.fish.fishMaterial, total);
     }
 
     @Override

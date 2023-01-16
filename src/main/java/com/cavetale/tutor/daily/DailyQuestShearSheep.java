@@ -55,7 +55,7 @@ public final class DailyQuestShearSheep extends DailyQuest<DailyQuestShearSheep.
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        return Mytems.SCISSORS.createIcon();
+        return new ItemStack(details.color.getMaterial(BlockColor.Suffix.WOOL), total);
     }
 
     protected void shearSheep(Player player, PlayerDailyQuest playerDailyQuest, PlayerShearEntityEvent event) {

@@ -4,7 +4,6 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
-import com.cavetale.mytems.Mytems;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.exploits.PlayerPlacedBlocks.isPlayerPlaced;
 import static net.kyori.adventure.text.Component.text;
@@ -38,31 +36,32 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
 
     @RequiredArgsConstructor
     protected enum Crop {
-        WHEAT(Growth.AGE, 150, "Wheat", VanillaItems.WHEAT, Set.of(Material.WHEAT)),
-        BEETROOT(Growth.AGE, 100, "Beetroots", VanillaItems.BEETROOT, Set.of(Material.BEETROOTS)),
-        POTATO(Growth.AGE, 100, "Potatoes", VanillaItems.POTATO, Set.of(Material.POTATOES)),
-        CARROT(Growth.AGE, 100, "Carrots", VanillaItems.CARROT, Set.of(Material.CARROTS)),
-        NETHER_WART(Growth.AGE, 20, "Nether Warts", VanillaItems.NETHER_WART, Set.of(Material.NETHER_WART)),
-        CACTUS(Growth.POOF, 10, "Cacti", VanillaItems.CACTUS, Set.of(Material.CACTUS)),
-        SUGAR_CANE(Growth.POOF, 10, "Sugar Cane", VanillaItems.SUGAR_CANE, Set.of(Material.SUGAR_CANE)),
-        CHORUS_FLOWER(Growth.POOF, 5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
-        KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
-        MELON(Growth.POOF, 10, "Melons", VanillaItems.MELON_SLICE, Set.of(Material.MELON)),
-        PUMPKIN(Growth.POOF, 10, "Pumpkins", VanillaItems.PUMPKIN, Set.of(Material.PUMPKIN, Material.CARVED_PUMPKIN)),
-        SWEET_BERRY(Growth.REGROW, 10, "Sweet Berries", VanillaItems.SWEET_BERRIES, Set.of(Material.SWEET_BERRY_BUSH)),
-        COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Set.of(Material.COCOA_BEANS)),
-        GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
-        BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
-        RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
-        CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
-        WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
-        SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Set.of(Material.SEA_PICKLE)), // up to 3?
+        WHEAT(Growth.AGE, 150, "Wheat", VanillaItems.WHEAT, Material.WHEAT, Set.of(Material.WHEAT)),
+        BEETROOT(Growth.AGE, 100, "Beetroots", VanillaItems.BEETROOT, Material.BEETROOT, Set.of(Material.BEETROOTS)),
+        POTATO(Growth.AGE, 100, "Potatoes", VanillaItems.POTATO, Material.POTATO, Set.of(Material.POTATOES)),
+        CARROT(Growth.AGE, 100, "Carrots", VanillaItems.CARROT, Material.CARROT, Set.of(Material.CARROTS)),
+        NETHER_WART(Growth.AGE, 20, "Nether Warts", VanillaItems.NETHER_WART, Material.NETHER_WART, Set.of(Material.NETHER_WART)),
+        CACTUS(Growth.POOF, 10, "Cacti", VanillaItems.CACTUS, Material.CACTUS, Set.of(Material.CACTUS)),
+        SUGAR_CANE(Growth.POOF, 10, "Sugar Cane", VanillaItems.SUGAR_CANE, Material.SUGAR_CANE, Set.of(Material.SUGAR_CANE)),
+        CHORUS_FLOWER(Growth.POOF, 5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
+        KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Material.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
+        MELON(Growth.POOF, 10, "Melons", VanillaItems.MELON_SLICE, Material.MELON_SLICE, Set.of(Material.MELON)),
+        PUMPKIN(Growth.POOF, 10, "Pumpkins", VanillaItems.PUMPKIN, Material.PUMPKIN, Set.of(Material.PUMPKIN, Material.CARVED_PUMPKIN)),
+        SWEET_BERRY(Growth.REGROW, 10, "Sweet Berries", VanillaItems.SWEET_BERRIES, Material.SWEET_BERRIES, Set.of(Material.SWEET_BERRY_BUSH)),
+        COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Material.COCOA_BEANS, Set.of(Material.COCOA_BEANS)),
+        GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Material.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
+        BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
+        RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
+        CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
+        WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
+        SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Material.SEA_PICKLE, Set.of(Material.SEA_PICKLE)), // up to 3?
         ;
 
         protected final Growth growth;
         protected final int total;
         protected final String displayName;
         protected final ComponentLike chatIcon;
+        protected final Material iconMaterial;
         protected final Set<Material> blockMaterials;
     }
 
@@ -95,9 +94,7 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        ItemStack result = Mytems.IRON_SCYTHE.createIcon();
-        result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
-        return result;
+        return new ItemStack(details.crop.iconMaterial, total);
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
-import com.cavetale.mytems.Mytems;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.exploits.PlayerPlacedBlocks.isPlayerPlaced;
 import static net.kyori.adventure.text.Component.text;
@@ -31,19 +29,20 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
 
     @RequiredArgsConstructor
     protected enum Ore {
-        COAL("Coal Ore", VanillaItems.COAL_ORE, Tag.COAL_ORES.getValues()),
-        COPPER("Copper Ore", VanillaItems.COPPER_ORE, Tag.COPPER_ORES.getValues()),
-        DIAMOND("Diamond Ore", VanillaItems.DIAMOND_ORE, Tag.DIAMOND_ORES.getValues()),
-        EMERALD("Emerald Ore", VanillaItems.EMERALD_ORE, Tag.EMERALD_ORES.getValues()),
-        GOLD("Gold Ore", VanillaItems.GOLD_ORE, Tag.GOLD_ORES.getValues()),
-        IRON("Iron Ore", VanillaItems.IRON_ORE, Tag.IRON_ORES.getValues()),
-        LAPIS("Lapis Ore", VanillaItems.LAPIS_ORE, Tag.LAPIS_ORES.getValues()),
-        QUARTZ("Nether Quartz Ore", VanillaItems.NETHER_QUARTZ_ORE, Set.of(Material.NETHER_QUARTZ_ORE)),
-        REDSTONE("Redstone Ore", VanillaItems.REDSTONE_ORE, Tag.REDSTONE_ORES.getValues()),
+        COAL("Coal Ore", VanillaItems.COAL_ORE, Material.COAL_ORE, Tag.COAL_ORES.getValues()),
+        COPPER("Copper Ore", VanillaItems.COPPER_ORE, Material.COPPER_ORE, Tag.COPPER_ORES.getValues()),
+        DIAMOND("Diamond Ore", VanillaItems.DIAMOND_ORE, Material.DIAMOND_ORE, Tag.DIAMOND_ORES.getValues()),
+        EMERALD("Emerald Ore", VanillaItems.EMERALD_ORE, Material.EMERALD_ORE, Tag.EMERALD_ORES.getValues()),
+        GOLD("Gold Ore", VanillaItems.GOLD_ORE, Material.GOLD_ORE, Tag.GOLD_ORES.getValues()),
+        IRON("Iron Ore", VanillaItems.IRON_ORE, Material.IRON_ORE, Tag.IRON_ORES.getValues()),
+        LAPIS("Lapis Ore", VanillaItems.LAPIS_ORE, Material.LAPIS_ORE, Tag.LAPIS_ORES.getValues()),
+        QUARTZ("Nether Quartz Ore", VanillaItems.NETHER_QUARTZ_ORE, Material.NETHER_QUARTZ_ORE, Set.of(Material.NETHER_QUARTZ_ORE)),
+        REDSTONE("Redstone Ore", VanillaItems.REDSTONE_ORE, Material.REDSTONE_ORE, Tag.REDSTONE_ORES.getValues()),
         ;
 
         protected final String displayName;
         protected final ComponentLike chatIcon;
+        protected final Material material;
         protected final Set<Material> blockMaterials;
     }
 
@@ -70,9 +69,7 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        ItemStack result = Mytems.HASTY_PICKAXE.createIcon();
-        result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
-        return result;
+        return new ItemStack(details.ore.material, total);
     }
 
     @Override

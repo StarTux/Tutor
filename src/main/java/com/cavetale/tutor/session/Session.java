@@ -504,16 +504,6 @@ public final class Session {
     }
 
     protected void makeTutorialMenu(Gui gui, Player player) {
-        // Current Quest
-        if (!currentQuests.isEmpty()) {
-            QuestName questName = currentQuests.keySet().iterator().next();
-            gui.setItem(0 + 4, makeQuestItem(questName), click -> {
-                    if (!click.isLeftClick()) return;
-                    Noise.CLICK.play(player);
-                    openQuestBook(player);
-                });
-        }
-        // Completed Quest List
         int index = 0;
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && !canSee(questName)) continue;

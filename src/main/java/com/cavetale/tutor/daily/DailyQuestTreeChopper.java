@@ -51,7 +51,7 @@ public final class DailyQuestTreeChopper extends DailyQuest<DailyQuestTreeChoppe
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        return Mytems.TREE_CHOPPER.createIcon();
+        return new ItemStack(details.chopped.saplings.getValues().iterator().next(), total);
     }
 
     protected void onTreeChop(Player player, PlayerDailyQuest playerDailyQuest, TreeChopEvent event) {

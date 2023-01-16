@@ -23,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -85,6 +86,7 @@ public final class DailyQuests implements Listener {
                     dailyQuests.add(dailyQuest);
                     dailyQuest.enable();
                     plugin.getSessions().loadDailyQuest(dailyQuest);
+                    dailyQuests.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
                 });
         }
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -110,6 +112,9 @@ public final class DailyQuests implements Listener {
     private int generateNewQuests() {
         int result = 0;
         Set<DailyQuestType> exclusions = EnumSet.noneOf(DailyQuestType.class);
+        for (DailyQuest dailyQuest : dailyQuests) {
+            exclusions.remove(dailyQuest.getType());
+        }
         for (int index = 0; index < 3; index += 1) {
             DailyQuest dailyQuest = generateNewQuest(index, exclusions);
             if (dailyQuest == null) continue;
@@ -134,6 +139,7 @@ public final class DailyQuests implements Listener {
         DailyQuest<?, ?> quest = type.create();
         quest.generate(index);
         dailyQuests.add(quest);
+        dailyQuests.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
         database().scheduleAsyncTask(() -> {
                 if (!quest.makeRow()) {
                     plugin.getLogger().severe("[Daily] Failed make row " + quest);
@@ -236,6 +242,19 @@ public final class DailyQuests implements Listener {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestShearSheep shearSheep) {
                     shearSheep.shearSheep(player, playerDailyQuest, event);
+                }
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onEntityDeath(EntityDeathEvent event) {
+        System.out.println(event.getEventName() + " " + event.getEntity().getKiller());
+        if (event.getEntity().getKiller() == null) return;
+        Player player = event.getEntity().getKiller();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestKillMonster killMonster) {
+                    killMonster.onEntityDeath(player, playerDailyQuest, event);
                 }
             });
     }
