@@ -31,8 +31,14 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
         SLIME("Slimes", 7, Mytems.SLIME_FACE, Set.of(EntityType.SLIME)),
         SPIDER("Spider", 5, Mytems.SPIDER_FACE, Set.of(EntityType.SPIDER, EntityType.CAVE_SPIDER)),
         PILLAGER("Pillager", 1, Mytems.PILLAGER_FACE, Set.of(EntityType.PILLAGER, EntityType.VINDICATOR, EntityType.EVOKER)),
-        ZOMBIE("Zombie", 5, Mytems.ZOMBIE_FACE, Set.of(EntityType.ZOMBIE, EntityType.DROWNED)),
+        ZOMBIE("Zombie", 5, Mytems.ZOMBIE_FACE, Set.of(EntityType.ZOMBIE, EntityType.DROWNED, EntityType.ZOMBIE_VILLAGER, EntityType.HUSK)),
         WITCH("Witches", 3, Mytems.WITCH_FACE, Set.of(EntityType.WITCH)),
+        BLAZE("Blazes", 3, Mytems.BLAZE_FACE, Set.of(EntityType.BLAZE)),
+        PIGLIN("Piglins", 3, Mytems.PIGLIN_FACE, Set.of(EntityType.PIGLIN, EntityType.ZOMBIFIED_PIGLIN, EntityType.PIGLIN_BRUTE)),
+        GUARDIAN("Guardians", 3, Mytems.GUARDIAN_FACE, Set.of(EntityType.GUARDIAN)),
+        PHANTOM("Phantom", 1, Mytems.PHANTOM_FACE, Set.of(EntityType.PHANTOM)),
+        MAGMA_CUBE("Magma Cubes", 5, Mytems.MAGMA_CUBE_FACE, Set.of(EntityType.MAGMA_CUBE)),
+        WITHER_SKELETON("Wither Skeletons", 3, Mytems.WITHER_SKELETON_FACE, Set.of(EntityType.WITHER_SKELETON)),
         ;
 
         public final String displayName;
@@ -69,7 +75,6 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
     }
 
     protected void onEntityDeath(Player player, PlayerDailyQuest playerDailyQuest, EntityDeathEvent event) {
-        player.sendMessage(event.getEventName());
         if (!NetworkServer.current().isSurvival()) return;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
         if (!details.target.entityTypes.contains(event.getEntity().getType())) return;

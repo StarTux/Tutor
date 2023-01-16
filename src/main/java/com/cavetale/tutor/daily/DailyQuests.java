@@ -5,6 +5,7 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.connect.ConnectMessageEvent;
+import com.cavetale.core.event.dungeon.DungeonDiscoverEvent;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
@@ -248,13 +249,23 @@ public final class DailyQuests implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityDeath(EntityDeathEvent event) {
-        System.out.println(event.getEventName() + " " + event.getEntity().getKiller());
         if (event.getEntity().getKiller() == null) return;
         Player player = event.getEntity().getKiller();
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestKillMonster killMonster) {
                     killMonster.onEntityDeath(player, playerDailyQuest, event);
+                }
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onDungeonDiscover(DungeonDiscoverEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestFindDungeon dungeonDiscover) {
+                    dungeonDiscover.onDungeonDiscover(player, playerDailyQuest, event);
                 }
             });
     }

@@ -21,9 +21,15 @@ public enum DailyQuestType {
     FISHING(DailyQuestFishing::new, Group.PEACEFUL),
     TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL),
     SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL),
+    // Breed Animals
+    // Pick Flowers
     // 1 Adventure
     KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE),
+    FIND_DUNGEON(DailyQuestFindDungeon::new, Group.ADVENTURE),
+    // MobArena
     // 2 Community
+    // Minigame
+    // Friendship Gifts
     ;
 
     protected final String key = name().toLowerCase();

@@ -1,5 +1,6 @@
 package com.cavetale.tutor.daily;
 
+import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.util.Json;
@@ -16,6 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -289,6 +291,12 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     public final boolean hasPermission(UUID uuid) {
         return Perm.get().has(uuid, "tutor.daily")
             && Perm.get().has(uuid, this.permission);
+    }
+
+    protected static boolean checkGameModeAndSurvivalServer(Player player) {
+        if (!NetworkServer.current().isSurvival()) return false;
+        if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return false;
+        return true;
     }
 
     /**
