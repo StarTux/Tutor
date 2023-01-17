@@ -462,13 +462,13 @@ public final class Session {
     }
 
     public void openMenu(Player player) {
-        if (pet == null) return;
         final int size = 4 * 9;
         final Gui gui = new Gui().size(size);
         gui.setOverlay(GuiOverlay.BLANK.builder(size, section.backgroundColor)
                        .layer(GuiOverlay.TOP_BAR, section.backgroundColor)
                        .title(section.title));
-        List<MenuSection> sectionList = List.of(MenuSection.values());
+        List<MenuSection> sectionList = new ArrayList<>(List.of(MenuSection.values()));
+        if (pet == null) sectionList.remove(MenuSection.PET);
         final int menuOffset = 4 - (sectionList.size() / 2);
         for (int i = 0; i < sectionList.size(); i += 1) {
             MenuSection menuSection = sectionList.get(i);

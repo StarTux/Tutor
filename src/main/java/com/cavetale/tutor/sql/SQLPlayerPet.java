@@ -19,9 +19,9 @@ import net.kyori.adventure.text.Component;
 public final class SQLPlayerPet implements SQLRow {
     @Id private Integer id;
     @Unique private UUID player;
-    @VarChar(31) private String pet;
+    @VarChar(31) @Nullable private String pet;
     private boolean autoSpawn;
-    @VarChar(255) private String name;
+    @VarChar(255) @Nullable private String name;
     private PetGender gender = PetGender.OTHER;
     @Text @Nullable private String settings; // json
     private Date updated;

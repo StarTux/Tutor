@@ -265,8 +265,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
             onComplete(playerDailyQuest);
             ItemMail.send(playerDailyQuest.getSession().getUuid(),
                           List.of(Mytems.RUBY.createItemStack()),
-                          textOfChildren(text("Daily Quest " + dailyQuests().getTimer().getTodaysName() + ": ", GRAY),
-                                         getDescription(playerDailyQuest)));
+                          textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
             Player player = playerDailyQuest.getSession().getPlayer();
             if (player != null) {
                 player.sendMessage(textOfChildren(text("Daily Quest Complete: ", GRAY), getDescription(playerDailyQuest)));

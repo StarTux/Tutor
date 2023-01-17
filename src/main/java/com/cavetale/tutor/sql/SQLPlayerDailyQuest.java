@@ -19,6 +19,7 @@ public final class SQLPlayerDailyQuest implements SQLRow {
     @Id private Integer id;
     private UUID player;
     @Keyed private int dailyQuestId;
+    private int dayId;
     @Text private String progress;
     private int score;
     private boolean complete;

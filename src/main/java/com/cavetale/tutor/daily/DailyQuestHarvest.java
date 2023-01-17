@@ -29,11 +29,26 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
     }
 
     protected enum Growth {
+        /**
+         * Aged crops need to be in their final growth stage.
+         */
         AGE,
+        /**
+         * These crops poof into existence and need to be not player
+         * placed.
+         */
         POOF,
+        /**
+         * Regrowing crops are not to be broken but harvested with the
+         * appropriate event.
+         */
         REGROW;
     }
 
+    /**
+     * These are all crops which can be reasonably harvested by a well
+     * established player.  Chorus flower could be too tricky.
+     */
     @RequiredArgsConstructor
     protected enum Crop {
         WHEAT(Growth.AGE, 150, "Wheat", VanillaItems.WHEAT, Material.WHEAT, Set.of(Material.WHEAT)),
@@ -43,18 +58,20 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
         NETHER_WART(Growth.AGE, 20, "Nether Warts", VanillaItems.NETHER_WART, Material.NETHER_WART, Set.of(Material.NETHER_WART)),
         CACTUS(Growth.POOF, 10, "Cacti", VanillaItems.CACTUS, Material.CACTUS, Set.of(Material.CACTUS)),
         SUGAR_CANE(Growth.POOF, 10, "Sugar Cane", VanillaItems.SUGAR_CANE, Material.SUGAR_CANE, Set.of(Material.SUGAR_CANE)),
-        CHORUS_FLOWER(Growth.POOF, 5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
-        KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Material.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
         MELON(Growth.POOF, 10, "Melons", VanillaItems.MELON_SLICE, Material.MELON_SLICE, Set.of(Material.MELON)),
         PUMPKIN(Growth.POOF, 10, "Pumpkins", VanillaItems.PUMPKIN, Material.PUMPKIN, Set.of(Material.PUMPKIN, Material.CARVED_PUMPKIN)),
         SWEET_BERRY(Growth.REGROW, 10, "Sweet Berries", VanillaItems.SWEET_BERRIES, Material.SWEET_BERRIES, Set.of(Material.SWEET_BERRY_BUSH)),
         COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Material.COCOA_BEANS, Set.of(Material.COCOA_BEANS)),
         GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Material.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
-        BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
-        RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
-        CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
-        WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
+        KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Material.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
         SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Material.SEA_PICKLE, Set.of(Material.SEA_PICKLE)), // up to 3?
+        // CHORUS_FLOWER(Growth.POOF, 5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
+        // BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
+        // RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
+        // CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
+        // WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
+        // LILY_PAD
+        // SPORE_BLOSSOM // HARD
         ;
 
         protected final Growth growth;

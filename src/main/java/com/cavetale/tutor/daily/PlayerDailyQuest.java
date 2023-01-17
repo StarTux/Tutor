@@ -34,6 +34,7 @@ public final class PlayerDailyQuest {
         row = new SQLPlayerDailyQuest();
         row.setPlayer(session.getUuid());
         row.setDailyQuestId(dailyQuest.getRowId());
+        row.setDayId(dailyQuest.getDayId());
         row.setProgress(Json.serialize(progress));
         row.setScore(score);
         row.setComplete(complete);

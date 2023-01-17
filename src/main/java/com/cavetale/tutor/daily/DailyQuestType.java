@@ -23,10 +23,15 @@ public enum DailyQuestType {
     SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL),
     // Breed Animals
     // Pick Flowers
+    // Craft Cake, etc
+
     // 1 Adventure
     KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE),
     FIND_DUNGEON(DailyQuestFindDungeon::new, Group.ADVENTURE),
-    // MobArena
+    FORAGING(DailyQuestForaging::new, Group.TESTING),
+    // Capture Monster
+    // Mob Arena
+
     // 2 Community
     // Minigame
     // Friendship Gifts
