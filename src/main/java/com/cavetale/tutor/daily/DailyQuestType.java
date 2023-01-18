@@ -14,38 +14,45 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public enum DailyQuestType {
-    DUMMY(DailyQuestDummy::new, List.of(-1)),
+    DUMMY(0, DailyQuestDummy::new, List.of()),
     // 0 Peaceful
-    MINING(DailyQuestMining::new, Group.PEACEFUL),
-    HARVEST(DailyQuestHarvest::new, Group.PEACEFUL),
-    FISHING(DailyQuestFishing::new, Group.PEACEFUL),
-    TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL),
-    SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL),
+    MINING(1, DailyQuestMining::new, Group.PEACEFUL),
+    HARVEST(1, DailyQuestHarvest::new, Group.PEACEFUL),
+    FISHING(1, DailyQuestFishing::new, Group.PEACEFUL),
+    TREE_CHOPPER(1, DailyQuestTreeChopper::new, Group.PEACEFUL),
+    SHEAR_SHEEP(1, DailyQuestShearSheep::new, Group.PEACEFUL),
     // Breed Animals
     // Pick Flowers
     // Craft Cake, etc
 
     // 1 Adventure
-    KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE),
-    FIND_DUNGEON(DailyQuestFindDungeon::new, Group.ADVENTURE),
-    FORAGING(DailyQuestForaging::new, Group.TESTING),
+    KILL_MONSTER(1, DailyQuestKillMonster::new, Group.ADVENTURE),
+    FIND_DUNGEON(1, DailyQuestFindDungeon::new, Group.ADVENTURE),
+    FORAGING(1, DailyQuestForaging::new, Group.TESTING),
     // Capture Monster
     // Mob Arena
 
     // 2 Community
-    // Minigame
-    // Friendship Gifts
+    MINIGAME_MATCH(6, DailyQuestMinigameMatch::new, Group.COMMUNITY),
+    FRIENDSHIP_GIFT(1, DailyQuestFriendshipGift:: new, Group.COMMUNITY),
     ;
 
+    protected final int weight; // Correspond with internal options
     protected final String key = name().toLowerCase();
     protected final Supplier<? extends DailyQuest> ctor;
     protected final List<Integer> indexes;
 
+    /**
+     * Get all quest types with the given index.  The result will be
+     * weighted!
+     */
     public static List<DailyQuestType> getAllWithIndex(int index) {
         List<DailyQuestType> list = new ArrayList<>();
         for (var it : values()) {
             if (it.indexes.contains(index)) {
-                list.add(it);
+                for (int i = 0; i < it.weight; i += 1) {
+                    list.add(it);
+                }
             }
         }
         return list;

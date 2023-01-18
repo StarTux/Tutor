@@ -2,6 +2,7 @@ package com.cavetale.tutor.daily;
 
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.util.Json;
 import com.cavetale.inventory.mail.ItemMail;
@@ -234,6 +235,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected void onPlayerHarvestBlock(Player player, PlayerDailyQuest playerDailyQuest, PlayerHarvestBlockEvent event) { }
     /** Event Handler. */
     protected void onPlayerFish(Player player, PlayerDailyQuest playerDailyQuest, PlayerFishEvent event) { }
+    /** Event Handler. */
+    protected void onPluginPlayer(Player player, PlayerDailyQuest playerDailyQuest, PluginPlayerEvent event) { }
 
     /**
      * To print in the sidebar.

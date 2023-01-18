@@ -6,6 +6,9 @@ import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.connect.ConnectMessageEvent;
 import com.cavetale.core.event.dungeon.DungeonDiscoverEvent;
+import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
+import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
@@ -114,7 +117,7 @@ public final class DailyQuests implements Listener {
         int result = 0;
         Set<DailyQuestType> exclusions = EnumSet.noneOf(DailyQuestType.class);
         for (DailyQuest dailyQuest : dailyQuests) {
-            exclusions.remove(dailyQuest.getType());
+            exclusions.add(dailyQuest.getType());
         }
         for (int index = 0; index < 3; index += 1) {
             DailyQuest dailyQuest = generateNewQuest(index, exclusions);
@@ -132,6 +135,7 @@ public final class DailyQuests implements Listener {
             return null;
         }
         List<DailyQuestType> types = DailyQuestType.getAllWithIndex(index);
+        types.removeIf(it -> exclusion.contains(it));
         if (types.isEmpty()) {
             plugin.getLogger().severe("[Daily] No types for index " + index);
             return null;
@@ -268,5 +272,39 @@ public final class DailyQuests implements Listener {
                     dungeonDiscover.onDungeonDiscover(player, playerDailyQuest, event);
                 }
             });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onMinigameMatchComplete(MinigameMatchCompleteEvent event) {
+        plugin.getLogger().info(event.getEventName() + " " + event.getType() + " " + event.getPlayerUuids());
+        for (Player player : event.getPlayers()) {
+            plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                    DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                    if (dailyQuest instanceof DailyQuestMinigameMatch minigameMatch) {
+                        minigameMatch.onMinigameMatchComplete(player, playerDailyQuest, event);
+                    }
+                });
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onPluginPlayer(PluginPlayerEvent event) {
+        Player player = event.getPlayer();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                dailyQuest.onPluginPlayer(player, playerDailyQuest, event);
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onPlayerShareFriendshipGift(PlayerShareFriendshipGiftEvent event) {
+        for (Player player : event.getBothPlayers()) {
+            plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                    DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                    if (dailyQuest instanceof DailyQuestFriendshipGift friendshipGift) {
+                        friendshipGift.onPlayerShareFriendshipGift(player, playerDailyQuest, event);
+                    }
+                });
+        }
     }
 }
