@@ -4,13 +4,12 @@ import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.block.PluginBlockEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.VanillaItems;
+import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,11 +20,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 /**
  * Explore the mining world.
- * - Find resources
- * - Raid dungeons
+ * - Find Resources
+ * - Raid Cavetale Dungeons
  */
 public final class MiningGoal implements Goal, Listener {
     @Getter protected final String id;
@@ -42,14 +45,15 @@ public final class MiningGoal implements Goal, Listener {
 
     public MiningGoal() {
         this.id = "mining";
-        this.displayName = Component.text("Explore the Mining World");
-        condIron = new NumberCondition(Component.text("Mine iron ore"), IRON,
+        this.displayName = text("Explore the Mining World");
+        condIron = new NumberCondition(text("Mine iron ore"), IRON,
                                        playerQuest -> getProgress(playerQuest).iron,
                                        (playerQuest, amount) -> getProgress(playerQuest).iron = amount);
-        condDiamond = new NumberCondition(Component.text("Mine diamond ore"), DIAMOND,
+        condDiamond = new NumberCondition(text("Mine diamond ore"), DIAMOND,
                                           playerQuest -> getProgress(playerQuest).diamond,
                                           (playerQuest, amount) -> getProgress(playerQuest).diamond = amount);
-        condDungeon = new NumberCondition(Component.text("Loot Dungeons"), DUNGEONS,
+        condDungeon = new NumberCondition(textOfChildren(text("Loot "), Mytems.CAVETALE_DUNGEON, text("Dungeons")),
+                                          DUNGEONS,
                                           playerQuest -> getProgress(playerQuest).dungeons,
                                           (playerQuest, amount) -> getProgress(playerQuest).dungeons = amount);
         condIron.setBookPageIndex(0);
@@ -62,33 +66,30 @@ public final class MiningGoal implements Goal, Listener {
             });
         this.constraints = List.of(new MiningWorldConstraint());
         this.additionalBookPages = List.of(new Component[] {
-                // Mining
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
-                        Component.text("The mining world is filled with special caves,"
-                                       + " where the walls are are covered with veins of valuable ores."
-                                       + " Maybe we will come across one of them."
-                                       + "\n\nThis is the best place to gather resources,"
-                                       + " because it resets every week. Let's get to it!"),
-                    }),
-                // Dungeons
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
-                        Component.text("Not only are there custom caves with bonus ores in the mining world,"
-                                       + " it also offers custom "),
-                        Component.text("dungeons", NamedTextColor.BLUE),
-                        Component.text(", built during past build events."
-                                       + "\n\nDungeon chests contain special loot."
-                                       + " Make sure to pick it up."),
-                    }),
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 2
-                        Component.text("Locating a dungeon:\n\n"),
-                        Component.text("Right-click", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
-                        Component.text(" a "),
-                        VanillaItems.componentOf(Material.COMPASS),
-                        Component.text("compass", NamedTextColor.BLUE, TextDecoration.UNDERLINED),
-                        Component.text("\nFollow its directions."
-                                       + " You have to be deep enough underground"
-                                       + " in the mining world for this to work", NamedTextColor.GRAY),
-                    }),
+                // Mining, pg 0
+                textOfChildren(text("The mining world is filled with special caves,"
+                                    + " where the walls are are covered with veins of valuable ores."
+                                    + " Maybe we will come across one of them."
+                                    + "\n\nThis is the best place to gather resources,"
+                                    + " because it resets every week. Let's get to it!")),
+                // Dungeons, pg 1
+                textOfChildren(text("Not only are there custom caves with bonus ores in the mining world,"
+                                    + " it also offers "),
+                               Mytems.CAVETALE_DUNGEON,
+                               text("Cavetale Dungeons", BLUE),
+                               text(", built during past build events."),
+                               newline(), newline(),
+                               text("Dungeon chests contain special loot."
+                                    + " Make sure to pick it up.")),
+                // pg 2
+                textOfChildren(text("Locating ", BLUE), Mytems.CAVETALE_DUNGEON, text("Cavetale Dungeons", BLUE),
+                               newline(), newline(),
+                               Mytems.MOUSE_RIGHT, text(" a "),
+                               VanillaItems.COMPASS, text("Compass", BLUE, TextDecoration.UNDERLINED),
+                               newline(),
+                               text("Follow its directions."
+                                    + " You have to be deep enough underground"
+                                    + " in the mining world for this to work", GRAY)),
             });
     }
 
@@ -102,12 +103,12 @@ public final class MiningGoal implements Goal, Listener {
         if (!getProgress(playerQuest).isComplete()) {
             playerQuest.getSession().applyPet(pet -> {
                     pet.addSpeechBubble(id, 0L, 100, new Component[] {
-                            Component.text("Here we are in the"),
-                            Component.text("mining world..."),
+                            text("Here we are in the"),
+                            text("mining world..."),
                         });
                     pet.addSpeechBubble(id, 0L, 100, new Component[] {
-                            Component.text("Let's find some"),
-                            Component.text("stuff, " + pet.getType().speechGimmick + "!"),
+                            text("Let's find some"),
+                            text("stuff, " + pet.getType().speechGimmick + "!"),
                         });
                 });
         }
