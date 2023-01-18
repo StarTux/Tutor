@@ -32,6 +32,7 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
         Material.GOLDEN_APPLE,
         Material.GOLDEN_CARROT,
         Material.COOKIE,
+        Material.BEETROOT_SOUP,
         // Decoration
         Material.BARREL,
         Material.BOOKSHELF,
