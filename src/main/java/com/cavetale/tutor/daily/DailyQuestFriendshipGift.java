@@ -30,7 +30,7 @@ public final class DailyQuestFriendshipGift extends DailyQuest<DailyQuest.Detail
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
-        return textOfChildren(text("Drop "), ItemKinds.chatDescription(Friends.getDailyFriendshipGift(), total),
+        return textOfChildren(text("Drop "), ItemKinds.chatDescription(Friends.getDailyFriendshipGift()),
                               text(" to " + total + " fellow players on the Cavetale server"
                                    + " to increase your friendship with one another."));
     }

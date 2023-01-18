@@ -28,6 +28,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -45,7 +46,6 @@ public final class DailyQuests implements Listener {
     public void enable() {
         this.manager = NetworkServer.current() == NetworkServer.current().getManager();
         timer.enable(plugin);
-        timer.setOnDayBreak(this::onDayBreak);
         timer.setOnHourChange(this::onHourChange);
         Bukkit.getPluginManager().registerEvents(this, plugin);
         database().scheduleAsyncTask(() -> {
@@ -55,11 +55,6 @@ public final class DailyQuests implements Listener {
                         checkDailyQuestExpiry();
                     });
             });
-    }
-
-    private void onDayBreak() {
-        if (!ready) return;
-        // ...
     }
 
     private void onHourChange() {
@@ -306,5 +301,16 @@ public final class DailyQuests implements Listener {
                     }
                 });
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onCraftItem(CraftItemEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestCrafting crafting) {
+                    crafting.onCraftItem(player, playerDailyQuest, event);
+                }
+            });
     }
 }

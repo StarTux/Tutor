@@ -21,9 +21,10 @@ public enum DailyQuestType {
     FISHING(1, DailyQuestFishing::new, Group.PEACEFUL),
     TREE_CHOPPER(1, DailyQuestTreeChopper::new, Group.PEACEFUL),
     SHEAR_SHEEP(1, DailyQuestShearSheep::new, Group.PEACEFUL),
+    CRAFTING(1, DailyQuestCrafting::new, Group.PEACEFUL),
     // Breed Animals
     // Pick Flowers
-    // Craft Cake, etc
+    // Eat
 
     // 1 Adventure
     KILL_MONSTER(1, DailyQuestKillMonster::new, Group.ADVENTURE),

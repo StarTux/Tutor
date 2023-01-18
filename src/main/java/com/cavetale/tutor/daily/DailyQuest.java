@@ -130,7 +130,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.year = dailyQuests().getTimer().getYear();
         this.dayId = day + month * 100 + year * 10000;
         this.details = newDetails();
-        this.total = 10; // onGenerate will override
+        this.total = 1; // onGenerate will override
         onGenerate();
     }
 
