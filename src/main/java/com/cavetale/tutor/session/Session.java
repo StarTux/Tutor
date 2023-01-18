@@ -633,12 +633,9 @@ public final class Session {
                                 if (!click.isLeftClick()) return;
                                 Noise.CLICK.play(player);
                                 player.closeInventory();
-                                player.sendMessage(text().content("\n  Click here to change the name of your pet\n")
-                                                   .color(BLUE)
-                                                   .decorate(BOLD)
+                                player.sendMessage(text("\n  Click here to change the name of your pet\n", GREEN, BOLD)
                                                    .clickEvent(suggestCommand("/tutor rename "))
-                                                   .hoverEvent(showText(text("/tutor rename",
-                                                                             YELLOW))));
+                                                   .hoverEvent(showText(text("/tutor rename", YELLOW))));
                             }),
                 // Gender
                 Gui.Slot.of(petGender.itemStack,

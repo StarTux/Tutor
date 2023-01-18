@@ -7,9 +7,13 @@ import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.session.MenuSection;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 public final class TutorCommand extends AbstractCommand<TutorPlugin> {
     public TutorCommand(final TutorPlugin plugin) {
@@ -81,9 +85,8 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
                     throw new CommandWarn("You cannot abandon this " + questName.type.lower);
                 }
                 session.removeQuest(questName);
-                player.sendMessage(Component.text().content(questName.type.upper + " abandoned: ")
-                                   .color(NamedTextColor.YELLOW)
-                                   .append(playerQuest.getQuest().name.displayName));
+                player.sendMessage(textOfChildren(text(questName.type.upper + " abandoned: ", YELLOW),
+                                                  playerQuest.getQuest().name.displayName));
                 if (questName.type == QuestType.TUTORIAL) {
                     session.openMenu(player, MenuSection.TUTORIALS);
                 }
@@ -104,7 +107,12 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
     }
 
     private boolean rename(Player player, String[] args) {
-        if (args.length == 0) return false;
+        if (args.length == 0) {
+            player.sendMessage(text("\n  Click here to change the name of your pet\n", GREEN, BOLD)
+                               .clickEvent(suggestCommand("/tutor rename "))
+                               .hoverEvent(showText(text("/tutor rename", YELLOW))));
+            return true;
+        }
         Session session = plugin.sessions.find(player);
         if (session == null) {
             throw new CommandWarn("Session loading. Please try again later!");
@@ -142,9 +150,7 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
             }
         }
         pet.setAutoDespawn(false);
-        player.sendMessage(Component.text().append(pet.getCustomName())
-                           .append(Component.text(" appeared!"))
-                           .color(NamedTextColor.GREEN));
+        player.sendMessage(textOfChildren(pet.getCustomName(), text(" appeared!")).color(GREEN));
         return true;
     }
 }

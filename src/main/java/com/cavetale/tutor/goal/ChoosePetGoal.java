@@ -1,6 +1,5 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.pet.Pet;
@@ -10,10 +9,14 @@ import com.cavetale.tutor.util.Gui;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.event.ClickEvent.runCommand;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class ChoosePetGoal implements Goal {
     @Getter private final String id;
@@ -28,14 +31,14 @@ public final class ChoosePetGoal implements Goal {
 
     public ChoosePetGoal() {
         this.id = "choose_pet";
-        this.displayName = Component.text("Choosing a Pet");
-        condClick = new CheckboxCondition(Component.text("Click a pet"),
+        this.displayName = text("Choosing a Pet");
+        condClick = new CheckboxCondition(text("Click a pet"),
                                           playerQuest -> getProgress(playerQuest).click,
                                           playerQuest -> getProgress(playerQuest).click = true);
-        condChoose = new CheckboxCondition(Component.text("Choose a pet"),
+        condChoose = new CheckboxCondition(text("Choose a pet"),
                                            playerQuest -> getProgress(playerQuest).choose,
                                            playerQuest -> getProgress(playerQuest).choose = true);
-        condRename = new CheckboxCondition(Component.text("Give your pet a name"),
+        condRename = new CheckboxCondition(text("Give your pet a name"),
                                            playerQuest -> getProgress(playerQuest).rename,
                                            playerQuest -> getProgress(playerQuest).rename = true);
         condClick.setBookPageIndex(0);
@@ -48,22 +51,21 @@ public final class ChoosePetGoal implements Goal {
             });
         this.constraints = List.of();
         this.additionalBookPages = List.of(new Component[] {
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 0
-                        Component.text("You have arrived at a strange place."
-                                       + " Why not choose a pet to keep you company!"
-                                       + "\n\nWe hope you enjoy your stay. "),
-                        Mytems.SMILE.component,
-                    }),
-                Component.join(JoinConfiguration.noSeparators(), new Component[] {// 1
-                        Component.text("Naming your Pet:"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Click your Pet"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Click [Back] in the book"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Click Your Pet to access Pet Options"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Click \"Change Name\""),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Click the prompt in chat"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Fill in the new name"),
-                        Component.text("\n" + Unicode.BULLET_POINT.character + " Hit ENTER"),
-                    }),
+                // pg 0
+                textOfChildren(text("You have arrived at a strange place."
+                                    + " Why not choose a pet to keep you company!"
+                                    + "\n\nWe hope you enjoy your stay. "),
+                               Mytems.SMILE.component),
+                // pg 1
+                textOfChildren(text("Naming your Pet", BLUE),
+                               newline(), newline(),
+                               text("Type in Chat", GRAY),
+                               newline(),
+                               (textOfChildren(text("> ", GRAY), text("/tutor rename ", DARK_GRAY))
+                                .clickEvent(runCommand("/tutor rename"))
+                                .hoverEvent(showText(text("/tutor rename", YELLOW)))),
+                               newline(),
+                               text("Followed by the name of your choice.", GRAY)),
             });
     }
 
@@ -77,7 +79,7 @@ public final class ChoosePetGoal implements Goal {
             for (PetType petType : PET_TYPES) {
                 Pet pet = playerQuest.getPlugin().getPets().createPet(player, petType);
                 pet.setTag(id);
-                pet.setCustomName(Component.text("Click me!", NamedTextColor.BLUE));
+                pet.setCustomName(text("Click me!", BLUE));
                 pet.setOnClick(() -> onClick(playerQuest));
                 pet.setExclusive(true);
                 pet.setCollidable(true);
@@ -95,14 +97,14 @@ public final class ChoosePetGoal implements Goal {
     private void onClick(PlayerQuest playerQuest) {
         condClick.progress(playerQuest);
         Gui gui = new Gui();
-        gui.withOverlay(3 * 9, NamedTextColor.BLUE, Component.text("Choose a pet!", NamedTextColor.BLUE));
+        gui.withOverlay(3 * 9, BLUE, text("Choose a pet!", BLUE));
         ItemStack cat = PetType.CAT.mytems.createIcon();
         cat.editMeta(meta -> {
-                meta.displayName(Component.text("I'm more of a cat person!", NamedTextColor.BLUE));
+                meta.displayName(text("I'm more of a cat person!", BLUE));
             });
         ItemStack dog = PetType.DOG.mytems.createIcon();
         dog.editMeta(meta -> {
-                meta.displayName(Component.text("I'm more of a dog person!", NamedTextColor.BLUE));
+                meta.displayName(text("I'm more of a dog person!", BLUE));
             });
         gui.setItem(9 + 3, dog, click -> {
                 if (!click.isLeftClick()) return;
@@ -126,14 +128,14 @@ public final class ChoosePetGoal implements Goal {
         playerQuest.getSession().spawnPet();
         playerQuest.getSession().applyPet(pet -> {
                 pet.addSpeechBubble(id, 50L, 100L, new Component[] {
-                        Component.text("Welcome to Cavetale,"),
-                        Component.text(petType.speechGimmick + "!"),
+                        text("Welcome to Cavetale,"),
+                        text(petType.speechGimmick + "!"),
                     });
                 pet.addSpeechBubble(id, 0L, 100L, new Component[] {
-                        Component.text("I will be your"),
-                        Component.text("personal assistant."),
-                        Component.text("Please give me a name,"),
-                        Component.text(petType.speechGimmick + "."),
+                        text("I will be your"),
+                        text("personal assistant."),
+                        text("Please give me a name,"),
+                        text(petType.speechGimmick + "."),
                     });
             });
     }
@@ -144,15 +146,13 @@ public final class ChoosePetGoal implements Goal {
             if (condRename.progress(playerQuest)) {
                 playerQuest.getSession().applyPet(pet -> {
                         pet.addSpeechBubble(id, 50L, 200L,
-                                            Component.text("When ").append(Component.text("[Complete]", NamedTextColor.AQUA)),
-                                            Component.text("appears, open the"),
-                                            Component.text("tutor menu and"),
-                                            Component.text("click it."));
+                                            textOfChildren(text("When "), text("[Complete]", AQUA)),
+                                            text("appears, open the"),
+                                            text("tutor menu and"),
+                                            text("click it."));
                         pet.addSpeechBubble(id, 0L, 150L,
-                                            Component.text("Or you can just"),
-                                            Component.text().content("click me ")
-                                            .append(Mytems.HAPPY.component)
-                                            .build());
+                                            text("Or you can just"),
+                                            textOfChildren(text("click me "), Mytems.HAPPY.component));
                     });
             }
         }
