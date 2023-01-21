@@ -2,6 +2,7 @@ package com.cavetale.tutor.daily.game;
 
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.perm.Perm;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.session.Session;
@@ -161,17 +162,15 @@ public final class DailyGame {
                 if (playerRolls > 0) {
                     ItemStack diceIcon = Mytems.DICE
                         .createIcon(List.of(text("Roll the Dice", GREEN),
-                                            text("You have " + playerRolls + " dice rolls", GRAY)));
+                                            text("You have " + playerRolls + " dice rolls", GRAY),
+                                            text("Get more dice rolls by", GRAY),
+                                            text("completing daily quests.", GRAY),
+                                            textOfChildren(Mytems.MOUSE_LEFT, text(" Roll", GRAY))));
                     diceIcon.setAmount(Math.max(1, Math.min(64, playerRolls)));
                     gui.setItem(diceIndex, diceIcon, click -> {
                             if (!click.isLeftClick()) return;
                             if (session.isDailyGameLocked()) return;
-                            if (tag.roll != 0) return;
-                            tag.roll = 1 + ThreadLocalRandom.current().nextInt(6);
-                            plugin().getLogger().info("[DailyGame] " + player.getName() + " rolled " + tag.roll);
-                            session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls() - 1, tag, () -> {
-                                    diceRoll.setup();
-                                });
+                            diceRoll.setup();
                         });
                 } else {
                     gui.setItem(diceIndex, null);
@@ -197,6 +196,7 @@ public final class DailyGame {
      */
     public final State diceRoll = new State() {
             private int ticks;
+            private boolean paused;
             @Override protected void enter() {
                 ticks = 0;
                 gui.setItem(diceIndex, Mytems.DICE_ROLL.createIcon());
@@ -206,10 +206,16 @@ public final class DailyGame {
                     float pitch = 2.0f - ((float) ticks / 60f);
                     player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, pitch);
                 } else if (ticks == 60) {
-                    gui.setItem(diceIndex, diceIcon(tag.roll).createIcon(List.of(text(tag.roll, WHITE))));
-                    moveSkull.setup();
-                } else if (ticks == 80) {
-                    player.sendMessage(textOfChildren(text("Daily Game ", GRAY), diceIcon(tag.roll), text(tag.roll)));
+                    tag.roll = 1 + ThreadLocalRandom.current().nextInt(6);
+                    plugin().getLogger().info("[DailyGame] " + player.getName() + " rolled " + tag.roll);
+                    paused = true;
+                    session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls() - 1, tag, () -> {
+                            paused = false;
+                            gui.setItem(diceIndex, diceIcon(tag.roll).createIcon(List.of(text(tag.roll, WHITE))));
+                            player.sendMessage(textOfChildren(text("Daily Game ", GRAY), diceIcon(tag.roll), text(tag.roll)));
+                        });
+                } else if (ticks >= 70) {
+                    if (paused) return;
                     moveSkull.setup();
                 }
                 ticks += 1;
@@ -231,6 +237,7 @@ public final class DailyGame {
                 removeSkull();
                 placeGoodies();
                 placeSkull(tag.progress);
+                gui.setItem(diceIndex, diceIcon(tag.roll).createIcon(List.of(text(tag.roll, WHITE))));
                 current = tag.progress;
                 to = Math.min(tag.board.cells.size() - 1, tag.progress + tag.roll);
             }
@@ -271,6 +278,7 @@ public final class DailyGame {
                     }
                     if (boardComplete) {
                         tag.randomize();
+                        newRolls += 1;
                     } else {
                         tag.progress = to;
                         tag.roll = 0;
@@ -290,6 +298,7 @@ public final class DailyGame {
                                 newGame.start();
                                 newGame.selectState();
                                 session.addDailyGamesCompletedAsync(1);
+                                Perm.get().addLevelProgress(player.getUniqueId());
                             } else {
                                 idle.setup();
                             }

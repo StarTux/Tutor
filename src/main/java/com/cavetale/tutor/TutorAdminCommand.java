@@ -75,6 +75,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         dailyNode.addChild("test").denyTabCompletion()
             .description("Test daily GUI")
             .playerCaller(this::dailyTest);
+        dailyNode.addChild("addrolls").arguments("<player> <value>")
+            .completers(CommandArgCompleter.PLAYER_CACHE,
+                        CommandArgCompleter.integer(i -> i != 0))
+            .description("Add Daily Game Rolls")
+            .senderCaller(this::dailyAddRolls);
     }
 
     private Player requirePlayer(String arg) {
@@ -367,5 +372,14 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         DailyGame game = new DailyGame(player, tag);
         game.start();
         game.test.setup();
+    }
+
+    private boolean dailyAddRolls(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        PlayerCache target = PlayerCache.require(args[0]);
+        int value = CommandArgCompleter.requireInt(args[1]);
+        plugin.sessions.findOrLoad(target, session -> session.addDailyRollsAsync(value));
+        sender.sendMessage(text("Added " + value + " daily rolls for " + target.name, YELLOW));
+        return true;
     }
 }

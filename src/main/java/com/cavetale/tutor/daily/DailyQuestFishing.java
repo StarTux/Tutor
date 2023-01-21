@@ -32,7 +32,7 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
         SALMON(3, "Salmon", VanillaItems.SALMON, Material.SALMON),
         PUFFERFISH(1, "Pufferfish", VanillaItems.PUFFERFISH, Material.PUFFERFISH),
         TROPICAL_FISH(1, "Tropical Fish", VanillaItems.TROPICAL_FISH, Material.TROPICAL_FISH),
-        TRASH(3, "Trash Items", text("Trash", RED, ITALIC), Material.AIR),
+        TRASH(3, "Trash Items", text("Trash", RED, ITALIC), Material.FISHING_ROD),
         ;
 
         protected final int total;

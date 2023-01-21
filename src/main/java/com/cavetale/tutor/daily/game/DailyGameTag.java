@@ -65,7 +65,9 @@ public final class DailyGameTag {
             goodies.add(new DailyGameGoody(goodyIndex, type));
         }
         List<Integer> warps = new ArrayList<>();
-        for (int i = 1; i < board.cells.size() - 1; i += 1) warps.add(i);
+        for (int i = 1; i < board.cells.size() - 1; i += 1) {
+            if (getGoodyAt(i) == null) warps.add(i);
+        }
         if (warps.size() >= 2) {
             Collections.shuffle(warps, random);
             goodies.add(new DailyGameGoody(warps.get(0), DailyGameGoody.Type.WARP));

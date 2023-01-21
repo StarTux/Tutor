@@ -560,7 +560,7 @@ public final class Session {
                                                                   text("Quests and tutorials", GRAY),
                                                                   text("will not show in your", GRAY),
                                                                   text("sidebar.", GRAY),
-                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" unignore", GRAY)))),
+                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" Unignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
                             player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
@@ -573,7 +573,7 @@ public final class Session {
                                                                          text("Quests and tutorials", GRAY),
                                                                          text("will show in your", GRAY),
                                                                          text("sidebar.", GRAY),
-                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" ignore", GRAY)))),
+                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" Ignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
                             player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
@@ -745,6 +745,7 @@ public final class Session {
             if (playerDailyQuest.isComplete()) {
                 text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", GREEN)));
             }
+            text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Details", GRAY)));
             Items.text(icon, text);
             gui.setItem(offset + i, 2, icon, click -> {
                     if (!click.isLeftClick()) return;
@@ -757,7 +758,8 @@ public final class Session {
         gui.setItem(0, 2, Mytems.DICE.createIcon(List.of(text("Play the Daily Game", GREEN),
                                                          text(rollsText, GRAY),
                                                          text("Get more dice rolls by", GRAY),
-                                                         text("completing daily quests.", GRAY))),
+                                                         text("completing daily quests.", GRAY),
+                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY)))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (dailyGameLocked) return;
@@ -771,7 +773,7 @@ public final class Session {
             gui.setItem(8, 2, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Daily Quests", RED),
                                                                   text("Daily Quests will not", GRAY),
                                                                   text("show in your sidebar.", GRAY),
-                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" unignore", GRAY)))),
+                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" Unignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
                             player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
@@ -783,7 +785,7 @@ public final class Session {
             gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Daily Quests", GREEN),
                                                                          text("Daily Quests will show", GRAY),
                                                                          text("in your sidebar.", GRAY),
-                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" ignore", GRAY)))),
+                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" Ignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
                             player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
@@ -946,7 +948,7 @@ public final class Session {
                 }
             }
             if (playerRow.getDailyGameRolls() > 0) {
-                lines.add(textOfChildren(text(tiny("you have "), AQUA), text("/daily ", YELLOW), Mytems.DICE));
+                lines.add(textOfChildren(text(tiny("you have "), AQUA), text("/daily", YELLOW), Mytems.DICE));
             }
         }
     }

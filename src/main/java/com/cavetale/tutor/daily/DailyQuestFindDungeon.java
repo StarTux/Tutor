@@ -6,6 +6,7 @@ import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -38,6 +39,7 @@ public final class DailyQuestFindDungeon extends DailyQuest<DailyQuest.Details, 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
         ItemStack result = Mytems.CAVETALE_DUNGEON.createIcon();
+        result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
         result.setAmount(total);
         return result;
     }

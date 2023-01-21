@@ -57,10 +57,10 @@ public final class DailyGameGoody {
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Bonus"));
             }
         },
-        RUBY(1, Mytems.RUBY::createIcon, Mytems.RUBY, text("Free Rubies", GREEN)) {
+        RUBY(2, Mytems.RUBY::createIcon, Mytems.RUBY, text("Free Rubies", GREEN)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
-                ItemStack item = Mytems.RUBY.createItemStack(1 + ThreadLocalRandom.current().nextInt(16));
+                ItemStack item = Mytems.RUBY.createItemStack(1 + ThreadLocalRandom.current().nextInt(10));
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Bonus"));
             }
         },
@@ -79,7 +79,7 @@ public final class DailyGameGoody {
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Secret Chest"));
             }
         },
-        SILVER_COIN(1, Mytems.SILVER_COIN::createIcon, Mytems.SILVER_COIN, text("Bonus Coins", GOLD)) {
+        SILVER_COIN(2, Mytems.SILVER_COIN::createIcon, Mytems.SILVER_COIN, text("Bonus Coins", GOLD)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 int amount = 100 * (1 + ThreadLocalRandom.current().nextInt(10));
