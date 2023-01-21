@@ -32,7 +32,7 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
         WARPED_FUNGUS(5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
         CHORUS_FLOWER(5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
         LILY_PAD(5, "Lily Pads", VanillaItems.LILY_PAD, Material.LILY_PAD, Set.of(Material.LILY_PAD)),
-        SPORE_BLOSSOM(1, "Spore Blossom", VanillaItems.SPORE_BLOSSOM, Material.SPORE_BLOSSOM, Set.of(Material.SPORE_BLOSSOM)),
+        //SPORE_BLOSSOM(1, "Spore Blossom", VanillaItems.SPORE_BLOSSOM, Material.SPORE_BLOSSOM, Set.of(Material.SPORE_BLOSSOM)),
         ;
 
         protected final int total;

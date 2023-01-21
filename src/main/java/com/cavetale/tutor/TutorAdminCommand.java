@@ -7,6 +7,8 @@ import com.cavetale.core.command.CommandWarn;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.tutor.daily.DailyQuest;
+import com.cavetale.tutor.daily.game.DailyGame;
+import com.cavetale.tutor.daily.game.DailyGameTag;
 import com.cavetale.tutor.goal.Condition;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
@@ -70,6 +72,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         dailyNode.addChild("list").denyTabCompletion()
             .description("List daily quests")
             .senderCaller(this::dailyList);
+        dailyNode.addChild("test").denyTabCompletion()
+            .description("Test daily GUI")
+            .playerCaller(this::dailyTest);
     }
 
     private Player requirePlayer(String arg) {
@@ -353,5 +358,13 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             sender.sendMessage((index++) + ") " + it);
         }
         sender.sendMessage("Total " + index);
+    }
+
+    private void dailyTest(Player player) {
+        DailyGameTag tag = new DailyGameTag();
+        tag.randomize();
+        DailyGame game = new DailyGame(player, tag);
+        game.start();
+        game.test.setup();
     }
 }

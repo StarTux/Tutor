@@ -7,7 +7,8 @@ public final class SQLStatic {
     private SQLStatic() { }
 
     public static List<Class<? extends SQLRow>> getAllTableClasses() {
-        return List.of(SQLPlayerQuest.class,
+        return List.of(SQLPlayer.class,
+                       SQLPlayerQuest.class,
                        SQLCompletedQuest.class,
                        SQLPlayerPet.class,
                        SQLPlayerPetUnlock.class,

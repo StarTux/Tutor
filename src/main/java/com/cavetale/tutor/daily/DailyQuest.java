@@ -266,6 +266,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         if (newScore >= total) {
             playerDailyQuest.setComplete(true);
             onComplete(playerDailyQuest);
+            playerDailyQuest.getSession().addDailyRollsAsync(1);
+            playerDailyQuest.getSession().addDailiesCompletedAsync(1);
             ItemMail.send(playerDailyQuest.getSession().getUuid(),
                           List.of(Mytems.RUBY.createItemStack()),
                           textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
@@ -307,6 +309,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * blank class if they have no need for extra information.
      */
     public static class Details {
+        //protected List<InventoryStore> rewards = new ArrayList<>();
     }
 
     /**

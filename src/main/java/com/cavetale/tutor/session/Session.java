@@ -6,6 +6,7 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
+import com.cavetale.core.util.Json;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.Quest;
@@ -14,6 +15,8 @@ import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.daily.DailyQuest;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
+import com.cavetale.tutor.daily.game.DailyGame;
+import com.cavetale.tutor.daily.game.DailyGameTag;
 import com.cavetale.tutor.goal.Constraint;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Noise;
@@ -22,6 +25,7 @@ import com.cavetale.tutor.pet.PetGender;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
+import com.cavetale.tutor.sql.SQLPlayer;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
@@ -36,9 +40,12 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -66,6 +73,7 @@ public final class Session {
     protected final Sessions sessions;
     protected final UUID uuid;
     protected final String name;
+    protected SQLPlayer playerRow = null;
     protected final Map<QuestName, PlayerQuest> currentQuests = new EnumMap<>(QuestName.class);
     protected final Map<QuestName, SQLCompletedQuest> completedQuests = new EnumMap<>(QuestName.class);
     protected final Map<PetType, SQLPlayerPetUnlock> unlockedPets = new EnumMap<>(PetType.class);
@@ -78,6 +86,7 @@ public final class Session {
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
     private Cache cache;
     private MenuSection section = MenuSection.TUTORIALS;
+    @Setter private boolean dailyGameLocked = false;
 
     /**
      * This is the constructor for a regular session which will be
@@ -114,6 +123,12 @@ public final class Session {
     protected void loadAsync(Runnable callback) {
         database().scheduleAsyncTask(() -> {
                 this.cache = new Cache();
+                this.playerRow = database().find(SQLPlayer.class)
+                    .eq("player", uuid).findUnique();
+                if (playerRow == null) {
+                    playerRow = new SQLPlayer(uuid);
+                    database().insert(playerRow);
+                }
                 cache.playerQuestRows = database().find(SQLPlayerQuest.class)
                     .eq("player", uuid).findList();
                 cache.completedQuestRows = database().find(SQLCompletedQuest.class)
@@ -355,26 +370,28 @@ public final class Session {
 
     public void triggerQuestReminder() {
         if (!currentQuests.isEmpty()) return;
-        for (QuestName questName : QuestName.values()) {
-            if (!completedQuests.containsKey(questName) && canSee(questName)) {
-                if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
-                    pet.addSpeechBubble("session", 60L, 150L,
-                                        text("There is another"),
-                                        text(questName.type.lower + " waiting"),
-                                        text("for you!"));
-                    pet.addSpeechBubble("session", 0L, 150L,
-                                        text("Click me or type"),
-                                        text(questName.type.command, YELLOW));
-                } else {
-                    getPlayer().sendMessage(text()
-                                            .content("There is another " + questName.type.lower
-                                                     + " waiting for you! Type ")
-                                            .append(text(questName.type.command, YELLOW))
-                                            .color(AQUA)
-                                            .clickEvent(questName.type.clickEvent())
-                                            .hoverEvent(questName.type.hoverEvent()));
+        if (!playerRow.isIgnoreQuests()) {
+            for (QuestName questName : QuestName.values()) {
+                if (!completedQuests.containsKey(questName) && canSee(questName)) {
+                    if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
+                        pet.addSpeechBubble("session", 60L, 150L,
+                                            text("There is another"),
+                                            text(questName.type.lower + " waiting"),
+                                            text("for you!"));
+                        pet.addSpeechBubble("session", 0L, 150L,
+                                            text("Click me or type"),
+                                            text(questName.type.command, YELLOW));
+                    } else {
+                        getPlayer().sendMessage(text()
+                                                .content("There is another " + questName.type.lower
+                                                         + " waiting for you! Type ")
+                                                .append(text(questName.type.command, YELLOW))
+                                                .color(AQUA)
+                                                .clickEvent(questName.type.clickEvent())
+                                                .hoverEvent(questName.type.hoverEvent()));
+                    }
+                    return;
                 }
-                return;
             }
         }
     }
@@ -504,10 +521,14 @@ public final class Session {
     }
 
     protected void makeTutorialMenu(Gui gui, Player player) {
-        int index = 0;
+        int nextIndex = 0;
+        List<Integer> slots = List.of(9, 10, 11, 12, 13, 14, 15, 16,
+                                      18, 19, 20, 21, 22, 23, 24, 25,
+                                      27, 28, 29, 30, 31, 32, 33, 34);
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && !canSee(questName)) continue;
-            gui.setItem(9 + index++, makeQuestItem(questName), click -> {
+            int slot = slots.get(nextIndex++);
+            gui.setItem(slot, makeQuestItem(questName), click -> {
                     if (!click.isLeftClick()) return;
                     if (currentQuests.containsKey(questName)) {
                         Noise.CLICK.play(player);
@@ -533,6 +554,33 @@ public final class Session {
                     startQuest(questName);
                     openMenu(player);
                 });
+        }
+        if (playerRow.isIgnoreQuests()) {
+            gui.setItem(8, 2, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Quests", RED),
+                                                                  text("Quests and tutorials", GRAY),
+                                                                  text("will not show in your", GRAY),
+                                                                  text("sidebar.", GRAY),
+                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" unignore", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                            playerRow.setIgnoreQuests(false);
+                            database().updateAsync(playerRow, null, "ignoreQuests");
+                            openMenu(player);
+                        });
+        } else {
+            gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Quests", GREEN),
+                                                                         text("Quests and tutorials", GRAY),
+                                                                         text("will show in your", GRAY),
+                                                                         text("sidebar.", GRAY),
+                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" ignore", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                            playerRow.setIgnoreQuests(true);
+                            database().updateAsync(playerRow, null, "ignoreQuests");
+                            openMenu(player);
+                        });
         }
     }
 
@@ -700,9 +748,49 @@ public final class Session {
             Items.text(icon, text);
             gui.setItem(offset + i, 2, icon, click -> {
                     if (!click.isLeftClick()) return;
-                    Noise.CLICK.play(player);
+                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                     openDailyQuestBook(player, dailyQuest, playerDailyQuest);
                 });
+        }
+        int rolls = playerRow.getDailyGameRolls();
+        String rollsText = "You have " + rolls + " dice roll" + (rolls != 1 ? "s" : "") + ".";
+        gui.setItem(0, 2, Mytems.DICE.createIcon(List.of(text("Play the Daily Game", GREEN),
+                                                         text(rollsText, GRAY),
+                                                         text("Get more dice rolls by", GRAY),
+                                                         text("completing daily quests.", GRAY))),
+                    click -> {
+                        if (!click.isLeftClick()) return;
+                        if (dailyGameLocked) return;
+                        player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                        DailyGameTag tag = playerRow.parseDailyGameTag();
+                        DailyGame game = new DailyGame(player, tag);
+                        game.start();
+                        game.selectState();
+                    });
+        if (playerRow.isIgnoreDailies()) {
+            gui.setItem(8, 2, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Daily Quests", RED),
+                                                                  text("Daily Quests will not", GRAY),
+                                                                  text("show in your sidebar.", GRAY),
+                                                                  textOfChildren(Mytems.MOUSE_LEFT, text(" unignore", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                            playerRow.setIgnoreDailies(false);
+                            database().updateAsync(playerRow, null, "ignoreDailies");
+                            openMenu(player);
+                        });
+        } else {
+            gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Daily Quests", GREEN),
+                                                                         text("Daily Quests will show", GRAY),
+                                                                         text("in your sidebar.", GRAY),
+                                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" ignore", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                            playerRow.setIgnoreDailies(true);
+                            database().updateAsync(playerRow, null, "ignoreDailies");
+                            openMenu(player);
+                        });
         }
     }
 
@@ -834,24 +922,31 @@ public final class Session {
     }
 
     protected void sidebar(List<Component> lines) {
-        for (PlayerQuest playerQuest : getQuestList()) {
-            if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
-                lines.add(textOfChildren(text(tiny("your "), AQUA), text("/tut", YELLOW), text(tiny("orial"), AQUA)));
-            } else {
-                lines.add(textOfChildren(text(tiny("your "), AQUA), text("/q", YELLOW), text(tiny("uest"), AQUA)));
+        if (!playerRow.isIgnoreQuests()) {
+            for (PlayerQuest playerQuest : getQuestList()) {
+                if (playerQuest.getQuest().getName().type == QuestType.TUTORIAL) {
+                    lines.add(textOfChildren(text(tiny("your "), AQUA), text("/tut", YELLOW), text(tiny("orial"), AQUA)));
+                } else {
+                    lines.add(textOfChildren(text(tiny("your "), AQUA), text("/q", YELLOW), text(tiny("uest"), AQUA)));
+                }
+                lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
+                break;
             }
-            lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
-            break;
         }
-        List<PlayerDailyQuest> visibleDailies = getVisibleDailies();
-        int unfinished = 0;
-        for (var it : visibleDailies) {
-            if (!it.isComplete()) unfinished += 1;
-        }
-        if (unfinished > 0) {
-            lines.add(text(tiny("dailies (" + visibleDailies.size() + ")"), AQUA));
-            for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
-                lines.addAll(playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest));
+        if (!playerRow.isIgnoreDailies()) {
+            List<PlayerDailyQuest> visibleDailies = getVisibleDailies();
+            int unfinished = 0;
+            for (var it : visibleDailies) {
+                if (!it.isComplete()) unfinished += 1;
+            }
+            if (unfinished > 0) {
+                lines.add(text(tiny("dailies (" + visibleDailies.size() + ")"), AQUA));
+                for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
+                    lines.addAll(playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest));
+                }
+            }
+            if (playerRow.getDailyGameRolls() > 0) {
+                lines.add(textOfChildren(text(tiny("you have "), AQUA), text("/daily ", YELLOW), Mytems.DICE));
             }
         }
     }
@@ -864,5 +959,60 @@ public final class Session {
             if (!playerDailyQuest.getDailyQuest().hasPermission(uuid)) continue;
             callback.accept(playerDailyQuest);
         }
+    }
+
+    public void saveDailyGameAsync(int newRolls, DailyGameTag tag, Runnable callback) {
+        dailyGameLocked = true;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .set("dailyGame", Json.serialize(tag))
+            .atomic("dailyGameRolls", newRolls)
+            .async(i -> {
+                    dailyGameLocked = false;
+                    if (i == 0) {
+                        plugin.getLogger().severe("[Session] "
+                                                  + name + " saveDiceRollAsync could not save "
+                                                  + " rolls=" + playerRow.getDailyGameRolls() + "/" + newRolls
+                                                  + " tag=" + Json.serialize(tag));
+                    } else {
+                        callback.run();
+                    }
+                });
+    }
+
+    public void addDailyRollsAsync(int chrolls) {
+        if (chrolls == 0) return;
+        dailyGameLocked = true;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("dailyGameRolls", chrolls)
+            .async(i -> {
+                    dailyGameLocked = false;
+                    playerRow.setDailyGameRolls(playerRow.getDailyGameRolls() + chrolls);
+                });
+    }
+
+    public void addQuestsCompletedAsync(int value) {
+        if (value == 0) return;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("quests", value)
+            .async(i -> playerRow.setQuests(playerRow.getQuests() + value));
+    }
+
+    public void addDailiesCompletedAsync(int value) {
+        if (value == 0) return;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("dailies", value)
+            .async(i -> playerRow.setDailies(playerRow.getDailies() + value));
+    }
+
+    public void addDailyGamesCompletedAsync(int value) {
+        if (value == 0) return;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("dailyGames", value)
+            .async(i -> playerRow.setDailyGames(playerRow.getDailyGames() + value));
     }
 }
