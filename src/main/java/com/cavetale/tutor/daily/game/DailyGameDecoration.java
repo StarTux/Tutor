@@ -8,7 +8,9 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 @RequiredArgsConstructor
 public enum DailyGameDecoration {
-    WINTER(GuiOverlay.DECOR_WINTER, List.of(DARK_AQUA, DARK_GREEN, BLUE, GRAY, BLACK)),
+    WINTER(GuiOverlay.DECOR_WINTER, List.of(DARK_AQUA, DARK_GREEN, BLUE, GRAY)),
+    SUMMER(GuiOverlay.DECOR_SUMMER, List.of(BLUE, YELLOW, GOLD)),
+    TETRIS(GuiOverlay.DECOR_TETRIS, List.of(RED, BLUE, LIGHT_PURPLE, GREEN, GRAY)),
     ;
 
     public final GuiOverlay overlay;

@@ -13,6 +13,8 @@ import net.kyori.adventure.text.format.TextColor;
  */
 @Data
 public final class DailyGameTag {
+    protected List<Integer> boardBag = new ArrayList<>();
+    protected List<Integer> decorBag = new ArrayList<>();
     protected DailyGameBoard board; // enum
     protected DailyGameDecoration decoration; // enum
     protected int background; // hex
@@ -28,9 +30,19 @@ public final class DailyGameTag {
     public DailyGameTag randomize() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         DailyGameBoard[] boards = DailyGameBoard.values();
-        this.board = boards[random.nextInt(boards.length)];
+        boardBag.removeIf(i -> i >= boards.length);
+        if (boardBag.isEmpty()) {
+            for (DailyGameBoard it : boards) boardBag.add(it.ordinal());
+            Collections.shuffle(boardBag, random);
+        }
+        this.board = boards[boardBag.remove(random.nextInt(boardBag.size()))];
         DailyGameDecoration[] decorations = DailyGameDecoration.values();
-        this.decoration = decorations[random.nextInt(decorations.length)];
+        decorBag.removeIf(i -> i >= decorations.length);
+        if (decorBag.isEmpty()) {
+            for (DailyGameDecoration it : decorations) decorBag.add(it.ordinal());
+            Collections.shuffle(decorBag, random);
+        }
+        this.decoration = decorations[decorBag.remove(random.nextInt(decorBag.size()))];
         List<TextColor> colors = decoration.backgroundColors;
         this.background = colors.get(random.nextInt(colors.size())).value();
         this.roll = 0;

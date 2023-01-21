@@ -360,8 +360,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         sender.sendMessage("Total " + index);
     }
 
+    private DailyGameTag tag = new DailyGameTag();
+
     private void dailyTest(Player player) {
-        DailyGameTag tag = new DailyGameTag();
         tag.randomize();
         DailyGame game = new DailyGame(player, tag);
         game.start();
