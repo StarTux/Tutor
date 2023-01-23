@@ -244,7 +244,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     public final List<Component> getSidebarLines(PlayerDailyQuest playerDailyQuest) {
         if (!active) return List.of();
         if (playerDailyQuest.isComplete()) {
-            return List.of(textOfChildren(Mytems.CHECKED_CHECKBOX, space(), getDescription(playerDailyQuest)));
+            return List.of(textOfChildren(Mytems.CHECKED_CHECKBOX.getCurrentAnimationFrame(),
+                                          space(), getDescription(playerDailyQuest)));
         } else {
             TextColor color = playerDailyQuest.progressTimer > System.currentTimeMillis()
                 ? GREEN
