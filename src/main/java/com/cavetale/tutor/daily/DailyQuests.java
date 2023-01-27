@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -322,6 +323,17 @@ public final class DailyQuests implements Listener {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestEating eating) {
                     eating.onPlayerItemConsume(player, playerDailyQuest, event);
+                }
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onEntityBreed(EntityBreedEvent event) {
+        if (!(event.getBreeder() instanceof Player player)) return;
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestBreeding breeding) {
+                    breeding.onEntityBreed(player, playerDailyQuest, event);
                 }
             });
     }

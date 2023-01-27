@@ -23,7 +23,7 @@ public enum DailyQuestType {
     SHEAR_SHEEP(1, DailyQuestShearSheep::new, Group.PEACEFUL),
     CRAFTING(1, DailyQuestCrafting::new, Group.PEACEFUL),
     EATING(1, DailyQuestEating::new, Group.PEACEFUL),
-    // Breed Animals
+    BREEDING(1, DailyQuestBreeding::new, Group.PEACEFUL),
     // Pick Flowers
 
     // 1 Adventure
