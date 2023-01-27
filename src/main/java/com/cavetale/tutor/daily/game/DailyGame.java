@@ -170,7 +170,7 @@ public final class DailyGame {
                 placeGoodies();
                 placeSkull(tag.progress);
                 final int playerRolls = session.getPlayerRow().getDailyGameRolls();
-                if (playerRolls < 3 && checkGameModeAndSurvivalServer(player)) {
+                if (playerRolls < 3 && checkGameModeAndSurvivalServer(player) && player.hasPermission("tutor.daily")) {
                     gui.setItem(buyIndex, Mytems.PLUS_BUTTON
                                 .createIcon(List.of(textOfChildren(text("Buy more ", GREEN), Mytems.DICE),
                                                     textOfChildren(text("Cost ", GRAY), text("3" + Unicode.MULTIPLICATION.string, WHITE),
