@@ -385,7 +385,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         if (args.length != 2) return false;
         PlayerCache target = PlayerCache.require(args[0]);
         int value = CommandArgCompleter.requireInt(args[1]);
-        plugin.sessions.findOrLoad(target, session -> session.addDailyRollsAsync(value));
+        plugin.sessions.findOrLoad(target, session -> session.addDailyRollsAsync(value, null));
         sender.sendMessage(text("Added " + value + " daily rolls for " + target.name, YELLOW));
         return true;
     }

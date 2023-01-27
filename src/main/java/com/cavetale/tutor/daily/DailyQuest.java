@@ -267,7 +267,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         if (newScore >= total) {
             playerDailyQuest.setComplete(true);
             onComplete(playerDailyQuest);
-            playerDailyQuest.getSession().addDailyRollsAsync(1);
+            playerDailyQuest.getSession().addDailyRollsAsync(1, null);
             playerDailyQuest.getSession().addDailiesCompletedAsync(1);
             ItemMail.send(playerDailyQuest.getSession().getUuid(),
                           List.of(Mytems.RUBY.createItemStack()),
@@ -298,7 +298,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
             && Perm.get().has(uuid, this.permission);
     }
 
-    protected static boolean checkGameModeAndSurvivalServer(Player player) {
+    public static boolean checkGameModeAndSurvivalServer(Player player) {
         if (!NetworkServer.current().isSurvival()) return false;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return false;
         return true;

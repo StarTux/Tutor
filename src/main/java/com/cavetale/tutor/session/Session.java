@@ -560,6 +560,7 @@ public final class Session {
                                                                   text("Quests and tutorials", GRAY),
                                                                   text("will not show in your", GRAY),
                                                                   text("sidebar.", GRAY),
+                                                                  empty(),
                                                                   textOfChildren(Mytems.MOUSE_LEFT, text(" Unignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
@@ -573,6 +574,7 @@ public final class Session {
                                                                          text("Quests and tutorials", GRAY),
                                                                          text("will show in your", GRAY),
                                                                          text("sidebar.", GRAY),
+                                                                         empty(),
                                                                          textOfChildren(Mytems.MOUSE_LEFT, text(" Ignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
@@ -720,6 +722,7 @@ public final class Session {
                 icon = Mytems.CHECKED_CHECKBOX.createIcon();
             } else {
                 icon = dailyQuest.createIcon(playerDailyQuest);
+                gui.getOverlay().highlightSlot(offset + i, 2, MenuSection.DAILY.backgroundColor);
             }
             List<Component> text = new ArrayList<>();
             text.add(dailyQuest.getDescription(playerDailyQuest));
@@ -745,6 +748,7 @@ public final class Session {
             if (playerDailyQuest.isComplete()) {
                 text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", GREEN)));
             }
+            text.add(empty());
             text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Details", GRAY)));
             Items.text(icon, text);
             gui.setItem(offset + i, 2, icon, click -> {
@@ -753,26 +757,29 @@ public final class Session {
                     openDailyQuestBook(player, dailyQuest, playerDailyQuest);
                 });
         }
-        int rolls = playerRow.getDailyGameRolls();
-        String rollsText = "You have " + rolls + " dice roll" + (rolls != 1 ? "s" : "") + ".";
-        gui.setItem(0, 2, Mytems.DICE.createIcon(List.of(text("Play the Daily Game", GREEN),
-                                                         text(rollsText, GRAY),
-                                                         text("Get more dice rolls by", GRAY),
-                                                         text("completing daily quests.", GRAY),
-                                                         textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY)))),
+        final int rolls = playerRow.getDailyGameRolls();
+        ItemStack diceIcon = Mytems.DICE.createIcon(List.of(text("Play the Daily Game", GREEN),
+                                                            empty(),
+                                                            textOfChildren(text("Have ", GRAY),
+                                                                           text(rolls + Unicode.MULTIPLICATION.string, WHITE), Mytems.DICE),
+                                                            empty(),
+                                                            text("Get more dice rolls by", GRAY),
+                                                            text("completing daily quests.", GRAY),
+                                                            empty(),
+                                                            textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY))));
+        diceIcon.setAmount(Math.max(1, Math.min(64, rolls)));
+        gui.setItem(0, 2, diceIcon,
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (dailyGameLocked) return;
                         player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
-                        DailyGameTag tag = playerRow.parseDailyGameTag();
-                        DailyGame game = new DailyGame(player, tag);
-                        game.start();
-                        game.selectState();
+                        openDailyGame(player);
                     });
         if (playerRow.isIgnoreDailies()) {
             gui.setItem(8, 2, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Daily Quests", RED),
                                                                   text("Daily Quests will not", GRAY),
                                                                   text("show in your sidebar.", GRAY),
+                                                                  empty(),
                                                                   textOfChildren(Mytems.MOUSE_LEFT, text(" Unignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
@@ -785,6 +792,7 @@ public final class Session {
             gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Daily Quests", GREEN),
                                                                          text("Daily Quests will show", GRAY),
                                                                          text("in your sidebar.", GRAY),
+                                                                         empty(),
                                                                          textOfChildren(Mytems.MOUSE_LEFT, text(" Ignore", GRAY)))),
                         click -> {
                             if (!click.isLeftClick()) return;
@@ -982,15 +990,20 @@ public final class Session {
                 });
     }
 
-    public void addDailyRollsAsync(int chrolls) {
+    public void addDailyRollsAsync(int chrolls, Runnable callback) {
         if (chrolls == 0) return;
         dailyGameLocked = true;
         database().update(SQLPlayer.class)
             .row(playerRow)
             .add("dailyGameRolls", chrolls)
             .async(i -> {
-                    dailyGameLocked = false;
-                    playerRow.setDailyGameRolls(playerRow.getDailyGameRolls() + chrolls);
+                    if (i == 0) {
+                        plugin.getLogger().severe("[Session] addDailyRollsAsync: " + name + ": " + i);
+                    } else {
+                        dailyGameLocked = false;
+                        playerRow.setDailyGameRolls(playerRow.getDailyGameRolls() + chrolls);
+                        if (callback != null) callback.run();
+                    }
                 });
     }
 
@@ -999,7 +1012,10 @@ public final class Session {
         database().update(SQLPlayer.class)
             .row(playerRow)
             .add("quests", value)
-            .async(i -> playerRow.setQuests(playerRow.getQuests() + value));
+            .async(i -> {
+                    if (i == 0) plugin.getLogger().severe("[Session] addQuestsCompletedAsync: " + name + ": " + i);
+                    playerRow.setQuests(playerRow.getQuests() + value);
+                });
     }
 
     public void addDailiesCompletedAsync(int value) {
@@ -1007,7 +1023,10 @@ public final class Session {
         database().update(SQLPlayer.class)
             .row(playerRow)
             .add("dailies", value)
-            .async(i -> playerRow.setDailies(playerRow.getDailies() + value));
+            .async(i -> {
+                    if (i == 0) plugin.getLogger().severe("[Session] addDailiesCompletedAsync: " + name + ": " + i);
+                    playerRow.setDailies(playerRow.getDailies() + value);
+                });
     }
 
     public void addDailyGamesCompletedAsync(int value) {
@@ -1015,6 +1034,16 @@ public final class Session {
         database().update(SQLPlayer.class)
             .row(playerRow)
             .add("dailyGames", value)
-            .async(i -> playerRow.setDailyGames(playerRow.getDailyGames() + value));
+            .async(i -> {
+                    if (i == 0) plugin.getLogger().severe("[Session] addDailyRollsAsync: " + name + ": " + i);
+                    playerRow.setDailyGames(playerRow.getDailyGames() + value);
+                });
+    }
+
+    public void openDailyGame(Player player) {
+        DailyGameTag tag = playerRow.parseDailyGameTag();
+        DailyGame game = new DailyGame(player, tag);
+        game.start();
+        game.selectState();
     }
 }

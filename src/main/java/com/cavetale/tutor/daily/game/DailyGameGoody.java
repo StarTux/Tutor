@@ -119,14 +119,24 @@ public final class DailyGameGoody {
 
     private static List<ItemStack> getChestLootPool() {
         final List<ItemStack> result = new ArrayList<>();
-        result.add(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE));
-        result.add(new ItemStack(Material.TOTEM_OF_UNDYING));
-        result.add(new ItemStack(Material.SHULKER_SHELL));
+        result.add(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 64));
         result.add(new ItemStack(Material.NETHER_STAR));
-        result.add(new ItemStack(Material.DRAGON_EGG));
         result.add(new ItemStack(Material.ELYTRA));
         result.add(Mytems.RUBY_COIN.createItemStack());
-        result.add(new ItemStack(Material.HEART_OF_THE_SEA));
+        result.add(Mytems.DIAMOND_COIN.createItemStack());
+        result.add(Mytems.MAGIC_CAPE.createItemStack());
+        result.add(Mytems.MOBSLAYER.createItemStack());
+        result.add(Mytems.BINGO_BUKKIT.createItemStack());
+        result.add(Mytems.WITCH_BROOM.createItemStack());
+        result.add(Mytems.BLUNDERBUSS.createItemStack());
+        result.add(Mytems.CAPTAINS_CUTLASS.createItemStack());
+        result.add(Mytems.ENDERBALL.createItemStack());
+        result.add(Mytems.MAGNIFYING_GLASS.createItemStack());
+        result.add(Mytems.FERTILIZER.createItemStack(64));
+        result.add(Mytems.SNOW_SHOVEL.createItemStack());
+        result.add(Mytems.SNEAKERS.createItemStack());
+        result.add(Mytems.UNICORN_HORN.createItemStack());
+        result.add(Mytems.TREE_CHOPPER.createItemStack());
         return result;
     }
 }

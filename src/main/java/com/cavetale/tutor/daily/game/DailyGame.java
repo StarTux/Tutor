@@ -2,14 +2,18 @@ package com.cavetale.tutor.daily.game;
 
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.session.Session;
 import com.cavetale.tutor.util.Gui;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,6 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitTask;
 import static com.cavetale.tutor.TutorPlugin.plugin;
+import static com.cavetale.tutor.daily.DailyQuest.checkGameModeAndSurvivalServer;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -39,10 +45,12 @@ public final class DailyGame {
     private ItemStack skull;
     private boolean closed = false;
     private BukkitTask task;
-    private final int diceIndex = 0;
+    private final List<Integer> diceIndices = List.of(0, 9, 18);
+    private final int buyIndex = 8 + 5 * 9;
     private int placedIndex = -1;
     private State state;
     private TextColor bg;
+    private int rolls; // Set prior to diceRoll.setup()
 
     public void start() {
         final int size = 6 * 9;
@@ -54,14 +62,15 @@ public final class DailyGame {
                                          text("You are here", GRAY)));
             });
         bg = tag.getBackgroundColor();
+        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, bg)
+            .layer(tag.board.overlay, WHITE)
+            .title(textOfChildren(DefaultFont.CAVETALE, text(" Daily Game")));
+        for (int i = 0; i < diceIndices.size(); i += 1) {
+            builder.highlightSlot(diceIndices.get(i), bg);
+        }
         this.gui = new Gui()
             .size(size)
-            .title(GuiOverlay.BLANK.builder(size, bg)
-                   .layer(tag.decoration.overlay, WHITE)
-                   .layer(tag.board.overlay, WHITE)
-                   .title(textOfChildren(DefaultFont.CAVETALE, text(" Daily Game")))
-                   .highlightSlot(diceIndex, bg)
-                   .build());
+            .title(builder.build());
         session = plugin().getSessions().find(player);
         if (session == null) {
             plugin().getLogger().severe("[DailyGame] Session not found: " + player.getName());
@@ -78,10 +87,12 @@ public final class DailyGame {
     }
 
     public void selectState() {
-        if (tag.roll == 0) {
-            idle.setup();
-        } else {
+        if (tag.roll > 0) {
             moveSkull.setup();
+        } else if (!tag.rolls.isEmpty()) {
+            chooseRoll.setup();
+        } else {
+            idle.setup();
         }
     }
 
@@ -159,21 +170,52 @@ public final class DailyGame {
                 placeGoodies();
                 placeSkull(tag.progress);
                 final int playerRolls = session.getPlayerRow().getDailyGameRolls();
-                if (playerRolls > 0) {
-                    ItemStack diceIcon = Mytems.DICE
-                        .createIcon(List.of(text("Roll the Dice", GREEN),
-                                            text("You have " + playerRolls + " dice rolls", GRAY),
+                if (playerRolls < 3 && checkGameModeAndSurvivalServer(player)) {
+                    gui.setItem(buyIndex, Mytems.PLUS_BUTTON
+                                .createIcon(List.of(textOfChildren(text("Buy more ", GREEN), Mytems.DICE),
+                                                    textOfChildren(text("Cost ", GRAY), text("3" + Unicode.MULTIPLICATION.string, WHITE),
+                                                                   Mytems.KITTY_COIN),
+                                                    empty(),
+                                                    textOfChildren(Mytems.MOUSE_LEFT, text(" Open shop", GRAY)))),
+                                click -> {
+                                    if (!click.isLeftClick()) return;
+                                    DailyRollsShop.open(player, session);
+                                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                                });
+                }
+                for (int i = 0; i < diceIndices.size(); i += 1) {
+                    final int diceRolls = i + 1;
+                    final int diceIndex = diceIndices.get(i);
+                    if (playerRolls >= diceRolls) {
+                        List<Component> text = new ArrayList<>();
+                        if (diceRolls > 1) {
+                            text.add(text("Roll " + diceRolls + " dice and", GREEN));
+                            text.add(text("choose one of them", GREEN));
+                        } else {
+                            text.add(text("Roll the dice once", GREEN));
+                        }
+                        text.addAll(List.of(textOfChildren(text("Cost ", GRAY), text(diceRolls + Unicode.MULTIPLICATION.string, WHITE), Mytems.DICE),
+                                            textOfChildren(text("Have ", GRAY), text(playerRolls + Unicode.MULTIPLICATION.string, WHITE), Mytems.DICE),
+                                            empty(),
                                             text("Get more dice rolls by", GRAY),
                                             text("completing daily quests.", GRAY),
+                                            empty(),
                                             textOfChildren(Mytems.MOUSE_LEFT, text(" Roll", GRAY))));
-                    diceIcon.setAmount(Math.max(1, Math.min(64, playerRolls)));
-                    gui.setItem(diceIndex, diceIcon, click -> {
-                            if (!click.isLeftClick()) return;
-                            if (session.isDailyGameLocked()) return;
-                            diceRoll.setup();
-                        });
-                } else {
-                    gui.setItem(diceIndex, null);
+                        ItemStack diceIcon = Mytems.DICE.createIcon(text);
+                        diceIcon.setAmount(diceRolls);
+                        gui.setItem(diceIndex, diceIcon, click -> {
+                                if (!click.isLeftClick()) return;
+                                if (session.isDailyGameLocked()) return;
+                                DailyGame.this.rolls = diceRolls;
+                                diceRoll.setup();
+                            });
+                    } else {
+                        gui.setItem(diceIndex, Mytems.INVISIBLE_ITEM
+                                    .createIcon(List.of(text("Not enough dice rolls", RED),
+                                                        empty(),
+                                                        text("Get more dice rolls by", GRAY),
+                                                        text("completing daily quests.", GRAY))));
+                    }
                 }
             }
             @Override protected void tick() {
@@ -187,7 +229,10 @@ public final class DailyGame {
             }
             @Override protected void exit() {
                 placeSkull(tag.progress);
-                gui.setItem(diceIndex, null);
+                for (int diceIndex : diceIndices) {
+                    gui.setItem(diceIndex, null);
+                }
+                gui.setItem(buyIndex, null);
             }
         };
 
@@ -199,27 +244,72 @@ public final class DailyGame {
             private boolean paused;
             @Override protected void enter() {
                 ticks = 0;
-                gui.setItem(diceIndex, Mytems.DICE_ROLL.createIcon());
+                for (int i = 0; i < rolls; i += 1) {
+                    gui.setItem(diceIndices.get(i), Mytems.DICE_ROLL.createIcon(List.of(text("...", DARK_GRAY))));
+                }
             }
             @Override protected void tick() {
                 if (ticks < 60 && (ticks % 2) == 0) {
                     float pitch = 2.0f - ((float) ticks / 60f);
                     player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, pitch);
                 } else if (ticks == 60) {
-                    tag.roll = 1 + ThreadLocalRandom.current().nextInt(6);
-                    plugin().getLogger().info("[DailyGame] " + player.getName() + " rolled " + tag.roll);
+                    List<Integer> options = new ArrayList<>(6);
+                    for (int i = 1; i <= 6; i += 1) options.add(i);
+                    Collections.shuffle(options, ThreadLocalRandom.current());
+                    for (int i = 0; i < rolls; i += 1) {
+                        tag.rolls.add(options.get(i));
+                    }
+                    plugin().getLogger().info("[DailyGame] " + player.getName() + " rolled " + tag.rolls);
                     paused = true;
-                    session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls() - 1, tag, () -> {
+                    session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls() - rolls, tag, () -> {
                             paused = false;
-                            gui.setItem(diceIndex, diceIcon(tag.roll).createIcon(List.of(text(tag.roll, WHITE))));
-                            player.sendMessage(textOfChildren(text("Daily Game ", GRAY), diceIcon(tag.roll), text(tag.roll)));
+                            for (int i = 0; i < rolls; i += 1) {
+                                final int diceIndex = diceIndices.get(i);
+                                final int roll = tag.rolls.get(i);
+                                gui.setItem(diceIndex, diceIcon(roll).createIcon(List.of(text(roll, WHITE))));
+                                player.sendMessage(textOfChildren(text("Daily Game ", GRAY), diceIcon(roll), text(roll)));
+                            }
+                            if (rolls == 1) {
+                                tag.roll = tag.rolls.get(0);
+                            }
                         });
                 } else if (ticks >= 70) {
                     if (paused) return;
-                    moveSkull.setup();
+                    if (rolls == 1) {
+                        moveSkull.setup();
+                    } else {
+                        chooseRoll.setup();
+                    }
                 }
                 ticks += 1;
             }
+            @Override protected void exit() { }
+        };
+
+    public final State chooseRoll = new State() {
+            @Override protected void enter() {
+                removeSkull();
+                placeGoodies();
+                placeSkull(tag.progress);
+                for (int i = 0; i < tag.rolls.size(); i += 1) {
+                    final int roll = tag.rolls.get(i);
+                    final int diceIndex = diceIndices.get(i);
+                    gui.setItem(diceIndex, diceIcon(roll)
+                                .createIcon(List.of(text(roll, WHITE),
+                                                    empty(),
+                                                    textOfChildren(Mytems.MOUSE_LEFT, text(" Progress " + roll + " steps", GRAY)))),
+                                click -> {
+                                    if (!click.isLeftClick()) return;
+                                    if (session.isDailyGameLocked()) return;
+                                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                                    tag.roll = roll;
+                                    session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls(), tag, () -> {
+                                            moveSkull.setup();
+                                        });
+                                });
+                }
+            }
+            @Override protected void tick() { }
             @Override protected void exit() { }
         };
 
@@ -237,7 +327,15 @@ public final class DailyGame {
                 removeSkull();
                 placeGoodies();
                 placeSkull(tag.progress);
-                gui.setItem(diceIndex, diceIcon(tag.roll).createIcon(List.of(text(tag.roll, WHITE))));
+                for (int i = 0; i < tag.rolls.size(); i += 1) {
+                    final int roll = tag.rolls.get(i);
+                    final int diceIndex = diceIndices.get(i);
+                    if (roll == tag.roll) {
+                        gui.setItem(diceIndex, diceIcon(roll).createIcon(List.of(text(roll, WHITE))));
+                    } else {
+                        gui.setItem(diceIndex, null);
+                    }
+                }
                 current = tag.progress;
                 to = Math.min(tag.board.cells.size() - 1, tag.progress + tag.roll);
             }
@@ -281,6 +379,7 @@ public final class DailyGame {
                         newRolls += 1;
                     } else {
                         tag.progress = to;
+                        tag.rolls.clear();
                         tag.roll = 0;
                     }
                     session.saveDailyGameAsync(newRolls, tag, () -> {
@@ -314,7 +413,6 @@ public final class DailyGame {
             @Override protected void enter() {
                 moveTicks = 20;
                 placeSkull(tag.progress);
-                gui.setItem(diceIndex, Mytems.DICE_ROLL.createIcon());
             }
             @Override protected void tick() {
                 if (moveTicks > 0) {

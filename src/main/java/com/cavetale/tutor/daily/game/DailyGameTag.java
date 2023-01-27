@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Data;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 /**
@@ -14,12 +15,11 @@ import net.kyori.adventure.text.format.TextColor;
 @Data
 public final class DailyGameTag {
     protected List<Integer> boardBag = new ArrayList<>();
-    protected List<Integer> decorBag = new ArrayList<>();
     protected DailyGameBoard board; // enum
-    protected DailyGameDecoration decoration; // enum
     protected int background; // hex
     protected int progress;
-    protected int roll;
+    protected List<Integer> rolls = new ArrayList<>();
+    protected int roll = 0;
     protected List<DailyGameGoody> goodies = new ArrayList<>();
     protected DailyGameGoody goodyWaiting;
 
@@ -36,15 +36,9 @@ public final class DailyGameTag {
             Collections.shuffle(boardBag, random);
         }
         this.board = boards[boardBag.remove(random.nextInt(boardBag.size()))];
-        DailyGameDecoration[] decorations = DailyGameDecoration.values();
-        decorBag.removeIf(i -> i >= decorations.length);
-        if (decorBag.isEmpty()) {
-            for (DailyGameDecoration it : decorations) decorBag.add(it.ordinal());
-            Collections.shuffle(decorBag, random);
-        }
-        this.decoration = decorations[decorBag.remove(random.nextInt(decorBag.size()))];
-        List<TextColor> colors = decoration.backgroundColors;
+        List<TextColor> colors = List.copyOf(NamedTextColor.NAMES.values());
         this.background = colors.get(random.nextInt(colors.size())).value();
+        this.rolls.clear();
         this.roll = 0;
         this.progress = 0;
         this.goodies.clear();
