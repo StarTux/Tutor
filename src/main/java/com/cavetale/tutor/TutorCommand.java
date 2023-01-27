@@ -74,6 +74,20 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
                 session.startQuest(questName);
                 return true;
             }
+            case "start": {
+                QuestName questName = QuestName.of(args[1]);
+                if (questName == null) return true;
+                Session session = plugin.sessions.find(player);
+                if (session == null) return true;
+                if (!session.getCurrentQuests().isEmpty()) return true;
+                if (!session.getCurrentQuests().isEmpty()) return true;
+                if (!session.canSee(questName) || !session.canStart(questName)) return true;
+                if (session.getCompletedQuests().containsKey(questName)) return true;
+                if (session.getCurrentQuests().containsKey(questName)) return true;
+                session.startQuest(questName);
+                session.openQuestBook(player);
+                return true;
+            }
             case "quit": {
                 QuestName questName = QuestName.of(args[1]);
                 if (questName == null) return true;

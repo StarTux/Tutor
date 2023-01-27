@@ -54,6 +54,7 @@ import static com.cavetale.tutor.TutorPlugin.database;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.JoinConfiguration.separator;
@@ -292,28 +293,59 @@ public final class Session {
         player.openBook(itemStack);
     }
 
-    public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
+    public void openQuestBook(Player player, Quest quest) {
         List<Component> pages = new ArrayList<>();
-        pages.add(textOfChildren((text()
-                                  .append(quest.name.displayName)
-                                  .color(DARK_AQUA)
-                                  .decorate(BOLD)
-                                  .build()),
+        pages.add(textOfChildren(quest.name.displayName.color(DARK_AQUA).decorate(BOLD),
                                  newline(),
-                                 text(quest.getName().type.upper + " ", GRAY),
                                  (DefaultFont.BACK_BUTTON.component
                                   .clickEvent(runCommand("/tutor menu"))
                                   .hoverEvent(showText(text("Open Tutor Menu", BLUE)))),
-                                 text("\n\nCompleted\n", GRAY),
-                                 text(dateFormat.format(row.getTime()), DARK_AQUA),
-                                 text("\n\n"),
-                                 (DefaultFont.START_BUTTON.component
-                                  .clickEvent(runCommand("/tutor click redo " + quest.getName().key))
-                                  .hoverEvent(showText(join(separator(newline()), new Component[] {
-                                                  text("Repeat this " + quest.getName().type.lower, BLUE),
-                                                  text("There will not be", GRAY),
-                                                  text("any extra rewards.", GRAY),
-                                              }))))));
+                                 space(), text(quest.getName().type.upper, GRAY),
+                                 newline(), newline(),
+                                 Mytems.CHECKED_CHECKBOX, text(" Not yet completed", GRAY),
+                                 (currentQuests.isEmpty()
+                                  ? textOfChildren(newline(), newline(), DefaultFont.START_BUTTON.component
+                                                   .clickEvent(runCommand("/tutor click start " + quest.getName().key))
+                                                   .hoverEvent(showText(text("Start this " + quest.getName().type.lower, BLUE))))
+                                  : empty()),
+                                 newline(), newline(),
+                                 join(separator(space()), quest.getName().getDescription())));
+        for (Goal goal : quest.getGoals()) {
+            pages.addAll(goal.getAdditionalBookPages());
+        }
+        BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+        meta.addPages(pages.toArray(new Component[0]));
+        meta.setTitle("Tutor");
+        meta.author(text("Cavetale"));
+        meta.setGeneration(BookMeta.Generation.ORIGINAL);
+        ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
+        itemStack.setItemMeta(meta);
+        player.closeInventory();
+        player.openBook(itemStack);
+    }
+
+    public void openCompletedQuestBook(Player player, Quest quest, SQLCompletedQuest row) {
+        List<Component> pages = new ArrayList<>();
+        pages.add(textOfChildren(quest.name.displayName.color(DARK_AQUA).decorate(BOLD),
+                                 newline(),
+                                 (DefaultFont.BACK_BUTTON.component
+                                  .clickEvent(runCommand("/tutor menu"))
+                                  .hoverEvent(showText(text("Open Tutor Menu", BLUE)))),
+                                 space(), text(quest.getName().type.upper, GRAY),
+                                 newline(), newline(),
+                                 Mytems.CHECKED_CHECKBOX,
+                                 text(" Completed ", GRAY), text(dateFormat.format(row.getTime()), DARK_AQUA),
+                                 (currentQuests.isEmpty()
+                                  ? textOfChildren(newline(), newline(),
+                                                   DefaultFont.START_BUTTON.component
+                                                   .clickEvent(runCommand("/tutor click redo " + quest.getName().key))
+                                                   .hoverEvent(showText(join(separator(newline()),
+                                                                             text("Repeat this " + quest.getName().type.lower, BLUE),
+                                                                             text("There will not be", GRAY),
+                                                                             text("any extra rewards.", GRAY)))))
+                                  : empty()),
+                                 newline(), newline(),
+                                 join(separator(space()), quest.getName().getDescription())));
         for (Goal goal : quest.getGoals()) {
             pages.addAll(goal.getAdditionalBookPages());
         }
@@ -486,16 +518,16 @@ public final class Session {
                        .title(section.title));
         List<MenuSection> sectionList = new ArrayList<>(List.of(MenuSection.values()));
         if (pet == null) sectionList.remove(MenuSection.PET);
-        final int menuOffset = 4 - (sectionList.size() / 2);
+        final int menuOffset = 4 - ((sectionList.size() * 2 - 1) / 2);
         for (int i = 0; i < sectionList.size(); i += 1) {
             MenuSection menuSection = sectionList.get(i);
-            gui.setItem(menuOffset + i, menuSection.createIcon(this), click -> {
+            gui.setItem(menuOffset + i + i, menuSection.createIcon(this), click -> {
                     if (!click.isLeftClick()) return;
                     Noise.CLICK.play(player);
                     openMenu(player, menuSection);
                 });
             if (section == menuSection) {
-                gui.getOverlay().highlightSlot(menuOffset + i, section.backgroundColor);
+                gui.getOverlay().highlightSlot(menuOffset + i + i, section.backgroundColor);
             }
         }
         section.makeGui(gui, player, this);
@@ -503,7 +535,7 @@ public final class Session {
         gui.open(player);
     }
 
-    private boolean canSee(QuestName questName) {
+    public boolean canSee(QuestName questName) {
         for (QuestName dep : questName.getSeeDependencies()) {
             if (!completedQuests.containsKey(dep)) return false;
         }
@@ -513,7 +545,7 @@ public final class Session {
         return true;
     }
 
-    private boolean canStart(QuestName questName) {
+    public boolean canStart(QuestName questName) {
         for (QuestName dep : questName.getStartDependencies()) {
             if (!completedQuests.containsKey(dep)) return false;
         }
@@ -533,26 +565,13 @@ public final class Session {
                     if (currentQuests.containsKey(questName)) {
                         Noise.CLICK.play(player);
                         openQuestBook(player);
-                        return;
-                    }
-                    if (completedQuests.containsKey(questName)) {
+                    } else if (completedQuests.containsKey(questName)) {
                         Noise.CLICK.play(player);
                         openCompletedQuestBook(player, plugin.getQuests().get(questName), completedQuests.get(questName));
-                        return;
+                    } else {
+                        Noise.CLICK.play(player);
+                        openQuestBook(player, plugin.getQuests().get(questName));
                     }
-                    if (!canSee(questName) || !canStart(questName)) {
-                        Noise.FAIL.play(player);
-                        return;
-                    }
-                    if (!currentQuests.isEmpty()) {
-                        Noise.FAIL.play(player);
-                        QuestName active = currentQuests.keySet().iterator().next();
-                        player.sendMessage(text("You already have an active " + active.type.lower + "!", RED));
-                        return;
-                    }
-                    Noise.CLICK.play(player);
-                    startQuest(questName);
-                    openMenu(player);
                 });
         }
         if (playerRow.isIgnoreQuests()) {
@@ -596,13 +615,13 @@ public final class Session {
             text.add(text("Current Quest", GOLD));
         } else if (completedQuests.containsKey(questName)) {
             item = Mytems.CHECKED_CHECKBOX.createIcon();
-            text.add(text("Completed", GOLD));
+            text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text("Completed", GREEN)));
         } else if (canStart(questName)) {
             item = Mytems.CHECKBOX.createIcon();
-            text.add(text("Start this " + questName.type.lower + "?", GOLD));
+            text.add(textOfChildren(Mytems.CHECKBOX, text("Start this " + questName.type.lower + "?", BLUE)));
         } else {
             item = Mytems.COPPER_KEYHOLE.createIcon();
-            text.add(text("Locked", DARK_RED));
+            text.add(textOfChildren(Mytems.COPPER_KEYHOLE, text("Locked", DARK_RED)));
         }
         if (!questName.getDescription().isEmpty()) {
             text.add(empty());
