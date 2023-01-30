@@ -4,13 +4,13 @@ import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
 import com.cavetale.core.event.minigame.MinigameMatchType;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -44,7 +44,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
     @Override
     public void onGenerate() {
         Game[] games = Game.values();
-        details.game = games[ThreadLocalRandom.current().nextInt(games.length)];
+        details.game = games[random.nextInt(games.length)];
         this.total = 1;
     }
 
@@ -62,7 +62,9 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        return details.game.iconSupplier.get();
+        ItemStack result = details.game.iconSupplier.get();
+        result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
+        return result;
     }
 
     public static final class Details extends DailyQuest.Details {

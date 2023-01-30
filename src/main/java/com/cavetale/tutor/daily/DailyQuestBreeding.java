@@ -4,7 +4,6 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
@@ -55,7 +54,7 @@ public final class DailyQuestBreeding extends DailyQuest<DailyQuestBreeding.Deta
     @Override
     public void onGenerate() {
         BreedMob[] mobs = BreedMob.values();
-        details.mob = mobs[ThreadLocalRandom.current().nextInt(mobs.length)];
+        details.mob = mobs[random.nextInt(mobs.length)];
         this.total = details.mob.total;
     }
 

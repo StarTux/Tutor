@@ -3,17 +3,20 @@ package com.cavetale.tutor.daily;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -44,7 +47,7 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
     @Override
     public void onGenerate() {
         Fish[] fishes = Fish.values();
-        this.details.fish = fishes[ThreadLocalRandom.current().nextInt(fishes.length)];
+        this.details.fish = fishes[random.nextInt(fishes.length)];
         this.total = details.fish.total;
     }
 
@@ -84,6 +87,34 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
             if (details.fish.fishMaterial != item.getType()) return;
         }
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        if (details.fish == Fish.TRASH) {
+            return switch (random.nextInt(4)) {
+            case 0 -> {
+                final ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
+                book.editMeta(m -> {
+                        List<Enchantment> enchs = new ArrayList<>();
+                        for (Enchantment enchantment : Enchantment.values()) {
+                            if (enchantment.isCursed()) continue;
+                            enchs.add(enchantment);
+                        }
+                        final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) m;
+                        Enchantment enchantment = enchs.get(random.nextInt(enchs.size()));
+                        meta.addStoredEnchant(enchantment, enchantment.getMaxLevel(), true);
+                    });
+                yield List.of(book);
+            }
+            case 1 -> List.of(new ItemStack(Material.SADDLE));
+            case 2 -> List.of(new ItemStack(Material.NAUTILUS_SHELL));
+            default -> List.of(new ItemStack(Material.NAME_TAG));
+            };
+        } else {
+            return List.of(new ItemStack(details.fish.fishMaterial, total),
+                           new ItemStack(Material.FISHING_ROD));
+        }
     }
 
     public static final class Details extends DailyQuest.Details {

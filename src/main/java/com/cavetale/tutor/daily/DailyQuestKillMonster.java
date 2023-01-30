@@ -4,7 +4,6 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
@@ -50,7 +49,7 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
     @Override
     public void onGenerate() {
         TargetMob[] targets = TargetMob.values();
-        details.target = targets[ThreadLocalRandom.current().nextInt(targets.length)];
+        details.target = targets[random.nextInt(targets.length)];
         this.total = details.target.total;
     }
 

@@ -4,8 +4,8 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -50,7 +50,7 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
     public void onGenerate() {
         this.total = 10;
         Ore[] ores = Ore.values();
-        this.details.ore = ores[ThreadLocalRandom.current().nextInt(ores.length)];
+        this.details.ore = ores[random.nextInt(ores.length)];
     }
 
     @Override
@@ -92,6 +92,11 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
         if (!details.ore.blockMaterials.contains(block.getType())) return;
         if (isPlayerPlaced(block)) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.ore.material, total));
     }
 
     public static final class Details extends DailyQuest.Details {

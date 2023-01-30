@@ -7,9 +7,9 @@ import com.cavetale.mytems.item.treechopper.ChoppedType;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.util.CamelCase.toCamelCase;
@@ -29,7 +29,7 @@ public final class DailyQuestTreeChopper extends DailyQuest<DailyQuestTreeChoppe
         for (ChoppedType type : ChoppedType.values()) {
             if (!type.isJustAGuess()) types.add(type);
         }
-        this.details.chopped = types.get(ThreadLocalRandom.current().nextInt(types.size()));
+        this.details.chopped = types.get(random.nextInt(types.size()));
         this.total = 10;
     }
 
@@ -60,6 +60,29 @@ public final class DailyQuestTreeChopper extends DailyQuest<DailyQuestTreeChoppe
         if (!event.isSuccessful()) return;
         if (event.getTreeChop().guessChoppedType() != details.chopped) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        List<ItemStack> result = new ArrayList<>();
+        switch (random.nextInt(3)) {
+        case 0:
+            for (Material material : details.chopped.logs.getValues()) {
+                result.add(new ItemStack(material, material.getMaxStackSize()));
+            }
+            break;
+        case 1:
+            for (Material material : details.chopped.saplings.getValues()) {
+                result.add(new ItemStack(material, material.getMaxStackSize()));
+            }
+            break;
+        case 2: default:
+            for (Material material : details.chopped.leaves.getValues()) {
+                result.add(new ItemStack(material, material.getMaxStackSize()));
+            }
+            break;
+        }
+        return result;
     }
 
     public static final class Details extends DailyQuest.Details {

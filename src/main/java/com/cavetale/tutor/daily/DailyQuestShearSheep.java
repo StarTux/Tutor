@@ -5,7 +5,6 @@ import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.BlockColor;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
@@ -27,7 +26,7 @@ public final class DailyQuestShearSheep extends DailyQuest<DailyQuestShearSheep.
     @Override
     protected void onGenerate() {
         BlockColor[] colors = BlockColor.values();
-        this.details.color = colors[ThreadLocalRandom.current().nextInt(colors.length)];
+        this.details.color = colors[random.nextInt(colors.length)];
         if (details.color == BlockColor.WHITE) {
             this.total = 20;
         } else if (details.color == BlockColor.BLACK) {

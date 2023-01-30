@@ -1,7 +1,6 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.item.ItemKinds;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
 
     @Override
     public void onGenerate() {
-        this.details.material = MATERIALS[ThreadLocalRandom.current().nextInt(MATERIALS.length)];
+        this.details.material = MATERIALS[random.nextInt(MATERIALS.length)];
         this.total = 1;
     }
 

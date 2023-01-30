@@ -1,7 +1,6 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.item.ItemKinds;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,8 +39,8 @@ public final class DailyQuestEating extends DailyQuest<DailyQuestEating.Details,
 
     @Override
     public void onGenerate() {
-        this.details.food = FOODS[ThreadLocalRandom.current().nextInt(FOODS.length)];
-        this.total = (ThreadLocalRandom.current().nextInt(3) + 1) * 10;
+        this.details.food = FOODS[random.nextInt(FOODS.length)];
+        this.total = (random.nextInt(3) + 1) * 10;
     }
 
     @Override

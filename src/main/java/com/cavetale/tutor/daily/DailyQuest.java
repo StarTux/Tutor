@@ -6,11 +6,15 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.util.Json;
 import com.cavetale.inventory.mail.ItemMail;
+import com.cavetale.inventory.storage.ItemStorage;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.sql.SQLDailyQuest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,6 +23,7 @@ import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -32,6 +37,7 @@ import static com.cavetale.core.font.Unicode.subscript;
 import static com.cavetale.core.font.Unicode.superscript;
 import static com.cavetale.tutor.TutorPlugin.dailyQuests;
 import static com.cavetale.tutor.TutorPlugin.database;
+import static com.cavetale.tutor.TutorPlugin.plugin;
 import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -59,6 +65,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected int total;
     @Setter protected boolean active;
     protected final String permission;
+    protected final List<ItemStack> rewards = new ArrayList<>();
+    protected Random random = ThreadLocalRandom.current();
 
     protected DailyQuest(final DailyQuestType type,
                          final Class<D> detailsClass, final Supplier<D> detailsCtor,
@@ -83,6 +91,9 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.year = tmp;
         this.details = parseDetails(row.getDetails());
         this.total = row.getTotal();
+        for (ItemStorage is : details.rewards) {
+            rewards.add(is.toItemStack());
+        }
         onLoad();
     }
 
@@ -94,6 +105,9 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         row.setDayId(dayId);
         row.setDailyIndex(index);
         row.setQuestType(type.key);
+        for (ItemStack is : rewards) {
+            details.rewards.add(ItemStorage.of(is));
+        }
         row.setDetails(Json.serialize(details));
         row.setTotal(total);
         // row.active is true before this.active!  See enable().
@@ -132,6 +146,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.details = newDetails();
         this.total = 1; // onGenerate will override
         onGenerate();
+        rewards.addAll(generateRewards());
     }
 
     /**
@@ -140,6 +155,14 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     public final void enable() {
         active = true;
         onEnable();
+        if (rewards.isEmpty() && dailyQuests().isManager()) {
+            // Only in test environment so let's not save!
+            rewards.addAll(generateRewards());
+            for (ItemStack is : rewards) {
+                details.rewards.add(ItemStorage.of(is));
+            }
+            plugin().getLogger().info("[Daily] Rewards generated: " + getRowId());
+        }
     }
 
     /**
@@ -192,6 +215,15 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * Must set total!
      */
     protected void onGenerate() { }
+
+    /**
+     * Generate rewards.  This is called right after onGenerate().
+     */
+    protected List<ItemStack> generateRewards() {
+        return List.of(random.nextBoolean()
+                       ? Mytems.RUBY.createItemStack()
+                       : new ItemStack(Material.DIAMOND, 5));
+    }
 
     protected void onComplete(PlayerDailyQuest playerDailyQuest) { }
 
@@ -269,9 +301,10 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
             onComplete(playerDailyQuest);
             playerDailyQuest.getSession().addDailyRollsAsync(1, null);
             playerDailyQuest.getSession().addDailiesCompletedAsync(1);
-            ItemMail.send(playerDailyQuest.getSession().getUuid(),
-                          List.of(Mytems.RUBY.createItemStack()),
-                          textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
+            if (!rewards.isEmpty()) {
+                ItemMail.send(playerDailyQuest.getSession().getUuid(), rewards,
+                              textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
+            }
             Player player = playerDailyQuest.getSession().getPlayer();
             if (player != null) {
                 player.sendMessage(textOfChildren(text("Daily Quest Complete: ", GRAY), getDescription(playerDailyQuest)));
@@ -310,7 +343,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * blank class if they have no need for extra information.
      */
     public static class Details {
-        //protected List<InventoryStore> rewards = new ArrayList<>();
+        protected List<ItemStorage> rewards = new ArrayList<>();
     }
 
     /**

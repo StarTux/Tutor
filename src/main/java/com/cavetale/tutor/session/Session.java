@@ -4,6 +4,7 @@ import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.core.item.ItemKinds;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.core.util.Json;
@@ -736,7 +737,7 @@ public final class Session {
         for (int i = 0; i < visibleDailies.size(); i += 1) {
             PlayerDailyQuest playerDailyQuest = visibleDailies.get(i);
             final ItemStack icon;
-            final DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+            final DailyQuest<?, ?> dailyQuest = playerDailyQuest.getDailyQuest();
             if (playerDailyQuest.isComplete()) {
                 icon = Mytems.CHECKED_CHECKBOX.createIcon();
             } else {
@@ -766,6 +767,11 @@ public final class Session {
             text.add(textOfChildren(text("Time left ", GRAY), text(hours + "h", WHITE)));
             if (playerDailyQuest.isComplete()) {
                 text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", GREEN)));
+            } else {
+                for (ItemStack item : dailyQuest.getRewards()) {
+                    text.add(textOfChildren(text("Reward ", GRAY), ItemKinds.chatDescription(item)));
+                }
+                text.add(textOfChildren(text("Reward ", GRAY), Mytems.DICE, text("Roll", GRAY)));
             }
             text.add(empty());
             text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Details", GRAY)));
@@ -823,11 +829,11 @@ public final class Session {
         }
     }
 
-    public void openDailyQuestBook(Player player, DailyQuest dailyQuest, PlayerDailyQuest playerDailyQuest) {
+    public void openDailyQuestBook(Player player, DailyQuest<?, ?> dailyQuest, PlayerDailyQuest playerDailyQuest) {
         List<Component> text = new ArrayList<>();
         text.add(DefaultFont.BACK_BUTTON.component
                  .hoverEvent(showText(text("Go back", BLUE)))
-                 .clickEvent(runCommand("/daily")));
+                 .clickEvent(runCommand("/daily back")));
         text.add(empty());
         text.add(dailyQuest.getDetailedDescription(playerDailyQuest));
         final int hours = 24 - plugin.getDailyQuests().getTimer().getHour();
@@ -852,6 +858,15 @@ public final class Session {
         if (playerDailyQuest.isComplete()) {
             text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", BLUE)));
         }
+        text.add(empty());
+        List<Component> rewardComponents = new ArrayList<>();
+        rewardComponents.add(text("Rewards", GRAY));
+        for (ItemStack item : dailyQuest.getRewards()) {
+            rewardComponents.add(ItemKinds.chatDescription(item));
+        }
+        rewardComponents.add(textOfChildren(Mytems.DICE, text("Roll", GRAY))
+                             .hoverEvent(showText(text("1 Daily Game Roll", GRAY))));
+        text.add(join(separator(space()), rewardComponents));
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         book.editMeta(m -> {
                 BookMeta meta = (BookMeta) m;

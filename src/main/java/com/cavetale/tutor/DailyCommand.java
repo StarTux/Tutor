@@ -4,6 +4,8 @@ import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.tutor.session.MenuSection;
 import com.cavetale.tutor.session.Session;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public final class DailyCommand extends AbstractCommand<TutorPlugin> {
@@ -14,6 +16,12 @@ public final class DailyCommand extends AbstractCommand<TutorPlugin> {
     @Override
     protected void onEnable() {
         rootNode.playerCaller(this::daily);
+        rootNode.addChild("back").denyTabCompletion()
+            .hidden(true)
+            .playerCaller(player -> {
+                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
+                    daily(player);
+                });
     }
 
     private void daily(Player player) {

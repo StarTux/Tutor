@@ -4,8 +4,8 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -64,13 +64,7 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
         COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Material.COCOA_BEANS, Set.of(Material.COCOA_BEANS)),
         GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Material.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
         KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Material.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
-        SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Material.SEA_PICKLE, Set.of(Material.SEA_PICKLE)), // up to 3?
-        // CHORUS_FLOWER(Growth.POOF, 5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
-        // BROWN_MUSHROOM(Growth.POOF, 5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
-        // RED_MUSHROOM(Growth.POOF, 5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
-        // CRIMSON_FUNGUS(Growth.POOF, 5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
-        // WARPED_FUNGUS(Growth.POOF, 5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
-        // LILY_PAD
+        SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Material.SEA_PICKLE, Set.of(Material.SEA_PICKLE)),
         // SPORE_BLOSSOM // HARD
         ;
 
@@ -85,7 +79,7 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
     @Override
     public void onGenerate() {
         Crop[] crops = Crop.values();
-        this.details.crop = crops[ThreadLocalRandom.current().nextInt(crops.length)];
+        this.details.crop = crops[random.nextInt(crops.length)];
         this.total = details.crop.total;
     }
 
@@ -162,6 +156,12 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
         if (!NetworkServer.current().isSurvival()) return;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.crop.iconMaterial, details.crop.iconMaterial.getMaxStackSize()),
+                       new ItemStack(Material.BONE_MEAL, 64));
     }
 
     public static final class Details extends DailyQuest.Details {

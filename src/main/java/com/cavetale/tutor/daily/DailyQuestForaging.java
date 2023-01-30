@@ -4,7 +4,6 @@ import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -45,7 +44,7 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
     @Override
     public void onGenerate() {
         Forage[] forages = Forage.values();
-        this.details.forage = forages[ThreadLocalRandom.current().nextInt(forages.length)];
+        this.details.forage = forages[random.nextInt(forages.length)];
         this.total = details.forage.total;
     }
 
