@@ -1,6 +1,7 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.item.ItemKinds;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -62,13 +63,18 @@ public final class DailyQuestEating extends DailyQuest<DailyQuestEating.Details,
         return result;
     }
 
-    public static final class Details extends DailyQuest.Details {
-        protected Material food = Material.APPLE;
-    }
-
     protected void onPlayerItemConsume(Player player, PlayerDailyQuest playerDailyQuest, PlayerItemConsumeEvent event) {
         if (!checkGameModeAndSurvivalServer(player)) return;
         if (event.getItem().getType() != details.food) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.food, Math.min(details.food.getMaxStackSize(), total)));
+    }
+
+    public static final class Details extends DailyQuest.Details {
+        protected Material food = Material.APPLE;
     }
 }

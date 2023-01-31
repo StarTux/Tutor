@@ -4,6 +4,7 @@ import com.cavetale.core.event.dungeon.DungeonDiscoverEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -47,5 +48,15 @@ public final class DailyQuestFindDungeon extends DailyQuest<DailyQuest.Details, 
     protected void onDungeonDiscover(Player player, PlayerDailyQuest playerDailyQuest, DungeonDiscoverEvent event) {
         if (!checkGameModeAndSurvivalServer(player)) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return switch (random.nextInt(4)) {
+        case 0 -> List.of(Mytems.RUBY.createItemStack(1 + random.nextInt(5)));
+        case 1 -> List.of(Mytems.KITTY_COIN.createItemStack());
+        case 3 -> List.of(Mytems.GOLDEN_COIN.createItemStack());
+        default -> List.of(Mytems.SILVER_COIN.createItemStack());
+        };
     }
 }

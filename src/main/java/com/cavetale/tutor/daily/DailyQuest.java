@@ -23,7 +23,6 @@ import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -219,11 +218,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     /**
      * Generate rewards.  This is called right after onGenerate().
      */
-    protected List<ItemStack> generateRewards() {
-        return List.of(random.nextBoolean()
-                       ? Mytems.RUBY.createItemStack()
-                       : new ItemStack(Material.DIAMOND, 5));
-    }
+    protected abstract List<ItemStack> generateRewards();
 
     protected void onComplete(PlayerDailyQuest playerDailyQuest) { }
 

@@ -5,6 +5,7 @@ import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.BlockColor;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
@@ -64,6 +65,11 @@ public final class DailyQuestShearSheep extends DailyQuest<DailyQuestShearSheep.
         DyeColor color = sheep.getColor();
         if (color != details.color.dyeColor) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.color.getMaterial(BlockColor.Suffix.WOOL), 64));
     }
 
     public static final class Details extends DailyQuest.Details {

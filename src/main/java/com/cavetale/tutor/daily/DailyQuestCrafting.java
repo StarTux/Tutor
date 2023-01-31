@@ -1,6 +1,7 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.item.ItemKinds;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -75,14 +76,19 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
         return result;
     }
 
-    public static final class Details extends DailyQuest.Details {
-        protected Material material = Material.CAKE;
-    }
-
     protected void onCraftItem(Player player, PlayerDailyQuest playerDailyQuest, CraftItemEvent event) {
         if (!checkGameModeAndSurvivalServer(player)) return;
         ItemStack result = event.getInventory().getResult();
         if (result == null || details.material != result.getType()) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.material, Math.min(details.material.getMaxStackSize(), 5)));
+    }
+
+    public static final class Details extends DailyQuest.Details {
+        protected Material material = Material.CAKE;
     }
 }

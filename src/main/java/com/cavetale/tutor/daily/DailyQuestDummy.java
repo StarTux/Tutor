@@ -1,5 +1,6 @@
 package com.cavetale.tutor.daily;
 
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +30,11 @@ public final class DailyQuestDummy extends DailyQuest<DailyQuestDummy.Details, D
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
         return new ItemStack(Material.STICK);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of();
     }
 
     public static final class Details extends DailyQuest.Details {

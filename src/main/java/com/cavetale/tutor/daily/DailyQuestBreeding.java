@@ -3,12 +3,16 @@ package com.cavetale.tutor.daily;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.item.pocketmob.PocketMobType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.inventory.ItemStack;
 import static net.kyori.adventure.text.Component.text;
@@ -74,6 +78,21 @@ public final class DailyQuestBreeding extends DailyQuest<DailyQuestBreeding.Deta
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
         return details.mob.chatIcon.createIcon(total);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        List<ItemStack> result = new ArrayList<>();
+        List<EntityType> entityTypes = List.copyOf(details.mob.entityTypes);
+        EntityType entityType = entityTypes.get(random.nextInt(entityTypes.size()));
+        if (random.nextBoolean()) {
+            result.add(PocketMobType.of(entityType).mytems.createItemStack(total));
+        } else {
+            result.add(Tameable.class.isAssignableFrom(entityType.getEntityClass())
+                       ? Mytems.PET_CATCHER.createItemStack(16)
+                       : Mytems.ANIMAL_CATCHER.createItemStack(16));
+        }
+        return result;
     }
 
     protected void onEntityBreed(Player player, PlayerDailyQuest playerDailyQuest, EntityBreedEvent event) {

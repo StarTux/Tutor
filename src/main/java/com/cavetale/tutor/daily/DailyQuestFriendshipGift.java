@@ -4,6 +4,7 @@ import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.friends.Friends;
 import com.cavetale.core.item.ItemKinds;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -42,5 +43,12 @@ public final class DailyQuestFriendshipGift extends DailyQuest<DailyQuest.Detail
 
     protected void onPlayerShareFriendshipGift(Player player, PlayerDailyQuest playerDailyQuest, PlayerShareFriendshipGiftEvent event) {
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        ItemStack gift = Friends.getDailyFriendshipGift();
+        gift.setAmount(Math.min(gift.getType().getMaxStackSize(), total));
+        return List.of(gift);
     }
 }

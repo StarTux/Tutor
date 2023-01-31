@@ -4,6 +4,7 @@ import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
 import com.cavetale.core.event.minigame.MinigameMatchType;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
+import java.util.List;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -67,13 +68,21 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         return result;
     }
 
-    public static final class Details extends DailyQuest.Details {
-        Game game = Game.COLORFALL;
-    }
-
     protected void onMinigameMatchComplete(Player player, PlayerDailyQuest playerDailyQuest, MinigameMatchCompleteEvent event) {
         if (event.getType() != details.game.type) return;
         if (event.getPlayerUuids().size() < details.game.minPlayers) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(Mytems.KITTY_COIN.createItemStack(),
+                       Mytems.RUBY.createItemStack(4),
+                       Mytems.GOLDEN_COIN.createItemStack(3));
+    }
+
+    public static final class Details extends DailyQuest.Details {
+        Game game = Game.COLORFALL;
     }
 }

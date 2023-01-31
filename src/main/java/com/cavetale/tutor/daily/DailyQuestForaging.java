@@ -3,6 +3,7 @@ package com.cavetale.tutor.daily;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -81,6 +82,11 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
         if (!details.forage.blockMaterials.contains(block.getType())) return;
         if (isPlayerPlaced(block)) return;
         makeProgress(playerDailyQuest, 1);
+    }
+
+    @Override
+    protected List<ItemStack> generateRewards() {
+        return List.of(new ItemStack(details.forage.iconMaterial, Math.min(details.forage.iconMaterial.getMaxStackSize(), total)));
     }
 
     public static final class Details extends DailyQuest.Details {
