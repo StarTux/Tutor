@@ -63,7 +63,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected D details;
     protected int total;
     @Setter protected boolean active;
-    protected final String permission;
+    protected String permission;
     protected final List<ItemStack> rewards = new ArrayList<>();
     protected Random random = ThreadLocalRandom.current();
 
@@ -75,12 +75,13 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.detailsCtor = detailsCtor;
         this.progressClass = progressClass;
         this.progressCtor = progressCtor;
-        this.permission = "tutor.daily." + (index + 1); // 1..3
+        this.permission = "tutor.daily";
     }
 
     protected final void load(SQLDailyQuest theRow) {
         this.row = theRow;
         this.index = row.getDailyIndex();
+        this.permission = "tutor.daily." + (index + 1);
         this.dayId = row.getDayId();
         int tmp = dayId;
         this.day = tmp % 100;
@@ -138,6 +139,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      */
     public final void generate(final int theIndex) {
         this.index = theIndex;
+        this.permission = "tutor.daily." + (index + 1);
         this.day = dailyQuests().getTimer().getDay();
         this.month = dailyQuests().getTimer().getMonth();
         this.year = dailyQuests().getTimer().getYear();
