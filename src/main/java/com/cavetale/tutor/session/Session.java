@@ -1073,6 +1073,17 @@ public final class Session {
                 });
     }
 
+    public void addTotalRollsAsync(int value) {
+        if (value == 0) return;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("totalRolls", value)
+            .async(i -> {
+                    if (i == 0) plugin.getLogger().severe("[Session] addTotalRollsAsync: " + name + ": " + i);
+                    playerRow.setTotalRolls(playerRow.getTotalRolls() + value);
+                });
+    }
+
     public void openDailyGame(Player player) {
         DailyGameTag tag = playerRow.parseDailyGameTag();
         DailyGame game = new DailyGame(player, tag);

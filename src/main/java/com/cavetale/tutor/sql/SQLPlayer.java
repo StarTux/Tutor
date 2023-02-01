@@ -22,6 +22,7 @@ public final class SQLPlayer implements SQLRow {
     private int dailyGameRolls;
     private boolean ignoreQuests;
     private boolean ignoreDailies;
+    @Default("0") private int totalRolls;
 
     public SQLPlayer() { }
 

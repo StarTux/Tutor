@@ -263,6 +263,7 @@ public final class DailyGame {
                     paused = true;
                     session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls() - rolls, tag, () -> {
                             paused = false;
+                            session.addTotalRollsAsync(rolls);
                             for (int i = 0; i < rolls; i += 1) {
                                 final int diceIndex = diceIndices.get(i);
                                 final int roll = tag.rolls.get(i);
