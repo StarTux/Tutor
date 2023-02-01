@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import lombok.Data;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import static net.kyori.adventure.text.format.TextColor.color;
 
 /**
  * Saved per player.
@@ -36,7 +37,21 @@ public final class DailyGameTag {
             Collections.shuffle(boardBag, random);
         }
         this.board = boards[boardBag.remove(random.nextInt(boardBag.size()))];
-        List<TextColor> colors = List.copyOf(NamedTextColor.NAMES.values());
+        List<TextColor> colors = List.of(NamedTextColor.GOLD,
+                                         NamedTextColor.BLUE,
+                                         NamedTextColor.GREEN,
+                                         NamedTextColor.AQUA,
+                                         NamedTextColor.RED,
+                                         NamedTextColor.LIGHT_PURPLE,
+                                         NamedTextColor.YELLOW,
+                                         color(0xFF8080), // red
+                                         color(0xFFFF00), // yellow
+                                         color(0x8080FF), // blue
+                                         color(0x80FF80), // green
+                                         color(0xFF00FF), // purple
+                                         color(0xFF8000), // orange
+                                         color(0x00FFFF), // cyan
+                                         NamedTextColor.WHITE);
         this.background = colors.get(random.nextInt(colors.size())).value();
         this.rolls.clear();
         this.roll = 0;
