@@ -137,6 +137,7 @@ public final class DailyGameGoody {
         result.add(Mytems.SNEAKERS.createItemStack());
         result.add(Mytems.UNICORN_HORN.createItemStack());
         result.add(Mytems.TREE_CHOPPER.createItemStack());
+        result.add(Mytems.SEALED_CAVEBOY.createItemStack());
         return result;
     }
 }
