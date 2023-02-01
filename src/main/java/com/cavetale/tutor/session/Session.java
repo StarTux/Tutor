@@ -926,7 +926,6 @@ public final class Session {
     protected void expireDailyQuests(final int newDayId) {
         for (PlayerDailyQuest playerDailyQuest : List.copyOf(dailyQuests)) {
             if (playerDailyQuest.getDailyQuest().getDayId() == newDayId) continue;
-            playerDailyQuest.saveAsync();
             dailyQuests.remove(playerDailyQuest);
         }
     }

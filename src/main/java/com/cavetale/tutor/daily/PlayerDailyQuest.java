@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import static com.cavetale.tutor.TutorPlugin.database;
+import static com.cavetale.tutor.TutorPlugin.plugin;
 
 @Getter @RequiredArgsConstructor @ToString
 public final class PlayerDailyQuest {
@@ -59,13 +60,20 @@ public final class PlayerDailyQuest {
         return true;
     }
 
-    public void saveAsync() {
+    public void saveAsync(Runnable callback) {
         database().update(SQLPlayerDailyQuest.class)
             .row(row)
             .set("progress", Json.serialize(progress))
             .atomic("score", score)
             .atomic("complete", complete)
-            .async(null); // Fault recovery?
+            .async(i -> {
+                    // Fault recovery?
+                    if (i == 0) {
+                        plugin().getLogger().severe("[PlayerDailyQuest] Could not save: " + row);
+                    } else {
+                        if (callback != null) callback.run();
+                    }
+                });
     }
 
     public void enable() {

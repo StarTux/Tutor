@@ -295,26 +295,29 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         playerDailyQuest.score = newScore;
         if (newScore >= total) {
             playerDailyQuest.setComplete(true);
-            onComplete(playerDailyQuest);
-            playerDailyQuest.getSession().addDailyRollsAsync(1, null);
-            playerDailyQuest.getSession().addDailiesCompletedAsync(1);
-            if (!rewards.isEmpty()) {
-                ItemMail.send(playerDailyQuest.getSession().getUuid(), rewards,
-                              textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
-            }
-            Player player = playerDailyQuest.getSession().getPlayer();
-            if (player != null) {
-                player.sendMessage(textOfChildren(text("Daily Quest Complete: ", GRAY), getDescription(playerDailyQuest)));
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
-            }
+            playerDailyQuest.saveAsync(() -> {
+                    onComplete(playerDailyQuest);
+                    playerDailyQuest.getSession().addDailyRollsAsync(1, null);
+                    playerDailyQuest.getSession().addDailiesCompletedAsync(1);
+                    Perm.get().addLevelProgress(playerDailyQuest.getSession().getUuid());
+                    if (!rewards.isEmpty()) {
+                        ItemMail.send(playerDailyQuest.getSession().getUuid(), rewards,
+                                      textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
+                    }
+                    Player player = playerDailyQuest.getSession().getPlayer();
+                    if (player != null) {
+                        player.sendMessage(textOfChildren(text("Daily Quest Complete: ", GRAY), getDescription(playerDailyQuest)));
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
+                    }
+                });
         } else {
+            playerDailyQuest.saveAsync(null);
+            playerDailyQuest.progressTimer = System.currentTimeMillis() + 5_000L;
             Player player = playerDailyQuest.getSession().getPlayer();
             if (player != null) {
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 0.5f, 2.0f);
             }
         }
-        playerDailyQuest.saveAsync();
-        playerDailyQuest.progressTimer = System.currentTimeMillis() + 5_000L;
     }
 
     public final boolean hasPermission(Permissible player) {
