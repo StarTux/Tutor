@@ -86,7 +86,7 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
 
     @Override
     protected List<ItemStack> generateRewards() {
-        return List.of(new ItemStack(details.forage.iconMaterial, Math.min(details.forage.iconMaterial.getMaxStackSize(), total)));
+        return List.of(new ItemStack(details.forage.iconMaterial, details.forage.iconMaterial.getMaxStackSize()));
     }
 
     public static final class Details extends DailyQuest.Details {
