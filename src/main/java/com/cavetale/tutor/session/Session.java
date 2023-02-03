@@ -298,14 +298,14 @@ public final class Session {
         List<Component> pages = new ArrayList<>();
         pages.add(textOfChildren(quest.name.displayName.color(DARK_AQUA).decorate(BOLD),
                                  newline(),
-                                 (DefaultFont.BACK_BUTTON.component
+                                 (DefaultFont.BACK_BUTTON.forPlayer(player)
                                   .clickEvent(runCommand("/tutor menu"))
                                   .hoverEvent(showText(text("Open Tutor Menu", BLUE)))),
                                  space(), text(quest.getName().type.upper, GRAY),
                                  newline(), newline(),
                                  Mytems.CHECKED_CHECKBOX, text(" Not yet completed", GRAY),
                                  (currentQuests.isEmpty()
-                                  ? textOfChildren(newline(), newline(), DefaultFont.START_BUTTON.component
+                                  ? textOfChildren(newline(), newline(), DefaultFont.START_BUTTON.forPlayer(player)
                                                    .clickEvent(runCommand("/tutor click start " + quest.getName().key))
                                                    .hoverEvent(showText(text("Start this " + quest.getName().type.lower, BLUE))))
                                   : empty()),
@@ -329,7 +329,7 @@ public final class Session {
         List<Component> pages = new ArrayList<>();
         pages.add(textOfChildren(quest.name.displayName.color(DARK_AQUA).decorate(BOLD),
                                  newline(),
-                                 (DefaultFont.BACK_BUTTON.component
+                                 (DefaultFont.BACK_BUTTON.forPlayer(player)
                                   .clickEvent(runCommand("/tutor menu"))
                                   .hoverEvent(showText(text("Open Tutor Menu", BLUE)))),
                                  space(), text(quest.getName().type.upper, GRAY),
@@ -338,7 +338,7 @@ public final class Session {
                                  text(" Completed ", GRAY), text(dateFormat.format(row.getTime()), DARK_AQUA),
                                  (currentQuests.isEmpty()
                                   ? textOfChildren(newline(), newline(),
-                                                   DefaultFont.START_BUTTON.component
+                                                   DefaultFont.START_BUTTON.forPlayer(player)
                                                    .clickEvent(runCommand("/tutor click redo " + quest.getName().key))
                                                    .hoverEvent(showText(join(separator(newline()),
                                                                              text("Repeat this " + quest.getName().type.lower, BLUE),
@@ -831,7 +831,7 @@ public final class Session {
 
     public void openDailyQuestBook(Player player, DailyQuest<?, ?> dailyQuest, PlayerDailyQuest playerDailyQuest) {
         List<Component> text = new ArrayList<>();
-        text.add(DefaultFont.BACK_BUTTON.component
+        text.add(DefaultFont.BACK_BUTTON.forPlayer(player)
                  .hoverEvent(showText(text("Go back", BLUE)))
                  .clickEvent(runCommand("/daily back")));
         text.add(empty());

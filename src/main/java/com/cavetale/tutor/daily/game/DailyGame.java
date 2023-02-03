@@ -53,6 +53,11 @@ public final class DailyGame {
     private int rolls; // Set prior to diceRoll.setup()
 
     public void start() {
+        session = plugin().getSessions().find(player);
+        if (session == null) {
+            plugin().getLogger().severe("[DailyGame] Session not found: " + player.getName());
+            return;
+        }
         final int size = 6 * 9;
         this.skull = new ItemStack(Material.PLAYER_HEAD);
         skull.editMeta(m -> {
@@ -64,18 +69,13 @@ public final class DailyGame {
         bg = tag.getBackgroundColor();
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, bg)
             .layer(tag.board.overlay, WHITE)
-            .title(textOfChildren(DefaultFont.CAVETALE, text(" Daily Game")));
+            .title(textOfChildren(DefaultFont.CAVETALE, text(" Daily Game #" + (session.getPlayerRow().getDailyGames() + 1))));
         for (int i = 0; i < diceIndices.size(); i += 1) {
             builder.highlightSlot(diceIndices.get(i), bg);
         }
         this.gui = new Gui()
             .size(size)
             .title(builder.build());
-        session = plugin().getSessions().find(player);
-        if (session == null) {
-            plugin().getLogger().severe("[DailyGame] Session not found: " + player.getName());
-            return;
-        }
         gui.onClose(evt -> closed = true);
         gui.open(player);
         gui.setItem(Gui.OUTSIDE, null, click -> {
