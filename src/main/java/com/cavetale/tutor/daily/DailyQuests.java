@@ -51,7 +51,7 @@ public final class DailyQuests implements Listener {
         timer.setOnHourChange(this::onHourChange);
         Bukkit.getPluginManager().registerEvents(this, plugin);
         database().scheduleAsyncTask(() -> {
-                loadDailyQuestsSync();
+                loadDailyQuestsSync(timer.getDayId());
                 Bukkit.getScheduler().runTask(plugin, () -> {
                         ready = true;
                         checkDailyQuestExpiry();
@@ -69,8 +69,7 @@ public final class DailyQuests implements Listener {
      * Called on enable or when the update message is received.  This
      * is stable to be called many times.
      */
-    private void loadDailyQuestsSync() {
-        final int dayId = timer.getDayId();
+    private void loadDailyQuestsSync(final int dayId) {
         List<SQLDailyQuest> rows = database().find(SQLDailyQuest.class)
             .eq("dayId", dayId)
             .findList();
@@ -150,7 +149,7 @@ public final class DailyQuests implements Listener {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                         quest.enable();
                         plugin.getSessions().loadDailyQuest(quest);
-                        Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, null);
+                        Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, "" + quest.getDayId());
                         plugin.getLogger().info("Quest generated: " + quest);
                     });
             });
@@ -175,7 +174,9 @@ public final class DailyQuests implements Listener {
     private void onConnectMessage(ConnectMessageEvent event) {
         switch (event.getChannel()) {
         case DAILY_QUEST_UPDATE:
-            database().scheduleAsyncTask(this::loadDailyQuestsSync);
+            int dayId = Integer.parseInt(event.getPayload());
+            plugin.getLogger().info("[Daily] Received Daily Quest Update: " + dayId);
+            database().scheduleAsyncTask(() -> loadDailyQuestsSync(dayId));
             break;
         default: break;
         }
