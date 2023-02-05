@@ -123,7 +123,6 @@ public final class DailyGameGoody {
         result.add(new ItemStack(Material.NETHER_STAR));
         result.add(new ItemStack(Material.ELYTRA));
         result.add(Mytems.RUBY_COIN.createItemStack());
-        result.add(Mytems.DIAMOND_COIN.createItemStack());
         result.add(Mytems.MAGIC_CAPE.createItemStack());
         result.add(Mytems.MOBSLAYER.createItemStack());
         result.add(Mytems.BINGO_BUKKIT.createItemStack());
