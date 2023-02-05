@@ -983,13 +983,14 @@ public final class Session {
                 if (!it.isComplete()) unfinished += 1;
             }
             if (unfinished > 0) {
-                lines.add(text(tiny("dailies (" + visibleDailies.size() + ")"), AQUA));
+                lines.add(textOfChildren(text("/daily ", YELLOW),
+                                         text(tiny("quests (" + visibleDailies.size() + ")"), AQUA)));
                 for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
                     lines.addAll(playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest));
                 }
             }
             if (playerRow.getDailyGameRolls() > 0) {
-                lines.add(textOfChildren(text(tiny("you have "), AQUA), text("/daily", YELLOW), Mytems.DICE));
+                lines.add(textOfChildren(text(tiny("you have "), AQUA), Mytems.DICE, text(tiny("rolls"), YELLOW)));
             }
         }
     }
