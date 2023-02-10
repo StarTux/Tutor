@@ -119,9 +119,6 @@ public final class DailyGameGoody {
 
     private static List<ItemStack> getChestLootPool() {
         final List<ItemStack> result = new ArrayList<>();
-        result.add(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 64));
-        result.add(new ItemStack(Material.NETHER_STAR));
-        result.add(new ItemStack(Material.ELYTRA));
         result.add(Mytems.RUBY_COIN.createItemStack());
         result.add(Mytems.MAGIC_CAPE.createItemStack());
         result.add(Mytems.MOBSLAYER.createItemStack());
@@ -135,9 +132,9 @@ public final class DailyGameGoody {
         result.add(Mytems.SNOW_SHOVEL.createItemStack());
         result.add(Mytems.SNEAKERS.createItemStack());
         result.add(Mytems.UNICORN_HORN.createItemStack());
-        result.add(Mytems.TREE_CHOPPER.createItemStack());
         result.add(Mytems.SEALED_CAVEBOY.createItemStack());
         result.add(Mytems.SCISSORS.createItemStack());
+        result.add(Mytems.COLORFALL_HOURGLASS.createItemStack());
         return result;
     }
 }
