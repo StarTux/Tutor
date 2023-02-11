@@ -135,6 +135,7 @@ public final class DailyGameGoody {
         result.add(Mytems.SEALED_CAVEBOY.createItemStack());
         result.add(Mytems.SCISSORS.createItemStack());
         result.add(Mytems.COLORFALL_HOURGLASS.createItemStack());
+        result.add(Mytems.STRUCTURE_FINDER.createItemStack());
         return result;
     }
 }
