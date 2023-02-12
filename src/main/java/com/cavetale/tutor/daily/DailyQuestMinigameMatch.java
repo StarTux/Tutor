@@ -25,13 +25,13 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
 
     @RequiredArgsConstructor
     public enum Game {
-        COLORFALL(2, "Colorfall", "Colorfall", MinigameMatchType.COLORFALL, VanillaItems.PINK_DYE, () -> new ItemStack(Material.PINK_DYE)),
-        EXTREME_GRASS_GROWING(2, "EGG", "Extreme Grass Growing", MinigameMatchType.EXTREME_GRASS_GROWING,
+        COLORFALL(3, "Colorfall", "Colorfall", MinigameMatchType.COLORFALL, VanillaItems.PINK_DYE, () -> new ItemStack(Material.PINK_DYE)),
+        EXTREME_GRASS_GROWING(3, "EGG", "Extreme Grass Growing", MinigameMatchType.EXTREME_GRASS_GROWING,
                               VanillaItems.GRASS, () -> new ItemStack(Material.GRASS)),
-        HIDE_AND_SEEK(2, "Hide&Seek", "Hide and Seek", MinigameMatchType.HIDE_AND_SEEK, Mytems.MAGNIFYING_GLASS, Mytems.MAGNIFYING_GLASS::createIcon),
-        PVP_ARENA(2, "PvP Arena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
-        TETRIS(2, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
-        VERTIGO(2, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
+        HIDE_AND_SEEK(3, "Hide&Seek", "Hide and Seek", MinigameMatchType.HIDE_AND_SEEK, Mytems.MAGNIFYING_GLASS, Mytems.MAGNIFYING_GLASS::createIcon),
+        PVP_ARENA(3, "PvP Arena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
+        TETRIS(3, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
+        VERTIGO(3, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
         ;
 
         public final int minPlayers;
@@ -58,7 +58,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
         return textOfChildren(text("Play a game of "),
                               details.game.chatIcon, text(details.game.displayName),
-                              text(" with at least " + details.game.minPlayers + " fellow players."));
+                              text(" with at least " + (details.game.minPlayers - 1) + " fellow players."));
     }
 
     @Override
