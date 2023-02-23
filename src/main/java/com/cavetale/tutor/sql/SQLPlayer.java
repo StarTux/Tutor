@@ -18,6 +18,7 @@ public final class SQLPlayer implements SQLRow {
     private int quests;
     private int dailies;
     private int dailyGames;
+    private int collections;
     @Text @Nullable private String dailyGame; // DailyGameTag json
     private int dailyGameRolls;
     private boolean ignoreQuests;

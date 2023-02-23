@@ -10,7 +10,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.core.font.Unicode.tiny;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextColor.color;
 
@@ -21,7 +24,12 @@ public enum MenuSection {
             ItemStack tutorialItem = new ItemStack(Material.WRITTEN_BOOK);
             tutorialItem.editMeta(meta -> {
                     Items.text(meta, List.of(text("Tutorials", YELLOW),
-                                             text("Tutorial Menu", GRAY)));
+                                             text("12345678901234567890123456"),
+                                             text("Tutorials help you learn", GRAY),
+                                             text("the ropes of playing on", GRAY),
+                                             text("Cavetale. Each completed", GRAY),
+                                             text("tutorial grants you a tier", GRAY),
+                                             text("point.", GRAY)));
                     meta.addItemFlags(ItemFlag.values());
                 });
             return tutorialItem;
@@ -33,13 +41,41 @@ public enum MenuSection {
     },
     DAILY(text("Daily Quests", GOLD), color(0x4040A0)) {
         @Override protected ItemStack createIcon(Session session) {
+            final int total = session.getPlayerRow().getDailies();
             ItemStack dailyItem = new ItemStack(Material.CLOCK);
-            Items.text(dailyItem, List.of(title));
+            Items.text(dailyItem, List.of(title,
+                                          text("Complete up to three", GRAY),
+                                          text("quests every day. Each", GRAY),
+                                          text("completed quest is", GRAY),
+                                          text("rewarded with a tier point", GRAY),
+                                          text("and a dice roll in the Daily", GRAY),
+                                          text("Game.", GRAY),
+                                          empty(),
+                                          textOfChildren(text(tiny("completed "), GRAY), text(total, GOLD))));
             return dailyItem;
         }
 
         @Override protected void makeGui(Gui gui, Player player, Session session) {
             session.makeDailyQuestGui(gui, player);
+        }
+    },
+    COLLECT(text("Collections", YELLOW), LIGHT_PURPLE) {
+        @Override protected ItemStack createIcon(Session session) {
+            ItemStack collectItem = new ItemStack(Material.BUNDLE);
+            collectItem.editMeta(meta -> {
+                    final int total = session.getPlayerRow().getCollections();
+                    Items.text(meta, List.of(text("Collections", YELLOW),
+                                             text("Complete collections,", GRAY),
+                                             text("one at a time.", GRAY),
+                                             empty(),
+                                             textOfChildren(text(tiny("completed "), GRAY), text(total, YELLOW))));
+                    meta.addItemFlags(ItemFlag.values());
+                });
+            return collectItem;
+        }
+
+        @Override protected void makeGui(Gui gui, Player player, Session session) {
+            session.makeCollectMenu(gui, player);
         }
     },
     //QUESTS(text("Quests", WHITE), color(0x40000000)),

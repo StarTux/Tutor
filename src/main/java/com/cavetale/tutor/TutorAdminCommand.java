@@ -6,6 +6,9 @@ import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
+import com.cavetale.tutor.collect.CollectItem;
+import com.cavetale.tutor.collect.ItemCollectionType;
+import com.cavetale.tutor.collect.PlayerItemCollection;
 import com.cavetale.tutor.daily.DailyQuest;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.daily.game.DailyGame;
@@ -87,6 +90,15 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                         CommandArgCompleter.integer(i -> i > 0))
             .description("Make daily quest progress")
             .senderCaller(this::dailyMakeProgress);
+        CommandNode collectNode = rootNode.addChild("collect")
+            .description("Collection commands");
+        collectNode.addChild("give").arguments("<collection>")
+            .completers(CommandArgCompleter.enumLowerList(ItemCollectionType.class))
+            .description("Give all items of a collection")
+            .playerCaller(this::collectGive);
+        collectNode.addChild("unlockall").denyTabCompletion()
+            .description("Unlock all collections")
+            .playerCaller(this::collectUnlockAll);
     }
 
     private Player requirePlayer(String arg) {
@@ -410,5 +422,30 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                 sender.sendMessage(text("Daily quest not found: index=" + index, RED));
             });
         return true;
+    }
+
+    private boolean collectGive(Player player, String[] args) {
+        if (args.length != 1) return false;
+        ItemCollectionType type = CommandArgCompleter.requireEnum(ItemCollectionType.class, args[0]);
+        int total = 0;
+        for (CollectItem item : type.getItems()) {
+            player.getInventory().addItem(item.createItemStack(item.getTotalAmount()));
+            total += 1;
+        }
+        player.sendMessage(text(total + " items added to inventory", AQUA));
+        return true;
+    }
+
+    private void collectUnlockAll(Player player) {
+        Session session = plugin.sessions.find(player);
+        if (session == null) throw new CommandWarn("Session not ready");
+        int total = 0;
+        for (PlayerItemCollection it : session.getCollections().values()) {
+            if (it.isUnlocked()) continue;
+            it.unlock();
+            total += 1;
+        }
+        if (total == 0) throw new CommandWarn("Nothing to unlock");
+        player.sendMessage(text(total + " collections unlocked", AQUA));
     }
 }

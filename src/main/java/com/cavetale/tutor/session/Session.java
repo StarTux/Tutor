@@ -1,5 +1,6 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
@@ -14,6 +15,10 @@ import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.QuestType;
 import com.cavetale.tutor.TutorPlugin;
+import com.cavetale.tutor.collect.CollectItem;
+import com.cavetale.tutor.collect.CollectItemSlots;
+import com.cavetale.tutor.collect.ItemCollectionType;
+import com.cavetale.tutor.collect.PlayerItemCollection;
 import com.cavetale.tutor.daily.DailyQuest;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.daily.game.DailyGame;
@@ -27,16 +32,20 @@ import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
 import com.cavetale.tutor.sql.SQLPlayer;
+import com.cavetale.tutor.sql.SQLPlayerItemCollection;
 import com.cavetale.tutor.sql.SQLPlayerPet;
 import com.cavetale.tutor.sql.SQLPlayerPetUnlock;
 import com.cavetale.tutor.sql.SQLPlayerQuest;
 import com.cavetale.tutor.util.Gui;
+import com.cavetale.tutor.util.Reward;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -79,6 +88,7 @@ public final class Session {
     protected final Map<QuestName, PlayerQuest> currentQuests = new EnumMap<>(QuestName.class);
     protected final Map<QuestName, SQLCompletedQuest> completedQuests = new EnumMap<>(QuestName.class);
     protected final Map<PetType, SQLPlayerPetUnlock> unlockedPets = new EnumMap<>(PetType.class);
+    protected final Map<ItemCollectionType, PlayerItemCollection> collections = new EnumMap<>(ItemCollectionType.class);
     protected final List<PlayerDailyQuest> dailyQuests = new ArrayList<>();
     protected SQLPlayerPet playerPetRow = null;
     protected boolean ready;
@@ -89,6 +99,7 @@ public final class Session {
     private Cache cache;
     private MenuSection section = MenuSection.TUTORIALS;
     @Setter private boolean dailyGameLocked = false;
+    @Setter private boolean collectionsLocked = false;
 
     /**
      * This is the constructor for a regular session which will be
@@ -113,36 +124,52 @@ public final class Session {
         this.name = playerCache.name;
     }
 
+    private void severe(String msg) {
+        plugin.getLogger().severe("[Session] [" + name + "] " + msg);
+    }
+
+    private void warning(String msg) {
+        plugin.getLogger().warning("[Session] [" + name + "] " + msg);
+    }
+
     private final class Cache {
         List<SQLPlayerQuest> playerQuestRows;
         List<SQLCompletedQuest> completedQuestRows;
         List<SQLPlayerPetUnlock> playerPetUnlockRows;
+        List<SQLPlayerItemCollection> playerCollectionRows;
         // Dailies are not loaded here because we rely on the
         // DailyQuests class to tell us which dailies are live so we
         // can load or create them later.
     }
 
-    protected void loadAsync(Runnable callback) {
+    public void loadSync() {
+        this.cache = new Cache();
+        this.playerRow = database().find(SQLPlayer.class)
+            .eq("player", uuid).findUnique();
+        if (playerRow == null) {
+            playerRow = new SQLPlayer(uuid);
+            database().insert(playerRow);
+        }
+        cache.playerQuestRows = database().find(SQLPlayerQuest.class)
+            .eq("player", uuid).findList();
+        cache.completedQuestRows = database().find(SQLCompletedQuest.class)
+            .eq("player", uuid).findList();
+        cache.playerPetUnlockRows = database().find(SQLPlayerPetUnlock.class)
+            .eq("player", uuid).findList();
+        this.playerPetRow = database().find(SQLPlayerPet.class)
+            .eq("player", uuid).findUnique();
+        if (playerPetRow == null) {
+            playerPetRow = new SQLPlayerPet(uuid);
+            playerPetRow.setAutoSpawn(true);
+            database().insert(playerPetRow);
+        }
+        cache.playerCollectionRows = database().find(SQLPlayerItemCollection.class)
+            .eq("player", uuid).findList();
+    }
+
+    public void loadAsync(Runnable callback) {
         database().scheduleAsyncTask(() -> {
-                this.cache = new Cache();
-                this.playerRow = database().find(SQLPlayer.class)
-                    .eq("player", uuid).findUnique();
-                if (playerRow == null) {
-                    playerRow = new SQLPlayer(uuid);
-                    database().insert(playerRow);
-                }
-                cache.playerQuestRows = database().find(SQLPlayerQuest.class)
-                    .eq("player", uuid).findList();
-                cache.completedQuestRows = database().find(SQLCompletedQuest.class)
-                    .eq("player", uuid).findList();
-                cache.playerPetUnlockRows = database().find(SQLPlayerPetUnlock.class)
-                    .eq("player", uuid).findList();
-                this.playerPetRow = database().find(SQLPlayerPet.class).eq("player", uuid).findUnique();
-                if (playerPetRow == null) {
-                    playerPetRow = new SQLPlayerPet(uuid);
-                    playerPetRow.setAutoSpawn(true);
-                    database().insert(playerPetRow);
-                }
+                loadSync();
                 if (callback != null) {
                     Bukkit.getScheduler().runTask(plugin, callback);
                 }
@@ -156,7 +183,7 @@ public final class Session {
         for (SQLPlayerQuest row : cache.playerQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
             if (questName == null) {
-                plugin.getLogger().warning("Quest not found: " + row);
+                warning("Quest not found: " + row);
                 continue;
             }
             Quest quest = plugin.getQuests().get(questName);
@@ -167,7 +194,7 @@ public final class Session {
         for (SQLCompletedQuest row : cache.completedQuestRows) {
             QuestName questName = QuestName.of(row.getQuest());
             if (questName == null) {
-                plugin.getLogger().warning("Quest not found: " + row);
+                warning("Quest not found: " + row);
                 continue;
             }
             completedQuests.put(questName, row);
@@ -175,7 +202,7 @@ public final class Session {
         for (SQLPlayerPetUnlock row : cache.playerPetUnlockRows) {
             PetType petType = row.parsePetType();
             if (petType == null) {
-                plugin.getLogger().warning("Pet type not found: " + row);
+                warning("Pet type not found: " + row);
                 continue;
             }
             unlockedPets.put(petType, row);
@@ -183,6 +210,17 @@ public final class Session {
         for (DailyQuest dailyQuest : plugin.getDailyQuests().getDailyQuests()) {
             if (!dailyQuest.isActive()) continue;
             loadDailyQuest(dailyQuest);
+        }
+        for (SQLPlayerItemCollection row : cache.playerCollectionRows) {
+            ItemCollectionType type = row.getItemCollectionType();
+            if (type == null) {
+                warning("Unknown item collection type: " + row);
+                continue;
+            }
+            collections.put(type, new PlayerItemCollection(this, type, row));
+        }
+        for (ItemCollectionType itemCollectionType : ItemCollectionType.values()) {
+            collections.computeIfAbsent(itemCollectionType, t -> new PlayerItemCollection(this, t, null));
         }
         cache = null;
         ready = true;
@@ -193,6 +231,9 @@ public final class Session {
         if (getPlayer().hasPermission("tutor.tutor")) {
             triggerAutomaticQuests();
             triggerQuestReminder();
+        }
+        if (Perm.get().has(uuid, "tutor.collect")) {
+            checkUnlockedCollections();
         }
     }
 
@@ -397,6 +438,19 @@ public final class Session {
                     startQuest(questName);
                     return;
                 }
+            }
+        }
+    }
+
+    public void checkUnlockedCollections() {
+        if (!Perm.get().has(uuid, "tutor.collect")) return;
+        Set<ItemCollectionType> completed = EnumSet.noneOf(ItemCollectionType.class);
+        for (ItemCollectionType it : ItemCollectionType.values()) {
+            if (collections.get(it).isComplete()) completed.add(it);
+        }
+        for (ItemCollectionType it : ItemCollectionType.values()) {
+            if (!collections.get(it).isUnlocked() && completed.containsAll(it.getDependencies())) {
+                collections.get(it).unlock();
             }
         }
     }
@@ -919,6 +973,102 @@ public final class Session {
         gui.open(player);
     }
 
+    /**
+     * Collections overview menu.
+     */
+    protected void makeCollectMenu(Gui gui, Player player) {
+        int nextIndex = 0;
+        for (ItemCollectionType itemCollectionType : ItemCollectionType.values()) {
+            PlayerItemCollection playerItemCollection = collections.get(itemCollectionType);
+            if (!playerItemCollection.isUnlocked()) continue;
+            if (playerItemCollection.isComplete() && playerItemCollection.isClaimed()) continue;
+            final int slot = 9 + nextIndex++;
+            gui.setItem(slot, itemCollectionType.makeIcon(), click -> {
+                    if (!click.isLeftClick()) return;
+                    openItemCollectionMenu(player, itemCollectionType);
+                });
+            if (playerItemCollection.isComplete()) {
+                gui.getOverlay().highlightSlot(slot, GOLD);
+            }
+        }
+    }
+
+    /**
+     * Menu of one collection.
+     */
+    protected void openItemCollectionMenu(Player player, ItemCollectionType itemCollectionType) {
+        PlayerItemCollection playerItemCollection = collections.get(itemCollectionType);
+        final int size = 6 * 9;
+        Gui gui = new Gui().size(size);
+        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, LIGHT_PURPLE)
+            .layer(GuiOverlay.WHITE, itemCollectionType.getBackground())
+            .layer(GuiOverlay.ITEM_COLLECTION, itemCollectionType.getColor())
+            .title(text(itemCollectionType.getDisplayName(), itemCollectionType.getColor()));
+        int nextIndex = 0;
+        List<CollectItem> collectItems = itemCollectionType.getItems();
+        List<Integer> slots = CollectItemSlots.slotsForSize(collectItems.size());
+        for (CollectItem collectItem : collectItems) {
+            final int index = nextIndex++;
+            gui.setItem(slots.get(index), collectItem.makeIcon(playerItemCollection));
+        }
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                openMenu(player, MenuSection.COLLECT);
+            });
+        gui.setOnClickBottom(click -> {
+                if (!NetworkServer.current().isSurvival()) return;
+                if (!click.isLeftClick()) return;
+                if (!playerItemCollection.isUnlocked()) return;
+                if (collectionsLocked) return;
+                ItemStack item = click.getCurrentItem();
+                if (item == null || item.getType().isAir()) return;
+                for (CollectItem collectItem : itemCollectionType.getItems()) {
+                    if (!collectItem.matchItemStack(item)) continue;
+                    final int score = playerItemCollection.getScore(collectItem);
+                    final int total = collectItem.getTotalAmount();
+                    if (score >= total) continue;
+                    final int increment = click.isShiftClick()
+                        ? Math.min(item.getAmount(), total - score)
+                        : 1;
+                    item.subtract(increment);
+                    playerItemCollection.addScore(collectItem, increment, () -> {
+                            if (playerItemCollection.isComplete()) {
+                                checkUnlockedCollections();
+                                player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 0.5f, 2.0f);
+                            } else {
+                                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 1.0f, 1.25f);
+                            }
+                            openItemCollectionMenu(player, itemCollectionType);
+                        });
+                    // success!
+                    return;
+                }
+                player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 0.5f);
+            });
+        List<Integer> rewardSlots = CollectItemSlots.rewards();
+        List<ItemStack> rewards = itemCollectionType.getRewards();
+        for (int i = 0; i < rewardSlots.size() && i < rewards.size(); i += 1) {
+            gui.setItem(rewardSlots.get(i), rewards.get(i), click -> {
+                    if (!NetworkServer.current().isSurvival()) return;
+                    if (!click.isLeftClick()) return;
+                    if (!playerItemCollection.isUnlocked()) return;
+                    if (!playerItemCollection.isComplete()) return;
+                    if (playerItemCollection.isClaimed()) return;
+                    if (collectionsLocked) return;
+                    playerItemCollection.claim(() -> {
+                            if (!player.isOnline()) {
+                                severe("Player left claiming reward: " + itemCollectionType);
+                                return;
+                            }
+                            Reward.give(player, rewards, itemCollectionType.getDisplayName(), itemCollectionType.getColor());
+                            addDailyRollsAsync(1, null);
+                        });
+                });
+        }
+        gui.title(builder.build());
+        gui.open(player);
+    }
+
     public boolean hasPet() {
         return pet != null;
     }
@@ -1014,10 +1164,9 @@ public final class Session {
             .async(i -> {
                     dailyGameLocked = false;
                     if (i == 0) {
-                        plugin.getLogger().severe("[Session] "
-                                                  + name + " saveDiceRollAsync could not save "
-                                                  + " rolls=" + playerRow.getDailyGameRolls() + "/" + newRolls
-                                                  + " tag=" + Json.serialize(tag));
+                        severe("saveDiceRollAsync could not save "
+                               + " rolls=" + playerRow.getDailyGameRolls() + "/" + newRolls
+                               + " tag=" + Json.serialize(tag));
                     } else {
                         callback.run();
                     }
@@ -1032,7 +1181,7 @@ public final class Session {
             .add("dailyGameRolls", chrolls)
             .async(i -> {
                     if (i == 0) {
-                        plugin.getLogger().severe("[Session] addDailyRollsAsync: " + name + ": " + i);
+                        severe("addDailyRollsAsync: " + i);
                     } else {
                         dailyGameLocked = false;
                         playerRow.setDailyGameRolls(playerRow.getDailyGameRolls() + chrolls);
@@ -1047,7 +1196,7 @@ public final class Session {
             .row(playerRow)
             .add("quests", value)
             .async(i -> {
-                    if (i == 0) plugin.getLogger().severe("[Session] addQuestsCompletedAsync: " + name + ": " + i);
+                    if (i == 0) severe("addQuestsCompletedAsync: " + i);
                     playerRow.setQuests(playerRow.getQuests() + value);
                 });
     }
@@ -1058,7 +1207,7 @@ public final class Session {
             .row(playerRow)
             .add("dailies", value)
             .async(i -> {
-                    if (i == 0) plugin.getLogger().severe("[Session] addDailiesCompletedAsync: " + name + ": " + i);
+                    if (i == 0) severe("addDailiesCompletedAsync: " + i);
                     playerRow.setDailies(playerRow.getDailies() + value);
                 });
     }
@@ -1069,8 +1218,19 @@ public final class Session {
             .row(playerRow)
             .add("dailyGames", value)
             .async(i -> {
-                    if (i == 0) plugin.getLogger().severe("[Session] addDailyRollsAsync: " + name + ": " + i);
+                    if (i == 0) severe("addDailyRollsAsync: " + i);
                     playerRow.setDailyGames(playerRow.getDailyGames() + value);
+                });
+    }
+
+    public void addCollectionsCompletedAsync(int value) {
+        if (value == 0) return;
+        database().update(SQLPlayer.class)
+            .row(playerRow)
+            .add("collections", value)
+            .async(i -> {
+                    if (i == 0) severe("addCollectionsCompletedAsync: " + i);
+                    playerRow.setCollections(playerRow.getCollections() + value);
                 });
     }
 
@@ -1080,7 +1240,7 @@ public final class Session {
             .row(playerRow)
             .add("totalRolls", value)
             .async(i -> {
-                    if (i == 0) plugin.getLogger().severe("[Session] addTotalRollsAsync: " + name + ": " + i);
+                    if (i == 0) severe("addTotalRollsAsync: " + i);
                     playerRow.setTotalRolls(playerRow.getTotalRolls() + value);
                 });
     }

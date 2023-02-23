@@ -3,7 +3,6 @@ package com.cavetale.tutor.util;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.mytems.util.Items;
-import com.cavetale.tutor.TutorPlugin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.tutor.TutorPlugin.plugin;
 
 public final class Gui implements InventoryHolder {
     public static final int OUTSIDE = -999;
@@ -39,6 +39,7 @@ public final class Gui implements InventoryHolder {
     @Getter private Component title = Component.empty();
     boolean locked = false;
     @Getter @Setter private GuiOverlay.Builder overlay;
+    @Setter private Consumer<InventoryClickEvent> onClickBottom = null;
 
     @RequiredArgsConstructor
     public static final class Slot {
@@ -170,13 +171,13 @@ public final class Gui implements InventoryHolder {
 
     void onInventoryOpen(InventoryOpenEvent event) {
         if (onOpen != null) {
-            Bukkit.getScheduler().runTask(TutorPlugin.getInstance(), () -> onOpen.accept(event));
+            Bukkit.getScheduler().runTask(plugin(), () -> onOpen.accept(event));
         }
     }
 
     void onInventoryClose(InventoryCloseEvent event) {
         if (onClose != null) {
-            Bukkit.getScheduler().runTask(TutorPlugin.getInstance(), () -> onClose.accept(event));
+            Bukkit.getScheduler().runTask(plugin(), () -> onClose.accept(event));
         }
     }
 
@@ -189,12 +190,19 @@ public final class Gui implements InventoryHolder {
         Player player = (Player) event.getWhoClicked();
         if (event.getClickedInventory() != null
             && !inventory.equals(event.getClickedInventory())) {
+            if (onClickBottom != null) {
+                locked = true;
+                Bukkit.getScheduler().runTask(plugin(), () -> {
+                        locked = false;
+                        onClickBottom.accept(event);
+                    });
+            }
             return;
         }
         Slot slot = slots.get(event.getSlot());
         if (slot != null && slot.onClick != null) {
             locked = true;
-            Bukkit.getScheduler().runTask(TutorPlugin.getInstance(), () -> {
+            Bukkit.getScheduler().runTask(plugin(), () -> {
                     locked = false;
                     slot.onClick.accept(event);
                 });
@@ -239,7 +247,7 @@ public final class Gui implements InventoryHolder {
 
         @EventHandler
         void onPluginDisable(PluginDisableEvent event) {
-            if (event.getPlugin() == TutorPlugin.getInstance()) {
+            if (event.getPlugin() == plugin()) {
                 Gui.disable();
             }
         }
@@ -257,7 +265,7 @@ public final class Gui implements InventoryHolder {
     }
 
     public static void enable() {
-        Bukkit.getPluginManager().registerEvents(new EventListener(), TutorPlugin.getInstance());
+        Bukkit.getPluginManager().registerEvents(new EventListener(), plugin());
     }
 
     public static void disable() {

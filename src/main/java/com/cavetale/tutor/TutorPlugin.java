@@ -17,6 +17,7 @@ public final class TutorPlugin extends JavaPlugin {
     protected SQLDatabase database;
     protected final TutorCommand tutorCommand = new TutorCommand(this);
     protected final DailyCommand dailyCommand = new DailyCommand(this);
+    protected final CollectCommand collectCommand = new CollectCommand(this);
     protected final TutorAdminCommand adminCommand = new TutorAdminCommand(this);
     protected final Map<QuestName, Quest> quests = new EnumMap<>(QuestName.class);
     protected final Sessions sessions = new Sessions(this);
@@ -43,6 +44,7 @@ public final class TutorPlugin extends JavaPlugin {
         dailyQuests.enable();
         tutorCommand.enable();
         dailyCommand.enable();
+        collectCommand.enable();
         adminCommand.enable();
         sessions.enable();
         pets.enable();

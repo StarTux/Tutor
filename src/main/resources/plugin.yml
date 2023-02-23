@@ -25,6 +25,12 @@ commands:
     permission: tutor.daily
     usage: /daily
 
+  collect:
+    aliases: []
+    description: Collections Menu
+    permission: tutor.collect
+    usage: /collect
+
   tutoradmin:
     aliases: [tutoradm]
     description: Admin command
@@ -59,4 +65,8 @@ permissions:
 
   tutor.daily.3:
     description: Get the third daily quest
+    default: false
+
+  tutor.collect:
+    description: Make collections
     default: false

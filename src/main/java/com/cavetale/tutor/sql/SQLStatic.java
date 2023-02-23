@@ -13,6 +13,7 @@ public final class SQLStatic {
                        SQLPlayerPet.class,
                        SQLPlayerPetUnlock.class,
                        SQLDailyQuest.class,
-                       SQLPlayerDailyQuest.class);
+                       SQLPlayerDailyQuest.class,
+                       SQLPlayerItemCollection.class);
     }
 }

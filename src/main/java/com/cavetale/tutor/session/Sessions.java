@@ -197,6 +197,7 @@ public final class Sessions implements Listener {
         if (session == null) return;
         if (event.getPlayer().hasPermission("tutor.tutor")) {
             session.triggerAutomaticQuests();
+            session.checkUnlockedCollections();
         }
     }
 
