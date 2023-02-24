@@ -77,7 +77,7 @@ public final class DailyQuests implements Listener {
             if (forRowId(row.getId()) != null) continue;
             final DailyQuestType type = DailyQuestType.ofKey(row.getQuestType());
             if (type == null) {
-                plugin.getLogger().severe("Unknown quest type: " + row);
+                plugin.getLogger().severe("[Daily] Unknown quest type: " + row);
                 continue;
             }
             DailyQuest dailyQuest = type.create();
@@ -127,7 +127,7 @@ public final class DailyQuests implements Listener {
     public DailyQuest generateNewQuest(final int index, Set<DailyQuestType> exclusion) {
         final DailyQuest old = forDailyIndex(index);
         if (old != null) {
-            plugin.getLogger().info("[Daily] Quest already exists for index " + index + ", " + old);
+            plugin.getLogger().info("[Daily] Quest already exists for index " + index);
             return null;
         }
         List<DailyQuestType> types = DailyQuestType.getAllWithIndex(index);
@@ -150,7 +150,7 @@ public final class DailyQuests implements Listener {
                         quest.enable();
                         plugin.getSessions().loadDailyQuest(quest);
                         Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, "" + quest.getDayId());
-                        plugin.getLogger().info("Quest generated: " + quest);
+                        plugin.getLogger().info("[Daily] Quest generated: " + quest);
                     });
             });
         return quest;
@@ -274,7 +274,7 @@ public final class DailyQuests implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onMinigameMatchComplete(MinigameMatchCompleteEvent event) {
-        plugin.getLogger().info(event.getEventName() + " " + event.getType() + " " + event.getPlayerUuids());
+        plugin.getLogger().info("[Daily] " + event.getEventName() + " " + event.getType() + " " + event.getPlayerUuids());
         for (Player player : event.getPlayers()) {
             plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                     DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
