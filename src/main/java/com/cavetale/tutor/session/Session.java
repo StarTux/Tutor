@@ -837,14 +837,20 @@ public final class Session {
                 });
         }
         final int rolls = playerRow.getDailyGameRolls();
+        final int totalRolls = playerRow.getTotalRolls();
+        final int totalGames = playerRow.getDailyGames();
         ItemStack diceIcon = Mytems.DICE.createIcon(List.of(text("Play the Daily Game", GREEN),
+                                                            text("Play a board game to level", GRAY),
+                                                            text("up your tiers and find", GRAY),
+                                                            text("rewards along the way.", GRAY),
+                                                            text("You can get more dice rolls", GRAY),
+                                                            text("by completing daily quests,", GRAY),
+                                                            text("tutorials, and collections.", GRAY),
                                                             empty(),
-                                                            textOfChildren(text("Have ", GRAY),
+                                                            textOfChildren(text(tiny("rolls available "), GRAY),
                                                                            text(rolls + Unicode.MULTIPLICATION.string, WHITE), Mytems.DICE),
-                                                            empty(),
-                                                            text("Get more dice rolls by", GRAY),
-                                                            text("completing daily quests.", GRAY),
-                                                            empty(),
+                                                            textOfChildren(text(tiny("total rolls "), GRAY), text(totalRolls, WHITE)),
+                                                            textOfChildren(text(tiny("total games "), GRAY), text(totalGames, WHITE)),
                                                             textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY))));
         diceIcon.setAmount(Math.max(1, Math.min(64, rolls)));
         gui.setItem(0, 2, diceIcon,
