@@ -5,6 +5,7 @@ import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.core.font.VanillaItems;
 import com.cavetale.core.item.ItemKinds;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
@@ -448,10 +449,16 @@ public final class Session {
         for (ItemCollectionType it : ItemCollectionType.values()) {
             if (collections.get(it).isComplete()) completed.add(it);
         }
+        boolean didUnlock = false;
         for (ItemCollectionType it : ItemCollectionType.values()) {
             if (!collections.get(it).isUnlocked() && completed.containsAll(it.getDependencies())) {
                 collections.get(it).unlock();
+                didUnlock = true;
             }
+        }
+        if (didUnlock && !playerRow.isCollectionReminder()) {
+            playerRow.setCollectionReminder(true);
+            database().updateAsync(playerRow, null, "collectionReminder");
         }
     }
 
@@ -997,6 +1004,10 @@ public final class Session {
                 gui.getOverlay().highlightSlot(slot, GOLD);
             }
         }
+        if (playerRow.isCollectionReminder()) {
+            playerRow.setCollectionReminder(false);
+            database().updateAsync(playerRow, null, "collectionReminder");
+        }
     }
 
     /**
@@ -1140,15 +1151,21 @@ public final class Session {
                 if (!it.isComplete()) unfinished += 1;
             }
             if (unfinished > 0) {
-                lines.add(textOfChildren(text("/daily ", YELLOW),
-                                         text(tiny("quests (" + visibleDailies.size() + ")"), AQUA)));
+                Component prefix = Mytems.COLORFALL_HOURGLASS.getCurrentAnimationFrame();
+                lines.add(textOfChildren(prefix, text("/daily ", YELLOW), text(tiny("quests (" + visibleDailies.size() + ")"), AQUA)));
                 for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
-                    lines.addAll(playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest));
+                    for (Component line : playerDailyQuest.getDailyQuest().getSidebarLines(playerDailyQuest)) {
+                        lines.add(textOfChildren(prefix, line));
+                    }
                 }
             }
-            if (playerRow.getDailyGameRolls() > 0) {
-                lines.add(textOfChildren(text(tiny("you have "), AQUA), Mytems.DICE, text(tiny("rolls"), YELLOW)));
-            }
+        }
+        if (playerRow.isRollReminder() && playerRow.getDailyGameRolls() > 0) {
+            lines.add(textOfChildren(Mytems.DICE, text("You have ", AQUA), text("/daily", YELLOW), text(" rolls", AQUA)));
+        }
+        if (playerRow.isCollectionReminder()) {
+            lines.add(textOfChildren(VanillaItems.BUNDLE, text("You have new ", AQUA)));
+            lines.add(textOfChildren(VanillaItems.BUNDLE, text("/collect", YELLOW), text("ions", AQUA)));
         }
     }
 
@@ -1186,6 +1203,7 @@ public final class Session {
         database().update(SQLPlayer.class)
             .row(playerRow)
             .add("dailyGameRolls", chrolls)
+            .set("rollReminder", true)
             .async(i -> {
                     if (i == 0) {
                         severe("addDailyRollsAsync: " + i);
@@ -1257,5 +1275,9 @@ public final class Session {
         DailyGame game = new DailyGame(player, tag);
         game.start();
         game.selectState();
+        if (playerRow.isRollReminder()) {
+            playerRow.setRollReminder(false);
+            database().updateAsync(playerRow, null, "rollReminder");
+        }
     }
 }

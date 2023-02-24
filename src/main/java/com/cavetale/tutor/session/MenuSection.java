@@ -1,5 +1,6 @@
 package com.cavetale.tutor.session;
 
+import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.util.Gui;
 import java.util.List;
@@ -41,16 +42,16 @@ public enum MenuSection {
     DAILY(text("Daily Quests", GOLD), color(0x4040A0)) {
         @Override protected ItemStack createIcon(Session session) {
             final int total = session.getPlayerRow().getDailies();
-            ItemStack dailyItem = new ItemStack(Material.CLOCK);
-            Items.text(dailyItem, List.of(title,
-                                          text("Complete up to three", GRAY),
-                                          text("quests every day. Each", GRAY),
-                                          text("completed quest is", GRAY),
-                                          text("rewarded with a tier point", GRAY),
-                                          text("and a dice roll in the Daily", GRAY),
-                                          text("Game.", GRAY),
-                                          empty(),
-                                          textOfChildren(text(tiny("completed "), GRAY), text(total, GOLD))));
+            ItemStack dailyItem = Mytems.COLORFALL_HOURGLASS
+                .createIcon(List.of(title,
+                                    text("Complete up to three", GRAY),
+                                    text("quests every day. Each", GRAY),
+                                    text("completed quest is", GRAY),
+                                    text("rewarded with a tier point", GRAY),
+                                    text("and a dice roll in the Daily", GRAY),
+                                    text("Game.", GRAY),
+                                    empty(),
+                                    textOfChildren(text(tiny("completed "), GRAY), text(total, GOLD))));
             return dailyItem;
         }
 
