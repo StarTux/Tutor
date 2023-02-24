@@ -1056,12 +1056,13 @@ public final class Session {
                     if (playerItemCollection.isClaimed()) return;
                     if (collectionsLocked) return;
                     playerItemCollection.claim(() -> {
-                            if (!player.isOnline()) {
+                            if (disabled || !player.isOnline()) {
                                 severe("Player left claiming reward: " + itemCollectionType);
                                 return;
                             }
                             Reward.give(player, rewards, itemCollectionType.getDisplayName(), itemCollectionType.getColor());
                             addDailyRollsAsync(1, null);
+                            Perm.get().addLevelProgress(uuid);
                         });
                 });
         }
