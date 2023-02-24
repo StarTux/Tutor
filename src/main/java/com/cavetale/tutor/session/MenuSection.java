@@ -24,7 +24,6 @@ public enum MenuSection {
             ItemStack tutorialItem = new ItemStack(Material.WRITTEN_BOOK);
             tutorialItem.editMeta(meta -> {
                     Items.text(meta, List.of(text("Tutorials", YELLOW),
-                                             text("12345678901234567890123456"),
                                              text("Tutorials help you learn", GRAY),
                                              text("the ropes of playing on", GRAY),
                                              text("Cavetale. Each completed", GRAY),
