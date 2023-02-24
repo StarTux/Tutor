@@ -2,7 +2,6 @@ package com.cavetale.tutor.util;
 
 import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.font.GuiOverlay;
-import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Sound;
@@ -14,22 +13,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextColor.color;
 
 public final class Reward {
-    private static final int SIZE = 6 * 9;
-    private static final List<Integer> SLOTS = new ArrayList<>();
-
-    static {
-        // Build a list of slots closest to the "center".  We use a
-        // 6x9 inventory so there is no dead center.
-        for (int i = 0; i < SIZE; i += 1) SLOTS.add(i);
-        SLOTS.sort((a, b) -> {
-                final int ax = 4 - (a % 9);
-                final int ay = 2 - (a / 9);
-                final int bx = 4 - (b % 9);
-                final int by = 2 - (b / 9);
-                return Integer.compare(ax * ax + ay * ay,
-                                       bx * bx + by * by);
-            });
-    }
+    private static final int[] SLOTS = {4, 5, 3, 6, 2, 7, 1, 8, 0};
+    private static final int SIZE = 9;
 
     public static void give(Player player, List<ItemStack> itemStackList, String title, TextColor color) {
         Gui gui = new Gui()
@@ -41,8 +26,8 @@ public final class Reward {
         gui.setEditable(true);
         for (int i = 0; i < itemStackList.size(); i += 1) {
             ItemStack it = itemStackList.get(i);
-            if (SLOTS.size() > i) {
-                int slot = SLOTS.get(i);
+            if (SLOTS.length > i) {
+                int slot = SLOTS[i];
                 gui.getInventory().setItem(slot, it);
             } else {
                 gui.getInventory().addItem(it);
