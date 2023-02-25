@@ -24,7 +24,7 @@ public enum DailyQuestType {
     CRAFTING(DailyQuestCrafting::new, Group.PEACEFUL, () -> DailyQuestCrafting.MATERIALS.length),
     EATING(DailyQuestEating::new, Group.PEACEFUL, () -> DailyQuestEating.FOODS.length),
     BREEDING(DailyQuestBreeding::new, Group.PEACEFUL, () -> DailyQuestBreeding.BreedMob.values().length),
-    // Pick Flowers
+    PICK_FLOWERS(DailyQuestPickFlowers::new, Group.PEACEFUL, () -> DailyQuestPickFlowers.Flower.values().length),
 
     // 1 Adventure
     KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE, () -> DailyQuestKillMonster.TargetMob.values().length),
