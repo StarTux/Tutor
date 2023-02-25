@@ -830,7 +830,7 @@ public final class Session {
                 text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Complete", GREEN)));
             } else {
                 for (ItemStack item : dailyQuest.getRewards()) {
-                    text.add(textOfChildren(text("Reward ", GRAY), ItemKinds.chatDescription(item)));
+                    text.add(textOfChildren(text("Reward ", GRAY), ItemKinds.chatDescription(item).color(WHITE)));
                 }
                 text.add(textOfChildren(text("Reward ", GRAY), Mytems.DICE, text("Roll", GRAY)));
             }
