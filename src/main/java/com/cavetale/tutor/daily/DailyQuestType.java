@@ -14,34 +14,34 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public enum DailyQuestType {
-    DUMMY(0, DailyQuestDummy::new, List.of()),
+    DUMMY(DailyQuestDummy::new, List.of(), () -> 0),
     // 0 Peaceful
-    MINING(1, DailyQuestMining::new, Group.PEACEFUL),
-    HARVEST(1, DailyQuestHarvest::new, Group.PEACEFUL),
-    FISHING(1, DailyQuestFishing::new, Group.PEACEFUL),
-    TREE_CHOPPER(1, DailyQuestTreeChopper::new, Group.PEACEFUL),
-    SHEAR_SHEEP(1, DailyQuestShearSheep::new, Group.PEACEFUL),
-    CRAFTING(1, DailyQuestCrafting::new, Group.PEACEFUL),
-    EATING(1, DailyQuestEating::new, Group.PEACEFUL),
-    BREEDING(1, DailyQuestBreeding::new, Group.PEACEFUL),
+    MINING(DailyQuestMining::new, Group.PEACEFUL, () -> DailyQuestMining.Ore.values().length),
+    HARVEST(DailyQuestHarvest::new, Group.PEACEFUL, () -> DailyQuestHarvest.Crop.values().length),
+    FISHING(DailyQuestFishing::new, Group.PEACEFUL, () -> DailyQuestFishing.Fish.values().length),
+    TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL, () -> DailyQuestTreeChopper.getAllTypes().size()),
+    SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL, () -> DailyQuestShearSheep.getAllColors().length),
+    CRAFTING(DailyQuestCrafting::new, Group.PEACEFUL, () -> DailyQuestCrafting.MATERIALS.length),
+    EATING(DailyQuestEating::new, Group.PEACEFUL, () -> DailyQuestEating.FOODS.length),
+    BREEDING(DailyQuestBreeding::new, Group.PEACEFUL, () -> DailyQuestBreeding.BreedMob.values().length),
     // Pick Flowers
 
     // 1 Adventure
-    KILL_MONSTER(1, DailyQuestKillMonster::new, Group.ADVENTURE),
-    FIND_DUNGEON(1, DailyQuestFindDungeon::new, Group.ADVENTURE),
-    FORAGING(1, DailyQuestForaging::new, Group.TESTING),
+    KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE, () -> DailyQuestKillMonster.TargetMob.values().length),
+    FIND_DUNGEON(DailyQuestFindDungeon::new, Group.ADVENTURE, () -> 1),
+    FORAGING(DailyQuestForaging::new, Group.TESTING, () -> DailyQuestForaging.Forage.values().length),
     // Capture Monster
     // Mob Arena
 
     // 2 Community
-    MINIGAME_MATCH(6, DailyQuestMinigameMatch::new, Group.COMMUNITY),
-    FRIENDSHIP_GIFT(1, DailyQuestFriendshipGift:: new, Group.COMMUNITY),
+    MINIGAME_MATCH(DailyQuestMinigameMatch::new, Group.COMMUNITY, () -> DailyQuestMinigameMatch.Game.values().length),
+    FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 1),
     ;
 
-    protected final int weight; // Correspond with internal options
     protected final String key = name().toLowerCase();
     protected final Supplier<? extends DailyQuest> ctor;
     protected final List<Integer> indexes;
+    protected final Supplier<Integer> optionCountGetter;
 
     /**
      * Get all quest types with the given index.  The result will be
@@ -51,7 +51,8 @@ public enum DailyQuestType {
         List<DailyQuestType> list = new ArrayList<>();
         for (var it : values()) {
             if (it.indexes.contains(index)) {
-                for (int i = 0; i < it.weight; i += 1) {
+                int weight = it.getOptionCount();
+                for (int i = 0; i < weight; i += 1) {
                     list.add(it);
                 }
             }
@@ -68,6 +69,10 @@ public enum DailyQuestType {
             if (k.equals(it.key)) return it;
         }
         return null;
+    }
+
+    public int getOptionCount() {
+        return optionCountGetter.get();
     }
 
     // Dodge the forward reference error.

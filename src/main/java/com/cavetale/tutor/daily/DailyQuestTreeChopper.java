@@ -25,12 +25,17 @@ public final class DailyQuestTreeChopper extends DailyQuest<DailyQuestTreeChoppe
 
     @Override
     public void onGenerate() {
+        List<ChoppedType> types = getAllTypes();
+        this.details.chopped = types.get(random.nextInt(types.size()));
+        this.total = 10;
+    }
+
+    public static List<ChoppedType> getAllTypes() {
         List<ChoppedType> types = new ArrayList<>();
         for (ChoppedType type : ChoppedType.values()) {
             if (!type.isJustAGuess()) types.add(type);
         }
-        this.details.chopped = types.get(random.nextInt(types.size()));
-        this.total = 10;
+        return types;
     }
 
     @Override
