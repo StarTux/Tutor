@@ -1020,7 +1020,7 @@ public final class Session {
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, LIGHT_PURPLE)
             .layer(GuiOverlay.WHITE, itemCollectionType.getBackground())
             .layer(GuiOverlay.ITEM_COLLECTION, itemCollectionType.getColor())
-            .title(text(itemCollectionType.getDisplayName(), itemCollectionType.getColor()));
+            .title(text(itemCollectionType.getDisplayName() + " Collection", itemCollectionType.getColor()));
         int nextIndex = 0;
         List<CollectItem> collectItems = itemCollectionType.getItems();
         List<Integer> slots = CollectItemSlots.slotsForSize(collectItems.size());

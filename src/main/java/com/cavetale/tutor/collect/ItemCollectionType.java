@@ -11,7 +11,9 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -21,9 +23,9 @@ import static net.kyori.adventure.text.format.TextColor.color;
 @Getter
 public enum ItemCollectionType {
     BEGINNER(Set.of(), "Punching Trees",
-            "We all start off small. Punch some trees and grass.",
-            GREEN, GRAY,
-            () -> new ItemStack(Material.WHEAT_SEEDS)) {
+             "We all start off small. Punch some trees and grass.",
+             GREEN, GRAY,
+             () -> new ItemStack(Material.WHEAT_SEEDS)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.OAK_LOG, 1),
                            new CollectMaterial(Material.WHEAT_SEEDS, 1),
@@ -96,6 +98,70 @@ public enum ItemCollectionType {
         }
     },
 
+    MONSTER_DROPS(Set.of(ORES), "Monster Drops",
+                  "Slay monsters to get their precious loot."
+                  + " They like to spawn in dark spots, usually at night.",
+                  color(0xFF0000), GRAY,
+                  Mytems.CREEPER_FACE::createIcon) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.GUNPOWDER),
+                           new CollectMaterial(Material.BONE),
+                           new CollectMaterial(Material.SPIDER_EYE),
+                           new CollectMaterial(Material.ARROW),
+                           new CollectMaterial(Material.ROTTEN_FLESH),
+                           new CollectMaterial(Material.ENDER_PEARL),
+                           new CollectMaterial(Material.SLIME_BALL));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.DIAMOND_SWORD),
+                           new ItemStack(Material.BOW),
+                           new ItemStack(Material.SHIELD));
+        }
+    },
+
+    DUNGEON_LOOT(Set.of(ORES), "Dungeon Loot",
+                 "Cavetale has custom dungeons, but vanilla dungeons still exist."
+                 + " See if you can loot some of them for their cool blocks and items."
+                 + " Try not to cheat. ;)",
+                 color(0xA00000), DARK_GRAY,
+                 () -> new ItemStack(Material.SPAWNER)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.MOSSY_COBBLESTONE, 16),
+                           new CollectMaterial(Material.MUSIC_DISC_13),
+                           new CollectMaterial(Material.MUSIC_DISC_CAT),
+                           new CollectMaterial(Material.SADDLE),
+                           new CollectMaterial(Material.NAME_TAG),
+                           new CollectMaterial(Material.GOLDEN_APPLE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.NAME_TAG, 16),
+                           new ItemStack(Material.ENCHANTED_GOLDEN_APPLE),
+                           new ItemStack(Material.ENCHANTED_GOLDEN_APPLE));
+        }
+    },
+
+    MINESHAFT(Set.of(ORES), "Mineshaft",
+              "Mineshafts are everywhere."
+              + " See if you can find one and pick it for resources."
+              + " Going underground in the mining world is recommended.",
+              GRAY, color(0x900000),
+              () -> new ItemStack(Material.RAIL)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.COBWEB, 64),
+                           new CollectMaterial(Material.CHAIN, 16),
+                           new CollectMaterial(Material.RAIL, 64),
+                           new CollectMaterial(Material.CHEST_MINECART, 1),
+                           new CollectMaterial(Material.POWERED_RAIL, 1),
+                           new CollectMaterial(Material.ACTIVATOR_RAIL, 1),
+                           new CollectMaterial(Material.DETECTOR_RAIL, 1));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.TNT, 64),
+                           new ItemStack(Material.FLINT_AND_STEEL),
+                           new ItemStack(Material.FLINT_AND_STEEL));
+        }
+    },
+
     TOPSOIL(Set.of(BEGINNER), "Topsoil",
             "Grab your shovel and dig up the top layers of your world.",
             color(0x79553A), color(0x808080),
@@ -109,6 +175,43 @@ public enum ItemCollectionType {
             return List.of(new ItemStack(Material.GRASS_BLOCK, 64),
                            new ItemStack(Material.WHEAT_SEEDS, 16),
                            new ItemStack(Material.WHEAT_SEEDS, 16));
+        }
+    },
+
+    FISHING(Set.of(TOPSOIL), "Fishing",
+            "Make a fishing rod and start fishing.",
+            color(0x8080FF), color(0x008080),
+            () -> new ItemStack(Material.FISHING_ROD)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.COD),
+                           new CollectMaterial(Material.SALMON),
+                           new CollectMaterial(Material.PUFFERFISH),
+                           new CollectMaterial(Material.TROPICAL_FISH));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.FISHING_ROD),
+                           enchantedBook(Enchantment.LURE, 3),
+                           enchantedBook(Enchantment.LUCK, 3));
+        }
+    },
+
+    BUCKET_MOBS(Set.of(FISHING), "Bucket Mobs",
+                "Some waterborne animals can be caught alive in buckets."
+                + " Let's try that!",
+                color(0x8080FF), GRAY,
+                () -> new ItemStack(Material.AXOLOTL_BUCKET)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.COD_BUCKET),
+                           new CollectMaterial(Material.SALMON_BUCKET),
+                           new CollectMaterial(Material.TROPICAL_FISH_BUCKET),
+                           new CollectMaterial(Material.PUFFERFISH_BUCKET),
+                           new CollectMaterial(Material.AXOLOTL_BUCKET),
+                           new CollectMaterial(Material.TADPOLE_BUCKET));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.BUCKET, 64),
+                           Mytems.MOB_CATCHER.createItemStack(32),
+                           Mytems.MOB_CATCHER.createItemStack(32));
         }
     },
 
@@ -129,6 +232,26 @@ public enum ItemCollectionType {
             return List.of(Mytems.WATERING_CAN.createItemStack(),
                            new ItemStack(Material.HAY_BLOCK, 16),
                            new ItemStack(Material.HAY_BLOCK, 16));
+        }
+    },
+
+    FARM_ANIMALS(Set.of(CROPS), "Farm Animals",
+                 "Breeding farm animals is one of the most rewarding farming activities in the game."
+                 + " You may have to kill a few of them in the end.",
+                 color(0xC4A484), DARK_AQUA,
+                 Mytems.COW_FACE::createIcon) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.BEEF, 64),
+                           new CollectMaterial(Material.PORKCHOP, 64),
+                           new CollectMaterial(Material.EGG, 64),
+                           new CollectMaterial(Material.MUTTON, 64),
+                           new CollectMaterial(Material.RABBIT, 64),
+                           new CollectMaterial(Material.CHICKEN, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.SMOKER, 8),
+                           new ItemStack(Material.CHARCOAL, 64),
+                           new ItemStack(Material.CHARCOAL, 64));
         }
     },
 
@@ -153,10 +276,28 @@ public enum ItemCollectionType {
         }
     },
 
+    MUSHROOMS(Set.of(TOPSOIL), "Mushrooms",
+              "Collecting mushrooms can be very relaxing."
+              + " As long as they don't grow in the nether, that is.",
+              color(0xFF00FF), color(0x804000),
+              () -> new ItemStack(Material.RED_MUSHROOM)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.RED_MUSHROOM, 64),
+                           new CollectMaterial(Material.BROWN_MUSHROOM, 64),
+                           new CollectMaterial(Material.CRIMSON_FUNGUS, 64),
+                           new CollectMaterial(Material.WARPED_FUNGUS, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.RED_MUSHROOM_BLOCK, 64),
+                           new ItemStack(Material.BROWN_MUSHROOM_BLOCK, 64),
+                           new ItemStack(Material.MUSHROOM_STEM, 64));
+        }
+    },
+
     TALL_FLOWERS(Set.of(FLOWERS), "Tall Flowers",
                  "The tall ones are easy to reproduce."
                  + " Just apply some bone meal.",
-                 color(0xFFC0CB), DARK_GREEN,
+                 color(0xFF69B4), DARK_GREEN,
                  () -> new ItemStack(Material.PEONY)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.LILAC, 16),
@@ -173,7 +314,7 @@ public enum ItemCollectionType {
 
     TULIPS(Set.of(FLOWERS), "Tulips",
            "Tulips come in four colors. Can your find them all?",
-           color(0xFFC0CB), DARK_GREEN,
+           color(DARK_GREEN), color(0xFFC0CB),
            () -> new ItemStack(Material.WHITE_TULIP)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.ORANGE_TULIP, 16),
@@ -227,5 +368,11 @@ public enum ItemCollectionType {
                 Items.text(meta, txt);
             });
         return icon;
+    }
+
+    private static ItemStack enchantedBook(Enchantment enchantment, int level) {
+        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+        item.editMeta(meta -> ((EnchantmentStorageMeta) meta).addStoredEnchant(enchantment, level, true));
+        return item;
     }
 }
