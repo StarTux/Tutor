@@ -29,13 +29,13 @@ public enum DailyQuestType {
     // 1 Adventure
     KILL_MONSTER(DailyQuestKillMonster::new, Group.ADVENTURE, () -> DailyQuestKillMonster.TargetMob.values().length),
     FIND_DUNGEON(DailyQuestFindDungeon::new, Group.ADVENTURE, () -> 1),
-    FORAGING(DailyQuestForaging::new, Group.TESTING, () -> DailyQuestForaging.Forage.values().length),
+    FORAGING(DailyQuestForaging::new, Group.ADVENTURE, () -> DailyQuestForaging.Forage.values().length),
     // Capture Monster
-    // Mob Arena
 
     // 2 Community
     MINIGAME_MATCH(DailyQuestMinigameMatch::new, Group.COMMUNITY, () -> DailyQuestMinigameMatch.Game.values().length),
     FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 1),
+    MOB_ARENA_WAVE(DailyQuestMobArenaWave::new, Group.COMMUNITY, () -> 1),
     ;
 
     protected final String key = name().toLowerCase();

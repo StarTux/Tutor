@@ -275,6 +275,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         if (playerDailyQuest.isComplete()) {
             return List.of(textOfChildren(Mytems.CHECKED_CHECKBOX.getCurrentAnimationFrame(),
                                           space(), getDescription(playerDailyQuest)));
+        } else if (total == 1) {
+            return List.of(textOfChildren(Mytems.CHECKBOX, space(), getDescription(playerDailyQuest)));
         } else {
             TextColor color = playerDailyQuest.progressTimer > System.currentTimeMillis()
                 ? GREEN
