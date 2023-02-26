@@ -98,11 +98,48 @@ public enum ItemCollectionType {
         }
     },
 
+    DEEPSLATE_ORES(Set.of(ORES), "Deepslate Ores",
+                   "Deeper underground, deepslate ores are found.",
+                   color(0x25A7AB), color(0x404040),
+                   () -> new ItemStack(Material.DEEPSLATE_DIAMOND_ORE)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.DEEPSLATE_DIAMOND_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_EMERALD_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_GOLD_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_IRON_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_COPPER_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_LAPIS_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_REDSTONE_ORE),
+                           new CollectMaterial(Material.DEEPSLATE_COAL_ORE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.BLAST_FURNACE, 8),
+                           new ItemStack(Material.COAL, 64),
+                           new ItemStack(Material.COAL, 64));
+        }
+    },
+
+    NETHER_ORES(Set.of(DEEPSLATE_ORES), "Nether Ores",
+                "Yet even deeper, we find the Nether.",
+                color(0xC6AC3E), color(0x5B2828),
+                () -> new ItemStack(Material.DEEPSLATE_DIAMOND_ORE)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.NETHER_QUARTZ_ORE),
+                           new CollectMaterial(Material.ANCIENT_DEBRIS),
+                           new CollectMaterial(Material.NETHER_GOLD_ORE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.NETHERITE_INGOT),
+                           new ItemStack(Material.NETHERITE_SCRAP),
+                           new ItemStack(Material.NETHERITE_SCRAP));
+        }
+    },
+
     MONSTER_DROPS(Set.of(ORES), "Monster Drops",
                   "Slay monsters to get their precious loot."
                   + " They like to spawn in dark spots, usually at night.",
                   color(0xFF0000), GRAY,
-                  Mytems.CREEPER_FACE::createIcon) {
+                  () -> new ItemStack(Material.GUNPOWDER)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.GUNPOWDER),
                            new CollectMaterial(Material.BONE),
@@ -209,9 +246,33 @@ public enum ItemCollectionType {
                            new CollectMaterial(Material.TADPOLE_BUCKET));
         }
         @Override public List<ItemStack> getRewards() {
-            return List.of(new ItemStack(Material.BUCKET, 64),
-                           Mytems.MOB_CATCHER.createItemStack(32),
-                           Mytems.MOB_CATCHER.createItemStack(32));
+            return List.of(new ItemStack(Material.BUCKET, 16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    CORAL(Set.of(FISHING), "Coral",
+          "Corals appear in warm oceans."
+          + " To collect them without harm, Silk Touch will be required.",
+          color(0x8080FF), color(0xE8E74A),
+          () -> new ItemStack(Material.TUBE_CORAL_BLOCK)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.TUBE_CORAL_BLOCK),
+                           new CollectMaterial(Material.BRAIN_CORAL_BLOCK),
+                           new CollectMaterial(Material.BUBBLE_CORAL_BLOCK),
+                           new CollectMaterial(Material.FIRE_CORAL_BLOCK),
+                           new CollectMaterial(Material.HORN_CORAL_BLOCK),
+                           new CollectMaterial(Material.TUBE_CORAL),
+                           new CollectMaterial(Material.BRAIN_CORAL),
+                           new CollectMaterial(Material.BUBBLE_CORAL),
+                           new CollectMaterial(Material.FIRE_CORAL),
+                           new CollectMaterial(Material.HORN_CORAL));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(enchantedBook(Enchantment.WATER_WORKER, 1),
+                           Mytems.RUBY.createItemStack(),
+                           Mytems.RUBY.createItemStack());
         }
     },
 
@@ -239,7 +300,7 @@ public enum ItemCollectionType {
                  "Breeding farm animals is one of the most rewarding farming activities in the game."
                  + " You may have to kill a few of them in the end.",
                  color(0xC4A484), DARK_AQUA,
-                 Mytems.COW_FACE::createIcon) {
+                 () -> new ItemStack(Material.BEEF)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.BEEF, 64),
                            new CollectMaterial(Material.PORKCHOP, 64),
