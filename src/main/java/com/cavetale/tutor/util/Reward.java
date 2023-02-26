@@ -16,7 +16,7 @@ public final class Reward {
     private static final int[] SLOTS = {4, 5, 3, 6, 2, 7, 1, 8, 0};
     private static final int SIZE = 9;
 
-    public static void give(Player player, List<ItemStack> itemStackList, String title, TextColor color) {
+    public static Gui give(Player player, List<ItemStack> itemStackList, String title, TextColor color) {
         Gui gui = new Gui()
             .size(SIZE)
             .title(GuiOverlay.HOLES.builder(SIZE, color)
@@ -44,6 +44,7 @@ public final class Reward {
         gui.open(player);
         player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.MASTER, 1.0f, 1.0f);
         player.sendMessage(text(title, color));
+        return gui;
     }
 
     private Reward() { }

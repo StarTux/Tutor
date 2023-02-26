@@ -999,6 +999,7 @@ public final class Session {
             gui.setItem(slot, itemCollectionType.makeIcon(), click -> {
                     if (!click.isLeftClick()) return;
                     openItemCollectionMenu(player, itemCollectionType);
+                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 });
             if (playerItemCollection.isComplete()) {
                 gui.getOverlay().highlightSlot(slot, GOLD);
@@ -1031,6 +1032,7 @@ public final class Session {
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 if (!click.isLeftClick()) return;
                 openMenu(player, MenuSection.COLLECT);
+                player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
             });
         gui.setOnClickBottom(click -> {
                 if (!NetworkServer.current().isSurvival()) return;
@@ -1077,7 +1079,8 @@ public final class Session {
                                 severe("Player left claiming reward: " + itemCollectionType);
                                 return;
                             }
-                            Reward.give(player, rewards, itemCollectionType.getDisplayName(), itemCollectionType.getColor());
+                            Gui rewardGui = Reward.give(player, rewards, itemCollectionType.getDisplayName(), itemCollectionType.getColor());
+                            rewardGui.setItem(Gui.OUTSIDE, null, c -> openMenu(player, MenuSection.COLLECT));
                             addDailyRollsAsync(1, null);
                             Perm.get().addLevelProgress(uuid);
                         });
