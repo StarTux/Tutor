@@ -122,7 +122,7 @@ public enum ItemCollectionType {
     NETHER_ORES(Set.of(ORES), "Nether Ores",
                 "Yet even deeper, we find the Nether.",
                 color(0xC6AC3E), color(0x5B2828),
-                () -> new ItemStack(Material.DEEPSLATE_DIAMOND_ORE)) {
+                () -> new ItemStack(Material.NETHER_GOLD_ORE)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.NETHER_QUARTZ_ORE),
                            new CollectMaterial(Material.ANCIENT_DEBRIS),
