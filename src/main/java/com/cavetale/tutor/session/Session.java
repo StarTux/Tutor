@@ -444,6 +444,7 @@ public final class Session {
     }
 
     public void checkUnlockedCollections() {
+        if (!NetworkServer.current().isSurvival()) return;
         if (!Perm.get().has(uuid, "tutor.collect")) return;
         Set<ItemCollectionType> completed = EnumSet.noneOf(ItemCollectionType.class);
         for (ItemCollectionType it : ItemCollectionType.values()) {
