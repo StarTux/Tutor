@@ -119,7 +119,7 @@ public enum ItemCollectionType {
         }
     },
 
-    NETHER_ORES(Set.of(DEEPSLATE_ORES), "Nether Ores",
+    NETHER_ORES(Set.of(ORES), "Nether Ores",
                 "Yet even deeper, we find the Nether.",
                 color(0xC6AC3E), color(0x5B2828),
                 () -> new ItemStack(Material.DEEPSLATE_DIAMOND_ORE)) {
