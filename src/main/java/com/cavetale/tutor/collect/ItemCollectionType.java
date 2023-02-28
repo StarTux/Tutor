@@ -135,7 +135,7 @@ public enum ItemCollectionType {
         }
     },
 
-    MONSTER_DROPS(Set.of(ORES), "Monster Drops",
+    MONSTER_DROPS(Set.of(MINING), "Monster Drops",
                   "Slay monsters to get their precious loot."
                   + " They like to spawn in dark spots, usually at night.",
                   color(0xFF0000), GRAY,
@@ -156,7 +156,7 @@ public enum ItemCollectionType {
         }
     },
 
-    DUNGEON_LOOT(Set.of(ORES), "Dungeon Loot",
+    DUNGEON_LOOT(Set.of(MONSTER_DROPS), "Dungeon Loot",
                  "Cavetale has custom dungeons, but vanilla dungeons still exist."
                  + " See if you can loot some of them for their cool blocks and items."
                  + " Try not to cheat. ;)",
@@ -177,7 +177,7 @@ public enum ItemCollectionType {
         }
     },
 
-    MINESHAFT(Set.of(ORES), "Mineshaft",
+    MINESHAFT(Set.of(MONSTER_DROPS), "Mineshaft",
               "Mineshafts are everywhere."
               + " See if you can find one and pick it for resources."
               + " Going underground in the mining world is recommended.",
@@ -215,7 +215,27 @@ public enum ItemCollectionType {
         }
     },
 
-    FISHING(Set.of(TOPSOIL), "Fishing",
+    CROPS(Set.of(TOPSOIL), "Crops",
+          "Grab a hoe, till some soil, and start sowing seeds."
+          + " Make sure to water your fields.",
+          color(0xDCBB65), DARK_GREEN,
+          () -> new ItemStack(Material.WHEAT)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.WHEAT, 64),
+                           new CollectMaterial(Material.CARROT, 64),
+                           new CollectMaterial(Material.POTATO, 64),
+                           new CollectMaterial(Material.BEETROOT, 64),
+                           new CollectMaterial(Material.MELON_SLICE, 64),
+                           new CollectMaterial(Material.PUMPKIN, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.WATERING_CAN.createItemStack(),
+                           new ItemStack(Material.HAY_BLOCK, 16),
+                           new ItemStack(Material.HAY_BLOCK, 16));
+        }
+    },
+
+    FISHING(Set.of(CROPS), "Fishing",
             "Make a fishing rod and start fishing.",
             color(0x8080FF), color(0x008080),
             () -> new ItemStack(Material.FISHING_ROD)) {
@@ -229,26 +249,6 @@ public enum ItemCollectionType {
             return List.of(new ItemStack(Material.FISHING_ROD),
                            enchantedBook(Enchantment.LURE, 3),
                            enchantedBook(Enchantment.LUCK, 3));
-        }
-    },
-
-    BUCKET_MOBS(Set.of(FISHING), "Bucket Mobs",
-                "Some waterborne animals can be caught alive in buckets."
-                + " Let's try that!",
-                color(0x8080FF), GRAY,
-                () -> new ItemStack(Material.AXOLOTL_BUCKET)) {
-        @Override public List<CollectItem> getItems() {
-            return List.of(new CollectMaterial(Material.COD_BUCKET),
-                           new CollectMaterial(Material.SALMON_BUCKET),
-                           new CollectMaterial(Material.TROPICAL_FISH_BUCKET),
-                           new CollectMaterial(Material.PUFFERFISH_BUCKET),
-                           new CollectMaterial(Material.AXOLOTL_BUCKET),
-                           new CollectMaterial(Material.TADPOLE_BUCKET));
-        }
-        @Override public List<ItemStack> getRewards() {
-            return List.of(new ItemStack(Material.BUCKET, 16),
-                           Mytems.MOB_CATCHER.createItemStack(16),
-                           Mytems.MOB_CATCHER.createItemStack(16));
         }
     },
 
@@ -276,23 +276,23 @@ public enum ItemCollectionType {
         }
     },
 
-    CROPS(Set.of(TOPSOIL), "Crops",
-          "Grab a hoe, till some soil, and start sowing seeds."
-          + " Make sure to water your fields.",
-          color(0xDCBB65), DARK_GREEN,
-          () -> new ItemStack(Material.WHEAT)) {
+    BUCKET_MOBS(Set.of(FISHING), "Bucket Mobs",
+                "Some waterborne animals can be caught alive in buckets."
+                + " Let's try that!",
+                color(0x8080FF), GRAY,
+                () -> new ItemStack(Material.AXOLOTL_BUCKET)) {
         @Override public List<CollectItem> getItems() {
-            return List.of(new CollectMaterial(Material.WHEAT, 64),
-                           new CollectMaterial(Material.CARROT, 64),
-                           new CollectMaterial(Material.POTATO, 64),
-                           new CollectMaterial(Material.BEETROOT, 64),
-                           new CollectMaterial(Material.MELON_SLICE, 64),
-                           new CollectMaterial(Material.PUMPKIN, 64));
+            return List.of(new CollectMaterial(Material.COD_BUCKET),
+                           new CollectMaterial(Material.SALMON_BUCKET),
+                           new CollectMaterial(Material.TROPICAL_FISH_BUCKET),
+                           new CollectMaterial(Material.PUFFERFISH_BUCKET),
+                           new CollectMaterial(Material.AXOLOTL_BUCKET),
+                           new CollectMaterial(Material.TADPOLE_BUCKET));
         }
         @Override public List<ItemStack> getRewards() {
-            return List.of(Mytems.WATERING_CAN.createItemStack(),
-                           new ItemStack(Material.HAY_BLOCK, 16),
-                           new ItemStack(Material.HAY_BLOCK, 16));
+            return List.of(new ItemStack(Material.BUCKET, 16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
         }
     },
 
