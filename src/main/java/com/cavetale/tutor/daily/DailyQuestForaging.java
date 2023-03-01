@@ -26,11 +26,11 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
 
     @RequiredArgsConstructor
     protected enum Forage {
-        BROWN_MUSHROOM(5, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
-        RED_MUSHROOM(5, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
-        CRIMSON_FUNGUS(5, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
-        WARPED_FUNGUS(5, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
-        CHORUS_FLOWER(5, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
+        BROWN_MUSHROOM(10, "Brown Mushrooms", VanillaItems.BROWN_MUSHROOM, Material.BROWN_MUSHROOM, Set.of(Material.BROWN_MUSHROOM)),
+        RED_MUSHROOM(10, "Red Mushrooms", VanillaItems.RED_MUSHROOM, Material.RED_MUSHROOM, Set.of(Material.RED_MUSHROOM)),
+        CRIMSON_FUNGUS(10, "Crimson Fungi", VanillaItems.CRIMSON_FUNGUS, Material.CRIMSON_FUNGUS, Set.of(Material.CRIMSON_FUNGUS)),
+        WARPED_FUNGUS(10, "Warped Fungi", VanillaItems.WARPED_FUNGUS, Material.WARPED_FUNGUS, Set.of(Material.WARPED_FUNGUS)),
+        CHORUS_FLOWER(10, "Chorus Flower", VanillaItems.CHORUS_FLOWER, Material.CHORUS_FLOWER, Set.of(Material.CHORUS_FLOWER)),
         LILY_PAD(5, "Lily Pads", VanillaItems.LILY_PAD, Material.LILY_PAD, Set.of(Material.LILY_PAD)),
         //SPORE_BLOSSOM(1, "Spore Blossom", VanillaItems.SPORE_BLOSSOM, Material.SPORE_BLOSSOM, Set.of(Material.SPORE_BLOSSOM)),
         ;
