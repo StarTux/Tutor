@@ -19,6 +19,8 @@ public final class CollectItemSlots {
         case 8 -> List.of(10, 12, 14, 16, 28, 30, 32, 34);
         case 9 -> List.of(2, 4, 6, 20, 22, 24, 38, 40, 42);
         case 10 -> List.of(9, 11, 13, 15, 17, 27, 29, 31, 33, 35);
+        case 12 -> List.of(1, 3, 5, 7, 19, 21, 23, 25, 37, 39, 41, 43);
+        case 16 -> List.of(1, 3, 5, 7, 11, 15, 19, 21, 23, 25, 29, 33, 37, 39, 41, 43);
         default -> {
             List<Integer> result = new ArrayList<>(size);
             for (int i = 0; i < size; i += 1) result.add(i);

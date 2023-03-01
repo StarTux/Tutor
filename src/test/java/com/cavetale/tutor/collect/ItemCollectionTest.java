@@ -20,5 +20,6 @@ public final class ItemCollectionTest {
                 System.out.println("  └─ " + depending);
             }
         }
+        System.out.println(ItemCollectionType.values().length + " Item Collections");
     }
 }

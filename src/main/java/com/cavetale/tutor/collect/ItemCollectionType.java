@@ -276,6 +276,25 @@ public enum ItemCollectionType {
         }
     },
 
+    MONUMENT(Set.of(CORAL), "Ocean Monument",
+             "Ocean Monuments can be hard to find because they are under water."
+             + " Beware of Guardians!",
+             color(0x4A6C85), color(0x43447B),
+             () -> new ItemStack(Material.PRISMARINE)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.PRISMARINE, 64),
+                           new CollectMaterial(Material.PRISMARINE_BRICKS, 64),
+                           new CollectMaterial(Material.DARK_PRISMARINE, 64),
+                           new CollectMaterial(Material.SEA_LANTERN, 16),
+                           new CollectMaterial(Material.WET_SPONGE, 1));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.SPONGE, 64),
+                           new ItemStack(Material.SEA_LANTERN, 16),
+                           new ItemStack(Material.SEA_LANTERN, 16));
+        }
+    },
+
     BUCKET_MOBS(Set.of(FISHING), "Bucket Mobs",
                 "Some waterborne animals can be caught alive in buckets."
                 + " Let's try that!",
@@ -313,6 +332,37 @@ public enum ItemCollectionType {
             return List.of(new ItemStack(Material.SMOKER, 8),
                            new ItemStack(Material.CHARCOAL, 64),
                            new ItemStack(Material.CHARCOAL, 64));
+        }
+    },
+
+    WOOL(Set.of(FARM_ANIMALS), "Wool",
+         "There are 16 colors of wool."
+         + " You can dye sheep and breed them"
+         + " and they will pass their color on to their babies.",
+         color(0xF38BAA), color(0x3AB3DA),
+         () -> new ItemStack(Material.PINK_WOOL)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.BLACK_WOOL, 64),
+                           new CollectMaterial(Material.RED_WOOL, 64),
+                           new CollectMaterial(Material.GREEN_WOOL, 64),
+                           new CollectMaterial(Material.BROWN_WOOL, 64),
+                           new CollectMaterial(Material.BLUE_WOOL, 64),
+                           new CollectMaterial(Material.PURPLE_WOOL, 64),
+                           new CollectMaterial(Material.CYAN_WOOL, 64),
+                           new CollectMaterial(Material.LIGHT_GRAY_WOOL, 64),
+                           new CollectMaterial(Material.GRAY_WOOL, 64),
+                           new CollectMaterial(Material.PINK_WOOL, 64),
+                           new CollectMaterial(Material.LIME_WOOL, 64),
+                           new CollectMaterial(Material.YELLOW_WOOL, 64),
+                           new CollectMaterial(Material.LIGHT_BLUE_WOOL, 64),
+                           new CollectMaterial(Material.MAGENTA_WOOL, 64),
+                           new CollectMaterial(Material.ORANGE_WOOL, 64),
+                           new CollectMaterial(Material.WHITE_WOOL, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.SCISSORS.createItemStack(),
+                           new ItemStack(Material.WHEAT, 64),
+                           new ItemStack(Material.WHEAT, 64));
         }
     },
 
@@ -387,6 +437,36 @@ public enum ItemCollectionType {
             return List.of(Mytems.FERTILIZER.createItemStack(64),
                            Mytems.RUBY.createItemStack(),
                            Mytems.RUBY.createItemStack());
+        }
+    },
+
+    DYE(Set.of(TALL_FLOWERS), "Dye",
+        "Flowers can be turned into dyes."
+        + " There are 16 different colors.",
+        color(0xC74EBD), color(0x169C9C),
+        () -> new ItemStack(Material.MAGENTA_DYE)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.BLACK_DYE, 64),
+                           new CollectMaterial(Material.RED_DYE, 64),
+                           new CollectMaterial(Material.GREEN_DYE, 64),
+                           new CollectMaterial(Material.BROWN_DYE, 64),
+                           new CollectMaterial(Material.BLUE_DYE, 64),
+                           new CollectMaterial(Material.PURPLE_DYE, 64),
+                           new CollectMaterial(Material.CYAN_DYE, 64),
+                           new CollectMaterial(Material.LIGHT_GRAY_DYE, 64),
+                           new CollectMaterial(Material.GRAY_DYE, 64),
+                           new CollectMaterial(Material.PINK_DYE, 64),
+                           new CollectMaterial(Material.LIME_DYE, 64),
+                           new CollectMaterial(Material.YELLOW_DYE, 64),
+                           new CollectMaterial(Material.LIGHT_BLUE_DYE, 64),
+                           new CollectMaterial(Material.MAGENTA_DYE, 64),
+                           new CollectMaterial(Material.ORANGE_DYE, 64),
+                           new CollectMaterial(Material.WHITE_DYE, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MAGENTA_PAINTBRUSH.createItemStack(),
+                           new ItemStack(Material.BONE_MEAL, 64),
+                           new ItemStack(Material.BONE_MEAL, 64));
         }
     },
     ;
