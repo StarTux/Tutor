@@ -42,6 +42,7 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
         Material.BOOK,
         Material.FIREWORK_ROCKET,
         Material.TNT,
+        Material.LODESTONE,
         // Redstone
         Material.REPEATER,
         Material.COMPARATOR,
