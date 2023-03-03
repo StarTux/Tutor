@@ -50,7 +50,7 @@ public final class DailyGameGoody {
                 player.playSound(player.getLocation(), ENTITY_GENERIC_EXPLODE, MASTER, 1.0f, 1.0f);
             }
         },
-        DIAMOND(1, () -> new ItemStack(Material.DIAMOND), VanillaItems.TNT, text("Free Diamonds", GREEN)) {
+        DIAMOND(1, () -> new ItemStack(Material.DIAMOND), VanillaItems.DIAMOND, text("Free Diamonds", GREEN)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 ItemStack item = new ItemStack(Material.DIAMOND, 1 + ThreadLocalRandom.current().nextInt(64));
