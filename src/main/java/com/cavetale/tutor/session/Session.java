@@ -62,6 +62,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import static com.cavetale.core.font.Unicode.tiny;
 import static com.cavetale.tutor.TutorPlugin.database;
+import static java.awt.Color.HSBtoRGB;
+import static java.awt.Color.RGBtoHSB;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.newline;
@@ -576,21 +578,24 @@ public final class Session {
     public void openMenu(Player player) {
         final int size = 4 * 9;
         final Gui gui = new Gui().size(size);
-        gui.setOverlay(GuiOverlay.BLANK.builder(size, section.backgroundColor)
-                       .layer(GuiOverlay.TOP_BAR, section.backgroundColor)
-                       .title(section.title));
+        gui.setOverlay(GuiOverlay.BLANK.builder(size, section.backgroundColor).title(section.title));
         List<MenuSection> sectionList = new ArrayList<>(List.of(MenuSection.values()));
         if (pet == null) sectionList.remove(MenuSection.PET);
         final int menuOffset = 4 - ((sectionList.size() * 2 - 1) / 2);
         for (int i = 0; i < sectionList.size(); i += 1) {
             MenuSection menuSection = sectionList.get(i);
-            gui.setItem(menuOffset + i + i, menuSection.createIcon(this), click -> {
+            final int slot = menuOffset + i + i;
+            gui.setItem(slot, menuSection.createIcon(this), click -> {
                     if (!click.isLeftClick()) return;
                     Noise.CLICK.play(player);
                     openMenu(player, menuSection);
                 });
             if (section == menuSection) {
-                gui.getOverlay().highlightSlot(menuOffset + i + i, section.backgroundColor);
+                float[] hsv = RGBtoHSB(section.backgroundColor.red(),
+                                       section.backgroundColor.green(),
+                                       section.backgroundColor.blue(), null);
+                int hex = HSBtoRGB((hsv[0] + 0.5f) % 1.0f, hsv[1] * 0.65f, hsv[2] * 0.65f);
+                gui.getOverlay().tab(slot, section.backgroundColor, color(hex));
             }
         }
         section.makeGui(gui, player, this);
@@ -790,7 +795,7 @@ public final class Session {
                             }),
             });
         gui.setSlots(indexes, slots);
-        gui.getOverlay().title(playerPetRow.getNameComponent());
+        gui.getOverlay().title(playerPetRow.getNameComponent().color(WHITE));
     }
 
     protected void makeDailyQuestGui(Gui gui, Player player) {

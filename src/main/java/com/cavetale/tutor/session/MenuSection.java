@@ -20,7 +20,7 @@ import static net.kyori.adventure.text.format.TextColor.color;
 
 @RequiredArgsConstructor
 public enum MenuSection {
-    TUTORIALS(text("Tutorials", WHITE), color(0x802020)) {
+    TUTORIALS(text("Tutorials", WHITE), color(0x77DD77)) {
         @Override protected ItemStack createIcon(Session session) {
             ItemStack tutorialItem = new ItemStack(Material.WRITTEN_BOOK);
             tutorialItem.editMeta(meta -> {
@@ -39,7 +39,7 @@ public enum MenuSection {
             session.makeTutorialMenu(gui, player);
         }
     },
-    DAILY(text("Daily Quests", GOLD), color(0x4040A0)) {
+    DAILY(text("Daily Quests", WHITE), color(0xADD8E6)) {
         @Override protected ItemStack createIcon(Session session) {
             final int total = session.getPlayerRow().getDailies();
             ItemStack dailyItem = Mytems.COLORFALL_HOURGLASS
@@ -59,7 +59,7 @@ public enum MenuSection {
             session.makeDailyQuestGui(gui, player);
         }
     },
-    COLLECT(text("Collections", YELLOW), LIGHT_PURPLE) {
+    COLLECT(text("Collections", WHITE), color(0xB99976)) {
         @Override protected ItemStack createIcon(Session session) {
             ItemStack collectItem = new ItemStack(Material.BUNDLE);
             collectItem.editMeta(meta -> {
@@ -79,7 +79,7 @@ public enum MenuSection {
         }
     },
     //QUESTS(text("Quests", WHITE), color(0x40000000)),
-    PET(text("Pet", WHITE), DARK_AQUA) {
+    PET(text("Pet", WHITE), color(0xFFC0CB)) {
         @Override protected ItemStack createIcon(Session session) {
             ItemStack petItem = session.pet.getType().mytems.createIcon();
             petItem.editMeta(meta -> {
