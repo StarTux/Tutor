@@ -92,7 +92,7 @@ public enum ItemCollectionType {
                            new CollectMaterial(Material.COAL_ORE));
         }
         @Override public List<ItemStack> getRewards() {
-            return List.of(new ItemStack(Material.BLAST_FURNACE, 8),
+            return List.of(enchantedBook(Enchantment.SILK_TOUCH, 1),
                            Mytems.RUBY.createItemStack(),
                            Mytems.RUBY.createItemStack());
         }
@@ -469,6 +469,48 @@ public enum ItemCollectionType {
                            new ItemStack(Material.BONE_MEAL, 64));
         }
     },
+
+    RAW_METAL(Set.of(MINING), "Raw Metal",
+              "Raw metals can be turned into blocks.",
+              color(0xAF8E77), color(0xe97a52),
+              () -> new ItemStack(Material.RAW_COPPER)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.RAW_COPPER, 64),
+                           new CollectMaterial(Material.RAW_IRON, 64),
+                           new CollectMaterial(Material.RAW_GOLD, 64),
+                           new CollectMaterial(Material.RAW_COPPER_BLOCK, 1),
+                           new CollectMaterial(Material.RAW_IRON_BLOCK, 1),
+                           new CollectMaterial(Material.RAW_GOLD_BLOCK, 1));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(enchantedBook(Enchantment.LOOT_BONUS_BLOCKS, 3),
+                           new ItemStack(Material.IRON_INGOT, 64),
+                           new ItemStack(Material.GOLD_INGOT, 64));
+        }
+    },
+
+    METAL_BLOCKS(Set.of(RAW_METAL), "Metal Blocks",
+                 "Ingots can be turned into decorative blocks as well.",
+                 color(0x11727A), color(0x303030),
+                 () -> new ItemStack(Material.IRON_BLOCK)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.DIAMOND_BLOCK, 1),
+                           new CollectMaterial(Material.EMERALD_BLOCK, 1),
+                           new CollectMaterial(Material.GOLD_BLOCK, 1),
+                           new CollectMaterial(Material.IRON_BLOCK, 1),
+                           new CollectMaterial(Material.COPPER_BLOCK, 1),
+                           new CollectMaterial(Material.LAPIS_BLOCK, 1),
+                           new CollectMaterial(Material.REDSTONE_BLOCK, 1),
+                           new CollectMaterial(Material.COAL_BLOCK, 1),
+                           new CollectMaterial(Material.NETHERITE_BLOCK, 1));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.KITTY_COIN.createItemStack(3),
+                           new ItemStack(Material.NETHERITE_INGOT),
+                           new ItemStack(Material.NETHERITE_INGOT));
+        }
+    },
+
     ;
 
     protected final String key;
