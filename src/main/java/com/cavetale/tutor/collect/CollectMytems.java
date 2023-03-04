@@ -21,6 +21,10 @@ public final class CollectMytems extends CollectItem {
         this("mytems:" + mytems.id, mytems, totalAmount);
     }
 
+    public CollectMytems(final Mytems mytems) {
+        this(mytems, 1);
+    }
+
     @Override
     public Component getDisplayName() {
         return textOfChildren(mytems, mytems.getMytem().getDisplayName());

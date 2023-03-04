@@ -511,6 +511,348 @@ public enum ItemCollectionType {
         }
     },
 
+    POCKET_FARM_ANIMAL(Set.of(BUCKET_MOBS), "Farm Catcher",
+                       "The Animal Catcher can reliably catch non-tameable animals"
+                       + " and store them as an item."
+                       + " It has a wide area of effect, so you can catch more than one.",
+                       color(0xE8A09D), color(0xC05552),
+                       Mytems.POCKET_PIG::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_PIG),
+                           new CollectMytems(Mytems.POCKET_CHICKEN),
+                           new CollectMytems(Mytems.POCKET_COW),
+                           new CollectMytems(Mytems.POCKET_GOAT),
+                           new CollectMytems(Mytems.POCKET_RABBIT),
+                           new CollectMytems(Mytems.POCKET_SHEEP));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.ANIMAL_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_WILD_ANIMAL(Set.of(POCKET_FARM_ANIMAL), "Wildlife Catcher",
+                       "The animal kingdom does not end at the garden fence."
+                       + " let's explore and catch them in their natural habitat!",
+                       color(0xc7c7c7), color(0x008383),
+                       Mytems.POCKET_TURTLE::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_TURTLE),
+                           new CollectMytems(Mytems.POCKET_AXOLOTL),
+                           new CollectMytems(Mytems.POCKET_BAT),
+                           new CollectMytems(Mytems.POCKET_FROG),
+                           new CollectMytems(Mytems.POCKET_FOX),
+                           new CollectMytems(Mytems.POCKET_OCELOT),
+                           new CollectMytems(Mytems.POCKET_PANDA),
+                           new CollectMytems(Mytems.POCKET_POLAR_BEAR),
+                           new CollectMytems(Mytems.POCKET_BEE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.ANIMAL_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_FANTASY_ANIMAL(Set.of(POCKET_WILD_ANIMAL), "Fable Catcher",
+                          "Not all Minecraft animals exist in the real world."
+                          + " We can catch them anyway.",
+                          color(0x00BBDB), color(0x006FA3),
+                          Mytems.POCKET_ALLAY::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_ALLAY),
+                           new CollectMytems(Mytems.POCKET_STRIDER),
+                           new CollectMytems(Mytems.POCKET_MUSHROOM_COW));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.ANIMAL_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_PET(Set.of(POCKET_FARM_ANIMAL), "Pet Catcher",
+               "Tamed animals are best caught with the Pet Catcher."
+               + " Success is guaranteed, as long as the pet is yours.",
+               color(0xE1BC86), color(0x785B42),
+               Mytems.POCKET_CAT::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_CAT),
+                           new CollectMytems(Mytems.POCKET_WOLF),
+                           new CollectMytems(Mytems.POCKET_PARROT));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.PET_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_HORSE(Set.of(POCKET_PET), "Horse Catcher",
+                 "Horses are tamed by riding them."
+                 + " Then they are easily caught with the Pet Catcher.",
+                 color(0xB59576), color(0xD0C800),
+                 Mytems.POCKET_HORSE::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_HORSE),
+                           new CollectMytems(Mytems.POCKET_DONKEY),
+                           new CollectMytems(Mytems.POCKET_MULE),
+                           new CollectMytems(Mytems.POCKET_SKELETON_HORSE));
+            // new CollectMytems(Mytems.POCKET_ZOMBIE_HORSE)
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.POCKET_ZOMBIE_HORSE.createItemStack(),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_CAMELID(Set.of(POCKET_HORSE), "Camelid Catcher",
+                   "Did you know that Llamas and Camels are related?",
+                   color(0xDB9A2D), color(0x42577F),
+                   Mytems.POCKET_CAMEL::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_LLAMA),
+                           new CollectMytems(Mytems.POCKET_TRADER_LLAMA));
+            //new CollectMytems(Mytems.POCKET_CAMEL),
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.PET_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_FISH(Set.of(BUCKET_MOBS), "Fish Catcher",
+                "Another way to catch fish alive is the Aquatic Catcher.",
+                color(0x289CC2), color(0xEDAD00),
+                Mytems.POCKET_PUFFERFISH::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_PUFFERFISH),
+                           new CollectMytems(Mytems.POCKET_TROPICAL_FISH),
+                           new CollectMytems(Mytems.POCKET_COD),
+                           new CollectMytems(Mytems.POCKET_SALMON));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.FISH_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_AQUATIC(Set.of(POCKET_FISH), "Aquatic Catcher",
+                   "The Aquatic Catcher also works on other underwater creatures,"
+                   + " as long as they're not hostile.",
+                   color(0xC7C7C7), color(0x173040),
+                   Mytems.POCKET_DOLPHIN::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_DOLPHIN),
+                           new CollectMytems(Mytems.POCKET_GLOW_SQUID),
+                           new CollectMytems(Mytems.POCKET_SQUID),
+                           new CollectMytems(Mytems.POCKET_TADPOLE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.FISH_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_VILLAGER(Set.of(POCKET_AQUATIC), "Villager Catcher",
+                    "The Villager Catcher is ideal to catch villagers and wandering traders.",
+                    color(0xA57A63), color(0x4A3129),
+                    Mytems.POCKET_VILLAGER::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_VILLAGER),
+                           new CollectMytems(Mytems.POCKET_WANDERING_TRADER));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.VILLAGER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_MONSTER(Set.of(POCKET_FANTASY_ANIMAL), "Monster Catcher",
+                   "The Monster Catcher works best on monsters."
+                   + " The catch chance is increased if the mob is damaged.",
+                   color(0x049903), color(0x000000),
+                   Mytems.POCKET_CREEPER::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_CREEPER),
+                           new CollectMytems(Mytems.POCKET_SKELETON),
+                           new CollectMytems(Mytems.POCKET_SPIDER),
+                           new CollectMytems(Mytems.POCKET_ZOMBIE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_UNDEAD(Set.of(POCKET_MONSTER), "Undead Catcher",
+                  "Some of the undead Minecraft monsters have odd variations."
+                  + " Find them and catch them!",
+                  color(0x6B8F61), color(0x85E0C8),
+                  Mytems.POCKET_DROWNED::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_DROWNED),
+                           new CollectMytems(Mytems.POCKET_HUSK),
+                           new CollectMytems(Mytems.POCKET_STRAY),
+                           new CollectMytems(Mytems.POCKET_ZOMBIE_VILLAGER));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_SCARY(Set.of(POCKET_UNDEAD), "Scary Catcher",
+                 "Some monsters hide in dark and eerie places."
+                 + " Fear not, because catching them all is worth it.",
+                 color(0x384479), color(0x003743),
+                 Mytems.POCKET_CAVE_SPIDER::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_CAVE_SPIDER),
+                           new CollectMytems(Mytems.POCKET_GUARDIAN),
+                           new CollectMytems(Mytems.POCKET_PHANTOM),
+                           new CollectMytems(Mytems.POCKET_SILVERFISH));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_GOLEM(Set.of(POCKET_SCARY), "Golem Catcher",
+                 "These can be built but you can also catch them in an egg."
+                 + " They will often attack hostile mobs but still count as monsters.",
+                 color(0xCDC0B6), color(0x658E2C),
+                 Mytems.POCKET_IRON_GOLEM::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_IRON_GOLEM),
+                           new CollectMytems(Mytems.POCKET_SNOWMAN));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_SLIME(Set.of(POCKET_GOLEM), "Slime Catcher",
+                 "The Nether and the overworld have one thing in common:"
+                 + " Slimes. These count as monsters.",
+                 color(0x6EA760), color(0x489335),
+                 Mytems.POCKET_SLIME::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_SLIME),
+                           new CollectMytems(Mytems.POCKET_MAGMA_CUBE));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_NETHER(Set.of(POCKET_MONSTER), "Nether Catcher",
+                  "The Nether has some particularly hard to catch monsters."
+                  + " Damaging them before you cast your Monster Catcher will prove useful.",
+                  color(0x3C4141), color(0x090909),
+                  Mytems.POCKET_WITHER_SKELETON::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_WITHER_SKELETON),
+                           new CollectMytems(Mytems.POCKET_BLAZE),
+                           new CollectMytems(Mytems.POCKET_GHAST));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_ENDER(Set.of(POCKET_NETHER), "Ender Catcher",
+                 "Some monsters come from the end dimension."
+                 + " When trapped in an egg, it doesn't matter where they're from.",
+                 color(0x9E6392), color(0x472D46),
+                 Mytems.POCKET_ENDERMAN::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_ENDERMAN),
+                           new CollectMytems(Mytems.POCKET_ENDERMITE),
+                           new CollectMytems(Mytems.POCKET_SHULKER));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_PIGLIN(Set.of(POCKET_NETHER), "Piglin Catcher",
+                  "There are a lot of pig monsters in the Nether."
+                  + " Some will require bringing into another dimension to transform.",
+                color(0xDCD992), color(0xD68787),
+                  Mytems.POCKET_PIGLIN::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_PIGLIN),
+                           new CollectMytems(Mytems.POCKET_PIGLIN_BRUTE),
+                           new CollectMytems(Mytems.POCKET_ZOMBIFIED_PIGLIN),
+                           new CollectMytems(Mytems.POCKET_HOGLIN),
+                           new CollectMytems(Mytems.POCKET_ZOGLIN));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_PILLAGER(Set.of(POCKET_PIGLIN), "Pillager Catcher",
+                    "They appear in raids, witch huts, or woodland mansions."
+                    + " All look somewhat similar.",
+                    color(0x838888), color(0x1C5153),
+                    Mytems.POCKET_PILLAGER::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_EVOKER),
+                           new CollectMytems(Mytems.POCKET_PILLAGER),
+                           new CollectMytems(Mytems.POCKET_RAVAGER),
+                           new CollectMytems(Mytems.POCKET_VEX),
+                           new CollectMytems(Mytems.POCKET_VINDICATOR),
+                           new CollectMytems(Mytems.POCKET_WITCH));
+            //new CollectMytems(Mytems.POCKET_ILLUSIONER),
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
+    POCKET_BOSS(Set.of(POCKET_PILLAGER), "Boss Catcher",
+                "Minecraft has no final boss but there are some boss monsters."
+                + " Finding them will be tricky, let alone catching them."
+                + " They cannot even be released from their egg.",
+                color(0xC369DA), color(0x191919),
+                Mytems.POCKET_ENDER_DRAGON::createItemStack) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMytems(Mytems.POCKET_ENDER_DRAGON),
+                           new CollectMytems(Mytems.POCKET_WITHER),
+                           new CollectMytems(Mytems.POCKET_ELDER_GUARDIAN),
+                           new CollectMytems(Mytems.POCKET_WARDEN));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16),
+                           Mytems.MOB_CATCHER.createItemStack(16));
+        }
+    },
+
     ;
 
     protected final String key;
