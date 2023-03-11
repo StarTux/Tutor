@@ -43,7 +43,8 @@ public final class DailyQuestMobArenaWave extends DailyQuest<DailyQuestMobArenaW
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
-        return text("Defeat Wave " + details.wave + " in MobArena. It's best to go with some friends.");
+        return text("Defeat Wave " + details.wave + " or higher in MobArena."
+                    + " It's best to go with some friends.");
     }
 
     @Override
