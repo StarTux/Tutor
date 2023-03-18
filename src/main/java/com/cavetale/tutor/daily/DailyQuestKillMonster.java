@@ -30,21 +30,21 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
      * The reward amount will be multiplied with the mob amount.
      */
     public enum TargetMob {
-        CREEPER("Creepers", 5, rnd -> new ItemStack(Material.GUNPOWDER, 64),
+        CREEPER("Creepers", 10, rnd -> new ItemStack(Material.GUNPOWDER, 64),
                 Mytems.CREEPER_FACE, Set.of(EntityType.CREEPER)),
-        ENDERMAN("Endermen", 3, rnd -> new ItemStack(Material.ENDER_PEARL, 16),
+        ENDERMAN("Endermen", 5, rnd -> new ItemStack(Material.ENDER_PEARL, 16),
                  Mytems.ENDERMAN_FACE, Set.of(EntityType.ENDERMAN)),
-        GHAST("Ghasts", 2, rnd -> new ItemStack(Material.GHAST_TEAR, 16),
+        GHAST("Ghasts", 3, rnd -> new ItemStack(Material.GHAST_TEAR, 16),
               Mytems.GHAST_FACE, Set.of(EntityType.GHAST)),
-        SKELETON("Skeleton", 5, rnd -> new ItemStack(Material.BONE, 64),
+        SKELETON("Skeleton", 10, rnd -> new ItemStack(Material.BONE, 64),
                  Mytems.SKELETON_FACE, Set.of(EntityType.SKELETON, EntityType.WITHER_SKELETON, EntityType.STRAY)),
-        SLIME("Slimes", 7, rnd -> new ItemStack(Material.SLIME_BALL, 64),
+        SLIME("Slimes", 10, rnd -> new ItemStack(Material.SLIME_BALL, 64),
               Mytems.SLIME_FACE, Set.of(EntityType.SLIME)),
-        SPIDER("Spider", 5, rnd -> new ItemStack((rnd.nextBoolean() ? Material.STRING : Material.SPIDER_EYE), 64),
+        SPIDER("Spider", 10, rnd -> new ItemStack((rnd.nextBoolean() ? Material.STRING : Material.SPIDER_EYE), 64),
                Mytems.SPIDER_FACE, Set.of(EntityType.SPIDER, EntityType.CAVE_SPIDER)),
         PILLAGER("Pillager", 1, rnd -> new ItemStack(Material.ARROW, 64),
                  Mytems.PILLAGER_FACE, Set.of(EntityType.PILLAGER, EntityType.VINDICATOR, EntityType.EVOKER)),
-        ZOMBIE("Zombie", 5, rnd -> new ItemStack(Material.IRON_INGOT, 64),
+        ZOMBIE("Zombie", 10, rnd -> new ItemStack(Material.IRON_INGOT, 64),
                Mytems.ZOMBIE_FACE, Set.of(EntityType.ZOMBIE, EntityType.DROWNED, EntityType.ZOMBIE_VILLAGER, EntityType.HUSK)),
         WITCH("Witches", 3, rnd -> switch (rnd.nextInt(6)) {
             case 0 -> new ItemStack(Material.GLOWSTONE_DUST, 64);
@@ -55,17 +55,17 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
             case 5 -> new ItemStack(Material.SUGAR, 64);
             default -> new ItemStack(Material.STICK, 64);
             }, Mytems.WITCH_FACE, Set.of(EntityType.WITCH)),
-        BLAZE("Blazes", 3, rnd -> new ItemStack(Material.BLAZE_ROD, 64),
+        BLAZE("Blazes", 10, rnd -> new ItemStack(Material.BLAZE_ROD, 64),
               Mytems.BLAZE_FACE, Set.of(EntityType.BLAZE)),
-        PIGLIN("Piglins", 3, rnd -> new ItemStack(Material.GOLD_INGOT, 64),
+        PIGLIN("Piglins", 5, rnd -> new ItemStack(Material.GOLD_INGOT, 64),
                Mytems.PIGLIN_FACE, Set.of(EntityType.PIGLIN, EntityType.ZOMBIFIED_PIGLIN, EntityType.PIGLIN_BRUTE)),
-        GUARDIAN("Guardians", 3, rnd -> new ItemStack(Material.WET_SPONGE, 64),
+        GUARDIAN("Guardians", 5, rnd -> new ItemStack(Material.WET_SPONGE, 64),
                  Mytems.GUARDIAN_FACE, Set.of(EntityType.GUARDIAN)),
         PHANTOM("Phantoms", 3, rnd -> new ItemStack(Material.PHANTOM_MEMBRANE, 16),
                 Mytems.PHANTOM_FACE, Set.of(EntityType.PHANTOM)),
-        MAGMA_CUBE("Magma Cubes", 5, rnd -> new ItemStack(Material.MAGMA_CREAM, 64),
+        MAGMA_CUBE("Magma Cubes", 10, rnd -> new ItemStack(Material.MAGMA_CREAM, 64),
                    Mytems.MAGMA_CUBE_FACE, Set.of(EntityType.MAGMA_CUBE)),
-        WITHER_SKELETON("Wither Skeletons", 3, rnd -> rnd.nextBoolean()
+        WITHER_SKELETON("Wither Skeletons", 5, rnd -> rnd.nextBoolean()
                         ? new ItemStack(Material.COAL, 64)
                         : new ItemStack(Material.WITHER_SKELETON_SKULL, 3),
                         Mytems.WITHER_SKELETON_FACE, Set.of(EntityType.WITHER_SKELETON)),
@@ -83,6 +83,7 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
         TargetMob[] targets = TargetMob.values();
         details.target = targets[random.nextInt(targets.length)];
         this.total = details.target.total;
+        if (total > 1) total += random.nextInt(3) * details.target.total;
     }
 
     @Override
