@@ -853,6 +853,58 @@ public enum ItemCollectionType {
         }
     },
 
+    SAND(Set.of(TOPSOIL), "Sand",
+         "Sand is plenty in the desert,"
+         + " but found in many other biomes as well.",
+         color(0xC2B280), color(0xA0A0A0),
+         () -> new ItemStack(Material.SAND)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.SAND, 64),
+                           new CollectMaterial(Material.SANDSTONE, 64),
+                           new CollectMaterial(Material.GLASS, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.CHISELED_SANDSTONE, 32),
+                           new ItemStack(Material.TNT, 16),
+                           new ItemStack(Material.TNT, 16));
+        }
+    },
+
+    MUSHROOM_ISLAND(Set.of(SAND), "Mushroom Island",
+                    "Mushroom islands may be rare, but are easy to locate with the"
+                    + " /mine command.",
+                    color(0x63575B), color(0x3F76E4),
+                    () -> new ItemStack(Material.MYCELIUM)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.MYCELIUM, 64),
+                           new CollectMaterial(Material.RED_MUSHROOM_BLOCK, 64),
+                           new CollectMaterial(Material.BROWN_MUSHROOM_BLOCK, 64),
+                           new CollectMaterial(Material.MUSHROOM_STEM, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.MUSHROOM_STEW),
+                           new ItemStack(Material.BROWN_MUSHROOM, 16),
+                           new ItemStack(Material.RED_MUSHROOM, 16));
+        }
+    },
+
+    GEODE(Set.of(MINESHAFT), "Geode",
+          "Geodes appear in any biome and can be hard to find."
+          + " It's best to comb through some cave systems.",
+          color(0x8966BF), color(0x54565A),
+          () -> new ItemStack(Material.AMETHYST_CLUSTER)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.AMETHYST_BLOCK, 64),
+                           new CollectMaterial(Material.CALCITE, 64),
+                           new CollectMaterial(Material.SMOOTH_BASALT, 64),
+                           new CollectMaterial(Material.AMETHYST_SHARD, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.SPYGLASS),
+                           new ItemStack(Material.TINTED_GLASS, 16),
+                           new ItemStack(Material.TINTED_GLASS, 16));
+        }
+    },
     ;
 
     protected final String key;

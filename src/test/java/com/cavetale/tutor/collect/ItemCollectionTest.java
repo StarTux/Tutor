@@ -17,7 +17,8 @@ public final class ItemCollectionTest {
             System.out.println(dependingMap.getOrDefault(type, 0) + " " + type);
             for (ItemCollectionType depending : ItemCollectionType.values()) {
                 if (!depending.dependencies.contains(type)) continue;
-                System.out.println("  └─ " + depending);
+                int count2 = dependingMap.getOrDefault(depending, 0);
+                System.out.println("  └─ " + count2 + " " + depending);
             }
         }
         System.out.println(ItemCollectionType.values().length + " Item Collections");
