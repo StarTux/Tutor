@@ -10,10 +10,12 @@ import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
 import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
 import com.cavetale.core.event.mobarena.MobArenaWaveCompleteEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.util.Json;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
 import com.cavetale.tutor.time.Timer;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -131,15 +133,26 @@ public final class DailyQuests implements Listener {
             plugin.getLogger().info("[Daily] Quest already exists for group " + group);
             return null;
         }
-        List<DailyQuestType> types = DailyQuestType.getAllWithGroup(group);
-        types.removeIf(it -> exclusion.contains(it));
+        List<DailyQuestIndex> types = DailyQuestType.getAllWithGroup(group);
+        types.removeIf(it -> exclusion.contains(it.type));
         if (types.isEmpty()) {
             plugin.getLogger().severe("[Daily] No types for group " + group);
             return null;
         }
-        final DailyQuestType type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
-        DailyQuest<?, ?> quest = type.create();
-        quest.generate(group);
+        List<DailyQuestIndex> bag = new ArrayList<>(types);
+        File doneFile = new File(plugin.getDataFolder(), "dailyDone" + group + ".json");
+        DailyQuestBag done = Json.load(doneFile, DailyQuestBag.class, DailyQuestBag::new);
+        bag.removeAll(done.indexes);
+        if (bag.isEmpty()) {
+            bag.addAll(types);
+            done.indexes.clear();
+        }
+        final DailyQuestIndex index = bag.get(ThreadLocalRandom.current().nextInt(bag.size()));
+        done.indexes.add(index);
+        Json.save(doneFile, done, true);
+        DailyQuest<?, ?> quest = index.type.create();
+        quest.setGroup(group);
+        quest.generate(index.index);
         dailyQuests.add(quest);
         dailyQuests.sort((a, b) -> Integer.compare(a.getGroup(), b.getGroup()));
         database().scheduleAsyncTask(() -> {
@@ -151,7 +164,7 @@ public final class DailyQuests implements Listener {
                         quest.enable();
                         plugin.getSessions().loadDailyQuest(quest);
                         Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, "" + quest.getDayId());
-                        plugin.getLogger().info("[Daily] Quest generated: " + quest);
+                        plugin.getLogger().info("[Daily] Quest generated: " + index.type + ", " + index.index);
                     });
             });
         return quest;

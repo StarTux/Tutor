@@ -43,9 +43,9 @@ public final class DailyQuestForaging extends DailyQuest<DailyQuestForaging.Deta
     }
 
     @Override
-    public void onGenerate() {
+    public void onGenerate(final int index) {
         Forage[] forages = Forage.values();
-        this.details.forage = forages[random.nextInt(forages.length)];
+        this.details.forage = forages[index];
         this.total = details.forage.total;
     }
 

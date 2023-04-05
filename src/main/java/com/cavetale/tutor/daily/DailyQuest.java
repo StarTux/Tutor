@@ -59,7 +59,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected int year;
     protected int month;
     protected int day;
-    protected int group;
+    @Setter protected int group;
     protected D details;
     protected int total;
     @Setter protected boolean active;
@@ -137,8 +137,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * Generate this quest with all its details.  onGenerate() is
      * called here.
      */
-    public final void generate(final int theGroup) {
-        this.group = theGroup;
+    public final void generate(final int index) {
         this.permission = "tutor.daily." + (group + 1);
         this.day = dailyQuests().getTimer().getDay();
         this.month = dailyQuests().getTimer().getMonth();
@@ -146,7 +145,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.dayId = day + month * 100 + year * 10000;
         this.details = newDetails();
         this.total = 1; // onGenerate will override
-        onGenerate();
+        onGenerate(Math.min(type.getOptionCount() - 1, index));
         rewards.addAll(generateRewards());
     }
 
@@ -215,7 +214,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * The details instance will have been generated already.
      * Must set total!
      */
-    protected void onGenerate() { }
+    protected void onGenerate(int index) { }
 
     /**
      * Generate rewards.  This is called right after onGenerate().

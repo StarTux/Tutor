@@ -47,10 +47,10 @@ public final class DailyQuestMining extends DailyQuest<DailyQuestMining.Details,
     }
 
     @Override
-    public void onGenerate() {
+    public void onGenerate(final int index) {
         this.total = 10;
         Ore[] ores = Ore.values();
-        this.details.ore = ores[random.nextInt(ores.length)];
+        this.details.ore = ores[index];
     }
 
     @Override

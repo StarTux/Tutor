@@ -22,7 +22,7 @@ public final class DailyQuestMobArenaWave extends DailyQuest<DailyQuestMobArenaW
     }
 
     @Override
-    public void onGenerate() {
+    public void onGenerate(final int index) {
         this.total = 1;
         details.wave = 10 * (1 + random.nextInt(5));
     }

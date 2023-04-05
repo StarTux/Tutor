@@ -47,13 +47,13 @@ public enum DailyQuestType {
      * Get all quest types with the given group.  The result will be
      * weighted!
      */
-    public static List<DailyQuestType> getAllWithGroup(int group) {
-        List<DailyQuestType> list = new ArrayList<>();
+    public static List<DailyQuestIndex> getAllWithGroup(int group) {
+        List<DailyQuestIndex> list = new ArrayList<>();
         for (var it : values()) {
             if (it.groups.contains(group)) {
-                int weight = it.getOptionCount();
-                for (int i = 0; i < weight; i += 1) {
-                    list.add(it);
+                int count = it.getOptionCount();
+                for (int i = 0; i < count; i += 1) {
+                    list.add(new DailyQuestIndex(it, i));
                 }
             }
         }

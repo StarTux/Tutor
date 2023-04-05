@@ -52,8 +52,8 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
     };
 
     @Override
-    public void onGenerate() {
-        this.details.material = MATERIALS[random.nextInt(MATERIALS.length)];
+    public void onGenerate(final int index) {
+        this.details.material = MATERIALS[index];
         this.total = 1;
     }
 

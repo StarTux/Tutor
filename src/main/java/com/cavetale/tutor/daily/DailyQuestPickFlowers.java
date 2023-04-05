@@ -58,9 +58,9 @@ public final class DailyQuestPickFlowers extends DailyQuest<DailyQuestPickFlower
     }
 
     @Override
-    public void onGenerate() {
+    public void onGenerate(final int index) {
         Flower[] flowers = Flower.values();
-        this.details.flower = flowers[random.nextInt(flowers.length)];
+        this.details.flower = flowers[index];
         this.total = details.flower.total;
     }
 

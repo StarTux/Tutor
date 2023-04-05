@@ -39,8 +39,8 @@ public final class DailyQuestEating extends DailyQuest<DailyQuestEating.Details,
     };
 
     @Override
-    public void onGenerate() {
-        this.details.food = FOODS[random.nextInt(FOODS.length)];
+    public void onGenerate(int index) {
+        this.details.food = FOODS[index];
         this.total = (random.nextInt(3) + 1) * 10;
     }
 

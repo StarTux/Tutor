@@ -77,9 +77,9 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
     }
 
     @Override
-    public void onGenerate() {
+    public void onGenerate(final int index) {
         Crop[] crops = Crop.values();
-        this.details.crop = crops[random.nextInt(crops.length)];
+        this.details.crop = crops[index];
         this.total = details.crop.total;
     }
 
