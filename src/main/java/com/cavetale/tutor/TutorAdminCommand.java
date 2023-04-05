@@ -84,7 +84,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                         CommandArgCompleter.integer(i -> i != 0))
             .description("Add Daily Game Rolls")
             .senderCaller(this::dailyAddRolls);
-        dailyNode.addChild("makeprogress").arguments("<player> <index> <amount>")
+        dailyNode.addChild("makeprogress").arguments("<player> <group> <amount>")
             .completers(CommandArgCompleter.PLAYER_CACHE,
                         CommandArgCompleter.integer(i -> i >= 0),
                         CommandArgCompleter.integer(i -> i > 0))
@@ -405,21 +405,21 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
     private boolean dailyMakeProgress(CommandSender sender, String[] args) {
         if (args.length != 3) return false;
         PlayerCache target = PlayerCache.require(args[0]);
-        int index = CommandArgCompleter.requireInt(args[1], i -> i >= 0);
+        int group = CommandArgCompleter.requireInt(args[1], i -> i >= 0);
         int amount = CommandArgCompleter.requireInt(args[2], i -> i > 0);
         plugin.sessions.findOrLoad(target, session -> {
                 for (PlayerDailyQuest it : session.getDailyQuests()) {
                     DailyQuest dailyQuest = it.getDailyQuest();
-                    if (dailyQuest.getIndex() != index) continue;
+                    if (dailyQuest.getGroup() != group) continue;
                     if (it.isComplete()) {
-                        sender.sendMessage(text("Already completed" + index, RED));
+                        sender.sendMessage(text("Already completed" + group, RED));
                         return;
                     }
                     dailyQuest.makeProgress(it, amount);
                     sender.sendMessage(text("Progress made: " + amount, AQUA));
                     return;
                 }
-                sender.sendMessage(text("Daily quest not found: index=" + index, RED));
+                sender.sendMessage(text("Daily quest not found: group=" + group, RED));
             });
         return true;
     }

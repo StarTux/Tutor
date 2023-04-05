@@ -87,7 +87,7 @@ public final class DailyQuests implements Listener {
                     dailyQuests.add(dailyQuest);
                     dailyQuest.enable();
                     plugin.getSessions().loadDailyQuest(dailyQuest);
-                    dailyQuests.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
+                    dailyQuests.sort((a, b) -> Integer.compare(a.getGroup(), b.getGroup()));
                 });
         }
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -116,8 +116,8 @@ public final class DailyQuests implements Listener {
         for (DailyQuest dailyQuest : dailyQuests) {
             exclusions.add(dailyQuest.getType());
         }
-        for (int index = 0; index < 3; index += 1) {
-            DailyQuest dailyQuest = generateNewQuest(index, exclusions);
+        for (int group = 0; group < 3; group += 1) {
+            DailyQuest dailyQuest = generateNewQuest(group, exclusions);
             if (dailyQuest == null) continue;
             result += 1;
             exclusions.add(dailyQuest.getType());
@@ -125,23 +125,23 @@ public final class DailyQuests implements Listener {
         return result;
     }
 
-    public DailyQuest generateNewQuest(final int index, Set<DailyQuestType> exclusion) {
-        final DailyQuest old = forDailyIndex(index);
+    public DailyQuest generateNewQuest(final int group, Set<DailyQuestType> exclusion) {
+        final DailyQuest old = forGroup(group);
         if (old != null) {
-            plugin.getLogger().info("[Daily] Quest already exists for index " + index);
+            plugin.getLogger().info("[Daily] Quest already exists for group " + group);
             return null;
         }
-        List<DailyQuestType> types = DailyQuestType.getAllWithIndex(index);
+        List<DailyQuestType> types = DailyQuestType.getAllWithGroup(group);
         types.removeIf(it -> exclusion.contains(it));
         if (types.isEmpty()) {
-            plugin.getLogger().severe("[Daily] No types for index " + index);
+            plugin.getLogger().severe("[Daily] No types for group " + group);
             return null;
         }
         final DailyQuestType type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
         DailyQuest<?, ?> quest = type.create();
-        quest.generate(index);
+        quest.generate(group);
         dailyQuests.add(quest);
-        dailyQuests.sort((a, b) -> Integer.compare(a.getIndex(), b.getIndex()));
+        dailyQuests.sort((a, b) -> Integer.compare(a.getGroup(), b.getGroup()));
         database().scheduleAsyncTask(() -> {
                 if (!quest.makeRow()) {
                     plugin.getLogger().severe("[Daily] Failed make row " + quest);
@@ -164,9 +164,9 @@ public final class DailyQuests implements Listener {
         return null;
     }
 
-    public DailyQuest forDailyIndex(int index) {
+    public DailyQuest forGroup(int group) {
         for (DailyQuest it : dailyQuests) {
-            if (it.getDailyIndex() == index) return it;
+            if (it.getGroup() == group) return it;
         }
         return null;
     }

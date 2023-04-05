@@ -59,7 +59,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected int year;
     protected int month;
     protected int day;
-    protected int index;
+    protected int group;
     protected D details;
     protected int total;
     @Setter protected boolean active;
@@ -80,8 +80,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
 
     protected final void load(SQLDailyQuest theRow) {
         this.row = theRow;
-        this.index = row.getDailyIndex();
-        this.permission = "tutor.daily." + (index + 1);
+        this.group = row.getDailyIndex();
+        this.permission = "tutor.daily." + (group + 1);
         this.dayId = row.getDayId();
         int tmp = dayId;
         this.day = tmp % 100;
@@ -103,7 +103,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected final boolean makeRow() {
         this.row = new SQLDailyQuest();
         row.setDayId(dayId);
-        row.setDailyIndex(index);
+        row.setDailyIndex(group);
         row.setQuestType(type.key);
         for (ItemStack is : rewards) {
             details.rewards.add(ItemStorage.of(is));
@@ -137,9 +137,9 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * Generate this quest with all its details.  onGenerate() is
      * called here.
      */
-    public final void generate(final int theIndex) {
-        this.index = theIndex;
-        this.permission = "tutor.daily." + (index + 1);
+    public final void generate(final int theGroup) {
+        this.group = theGroup;
+        this.permission = "tutor.daily." + (group + 1);
         this.day = dailyQuests().getTimer().getDay();
         this.month = dailyQuests().getTimer().getMonth();
         this.year = dailyQuests().getTimer().getYear();
@@ -250,7 +250,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         return row != null ? row.getId() : 0;
     }
 
-    public final int getDailyIndex() {
+    public final int getGroup() {
         return row != null ? row.getDailyIndex() : -1;
     }
 

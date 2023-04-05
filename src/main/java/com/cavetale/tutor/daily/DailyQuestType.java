@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * All daily quest types are known here.
- * Tasks for indexes:
+ * Tasks for groups:
  * - 0) Peaceful everyday
  * - 1) Dangerous or combat
  * - 2) Community task
@@ -40,17 +40,17 @@ public enum DailyQuestType {
 
     protected final String key = name().toLowerCase();
     protected final Supplier<? extends DailyQuest> ctor;
-    protected final List<Integer> indexes;
+    protected final List<Integer> groups;
     protected final Supplier<Integer> optionCountGetter;
 
     /**
-     * Get all quest types with the given index.  The result will be
+     * Get all quest types with the given group.  The result will be
      * weighted!
      */
-    public static List<DailyQuestType> getAllWithIndex(int index) {
+    public static List<DailyQuestType> getAllWithGroup(int group) {
         List<DailyQuestType> list = new ArrayList<>();
         for (var it : values()) {
-            if (it.indexes.contains(index)) {
+            if (it.groups.contains(group)) {
                 int weight = it.getOptionCount();
                 for (int i = 0; i < weight; i += 1) {
                     list.add(it);
