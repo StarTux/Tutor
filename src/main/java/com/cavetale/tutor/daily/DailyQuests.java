@@ -149,6 +149,7 @@ public final class DailyQuests implements Listener {
         }
         final DailyQuestIndex index = bag.get(ThreadLocalRandom.current().nextInt(bag.size()));
         done.indexes.add(index);
+        plugin.getDataFolder().mkdirs();
         Json.save(doneFile, done, true);
         DailyQuest<?, ?> quest = index.type.create();
         quest.setGroup(group);
