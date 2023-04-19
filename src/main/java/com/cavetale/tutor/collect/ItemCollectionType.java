@@ -797,7 +797,7 @@ public enum ItemCollectionType {
     POCKET_PIGLIN(Set.of(POCKET_NETHER), "Piglin Catcher",
                   "There are a lot of pig monsters in the Nether."
                   + " Some will require bringing into another dimension to transform.",
-                color(0xDCD992), color(0xD68787),
+                  color(0xDCD992), color(0xD68787),
                   Mytems.POCKET_PIGLIN::createItemStack) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMytems(Mytems.POCKET_PIGLIN),
@@ -903,6 +903,81 @@ public enum ItemCollectionType {
             return List.of(new ItemStack(Material.SPYGLASS),
                            new ItemStack(Material.TINTED_GLASS, 16),
                            new ItemStack(Material.TINTED_GLASS, 16));
+        }
+    },
+
+    NETHER(Set.of(STONES), "Nether",
+           "Dig even deeper to find the Nether."
+           + " If you hit bedrock, try a portal instead.",
+           color(0x6A3535), color(0xA16A42),
+           () -> new ItemStack(Material.NETHERRACK)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.NETHERRACK, 64),
+                           new CollectMaterial(Material.SOUL_SAND, 64),
+                           new CollectMaterial(Material.MAGMA_BLOCK, 64),
+                           new CollectMaterial(Material.GLOWSTONE, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.ANCIENT_DEBRIS, 8),
+                           new ItemStack(Material.GHAST_TEAR, 4),
+                           new ItemStack(Material.GHAST_TEAR, 4));
+        }
+    },
+
+    CRIMSON_FOREST(Set.of(NETHER), "Crimson Forest",
+                   "Some sites in the nether offer an impressive vegetation.",
+                   color(0x4B0000), color(0xFAF1B2),
+                   () -> new ItemStack(Material.CRIMSON_NYLIUM)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.CRIMSON_NYLIUM, 64),
+                           new CollectMaterial(Material.CRIMSON_STEM, 64),
+                           new CollectMaterial(Material.NETHER_WART_BLOCK, 64),
+                           new CollectMaterial(Material.SHROOMLIGHT, 64),
+                           new CollectMaterial(Material.CRIMSON_ROOTS, 64),
+                           new CollectMaterial(Material.CRIMSON_FUNGUS, 64),
+                           new CollectMaterial(Material.WEEPING_VINES, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.ANCIENT_DEBRIS, 8),
+                           new ItemStack(Material.GOLDEN_APPLE, 16),
+                           new ItemStack(Material.GOLDEN_APPLE, 16));
+        }
+    },
+
+    WARPED_FOREST(Set.of(NETHER), "Warped Forest",
+                  "Some sites in the nether offer an impressive vegetation.",
+                  color(0x084A4F), color(0xFAF1B2),
+                  () -> new ItemStack(Material.WARPED_NYLIUM)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.WARPED_NYLIUM, 64),
+                           new CollectMaterial(Material.WARPED_STEM, 64),
+                           new CollectMaterial(Material.WARPED_WART_BLOCK, 64),
+                           new CollectMaterial(Material.SHROOMLIGHT, 64),
+                           new CollectMaterial(Material.WARPED_ROOTS, 64),
+                           new CollectMaterial(Material.WARPED_FUNGUS, 64),
+                           new CollectMaterial(Material.TWISTING_VINES, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.ANCIENT_DEBRIS, 8),
+                           new ItemStack(Material.ENDER_PEARL, 16),
+                           new ItemStack(Material.ENDER_PEARL, 16));
+        }
+    },
+
+    BASALT_DELTAS(Set.of(NETHER), "Basalt Deltas",
+                  "This is a great source for stones"
+                  + " if you ever find yourself trapped in the nether.",
+                  color(0x5C5C5C), color(0xDC6E1E),
+                  () -> new ItemStack(Material.BASALT)) {
+        @Override public List<CollectItem> getItems() {
+            return List.of(new CollectMaterial(Material.BASALT, 64),
+                           new CollectMaterial(Material.BLACKSTONE, 64),
+                           new CollectMaterial(Material.MAGMA_BLOCK, 64));
+        }
+        @Override public List<ItemStack> getRewards() {
+            return List.of(new ItemStack(Material.ANCIENT_DEBRIS, 8),
+                           new ItemStack(Material.SADDLE),
+                           new ItemStack(Material.WARPED_FUNGUS_ON_A_STICK));
         }
     },
     ;
