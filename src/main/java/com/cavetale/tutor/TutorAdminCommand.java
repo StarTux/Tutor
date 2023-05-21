@@ -43,6 +43,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
 
     @Override
     public void onEnable() {
+        rootNode.addChild("reload").denyTabCompletion()
+            .description("Reload data")
+            .senderCaller(this::reload);
         rootNode.addChild("start").arguments("<player> <quest>")
             .description("Start quest for player")
             .completers(CommandArgCompleter.NULL, CommandArgCompleter.list(QuestName.KEY_LIST))
@@ -124,6 +127,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         QuestName questName = QuestName.of(arg);
         if (questName == null) throw new CommandWarn("Quest not found: " + arg);
         return plugin.quests.get(questName);
+    }
+
+    private void reload(CommandSender sender) {
+        plugin.getDailyQuests().reload();
+        plugin.getSessions().reload();
     }
 
     private boolean start(CommandSender sender, String[] args) {

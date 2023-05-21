@@ -64,6 +64,16 @@ public final class Sessions implements Listener {
         enabled = false;
     }
 
+    public void reload() {
+        for (Session session : sessionsMap.values()) {
+            session.disable();
+        }
+        sessionsMap.clear();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            createSession(player);
+        }
+    }
+
     /**
      * Find a usable session. (Nullable!)
      * @param player the player

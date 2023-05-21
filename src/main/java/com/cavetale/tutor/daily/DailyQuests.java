@@ -15,6 +15,7 @@ import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
 import com.cavetale.tutor.time.Timer;
+import io.papermc.paper.event.entity.EntityFertilizeEggEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -65,6 +66,14 @@ public final class DailyQuests implements Listener {
     private void onHourChange() {
         if (!ready) return;
         checkDailyQuestExpiry();
+    }
+
+    public void reload() {
+        dailyQuests.clear();
+        loadDailyQuestsSync(timer.getDayId());
+        Bukkit.getScheduler().runTask(plugin, () -> {
+                checkDailyQuestExpiry();
+            });
     }
 
     /**
@@ -363,6 +372,17 @@ public final class DailyQuests implements Listener {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestBreeding breeding) {
                     breeding.onEntityBreed(player, playerDailyQuest, event);
+                }
+            });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onEntityFertilizeEgg(EntityFertilizeEggEvent event) {
+        Player player = event.getBreeder();
+        plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
+                DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
+                if (dailyQuest instanceof DailyQuestBreeding breeding) {
+                    breeding.onEntityFertilizeEgg(player, playerDailyQuest, event);
                 }
             });
     }
