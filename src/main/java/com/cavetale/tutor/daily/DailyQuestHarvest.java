@@ -61,7 +61,7 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
         MELON(Growth.POOF, 10, "Melons", VanillaItems.MELON_SLICE, Material.MELON_SLICE, Set.of(Material.MELON)),
         PUMPKIN(Growth.POOF, 10, "Pumpkins", VanillaItems.PUMPKIN, Material.PUMPKIN, Set.of(Material.PUMPKIN, Material.CARVED_PUMPKIN)),
         SWEET_BERRY(Growth.REGROW, 10, "Sweet Berries", VanillaItems.SWEET_BERRIES, Material.SWEET_BERRIES, Set.of(Material.SWEET_BERRY_BUSH)),
-        COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Material.COCOA_BEANS, Set.of(Material.COCOA_BEANS)),
+        COCOA(Growth.AGE, 5, "Cocoa Beans", VanillaItems.COCOA_BEANS, Material.COCOA_BEANS, Set.of(Material.COCOA)),
         GLOW_BERRY(Growth.REGROW, 3, "Glow Berries", VanillaItems.GLOW_BERRIES, Material.GLOW_BERRIES, Set.of(Material.CAVE_VINES)),
         KELP(Growth.POOF, 10, "Kelp", VanillaItems.KELP, Material.KELP, Set.of(Material.KELP, Material.KELP_PLANT)),
         SEA_PICKLE(Growth.POOF, 5, "Sea Pickles", VanillaItems.SEA_PICKLE, Material.SEA_PICKLE, Set.of(Material.SEA_PICKLE)),
