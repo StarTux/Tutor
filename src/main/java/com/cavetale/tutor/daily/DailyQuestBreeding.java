@@ -53,6 +53,7 @@ public final class DailyQuestBreeding extends DailyQuest<DailyQuestBreeding.Deta
         STRIDER("Strider", 1, Mytems.STRIDER_FACE, Set.of(EntityType.STRIDER), List.of(Material.WARPED_FUNGUS)),
         HOGLIN("Hoglin", 1, Mytems.HOGLIN_FACE, Set.of(EntityType.HOGLIN), List.of(Material.CRIMSON_FUNGUS)),
         FROG("Frogs", 3, Mytems.TEMPERATE_FROG_FACE, Set.of(EntityType.FROG), List.of(Material.SLIME_BALL)),
+        // TURTLE("Turtle", 1, Mytems.TURTLE_FACE, Set.of(EntityType.TURTLE), List.of(Material.SEAGRASS)),
         // CAMEL("Camel Baby", 1, Mytems.CAMEL_FACE, Set.of(EntityType.CAMEL), List.of(Material.CACTUS)), // 1.20!
         ;
 

@@ -1,7 +1,6 @@
 package com.cavetale.tutor.daily;
 
 import com.cavetale.core.connect.NetworkServer;
-import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import static com.cavetale.core.font.Unicode.MULTIPLICATION;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -53,7 +53,7 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
 
     @Override
     public Component getDescription(PlayerDailyQuest playerDailyQuest) {
-        return textOfChildren(text("Catch " + total + Unicode.MULTIPLICATION.string), details.fish.chatIcon);
+        return textOfChildren(VanillaItems.FISHING_ROD, text("Catch " + total + MULTIPLICATION.string), details.fish.chatIcon);
     }
 
     @Override
