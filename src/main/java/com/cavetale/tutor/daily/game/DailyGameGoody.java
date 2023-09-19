@@ -138,6 +138,8 @@ public final class DailyGameGoody {
         result.add(Mytems.STRUCTURE_FINDER.createItemStack());
         result.add(Mytems.DEFLECTOR_SHIELD.createItemStack());
         result.add(Mytems.COPPER_SPLEEF_SHOVEL.createItemStack());
+        result.add(Mytems.DIVIDERS.createItemStack());
+        result.add(Mytems.YARDSTICK.createItemStack());
         return result;
     }
 }
