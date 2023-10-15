@@ -34,7 +34,7 @@ public enum DailyQuestType {
 
     // 2 Community
     MINIGAME_MATCH(DailyQuestMinigameMatch::new, Group.COMMUNITY, () -> DailyQuestMinigameMatch.Game.values().length),
-    FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 1),
+    FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 7),
     MOB_ARENA_WAVE(DailyQuestMobArenaWave::new, Group.COMMUNITY, () -> 1),
     ;
 
