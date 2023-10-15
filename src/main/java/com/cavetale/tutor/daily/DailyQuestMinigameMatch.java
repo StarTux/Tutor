@@ -32,6 +32,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         PVP_ARENA(3, "PvP Arena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
         TETRIS(3, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
         VERTIGO(3, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
+        SPLEEF(3, "Spleef", "Spleef", MinigameMatchType.SPLEEF, Mytems.COPPER_SPLEEF_SHOVEL, Mytems.COPPER_SPLEEF_SHOVEL::createIcon),
         ;
 
         public final int minPlayers;
