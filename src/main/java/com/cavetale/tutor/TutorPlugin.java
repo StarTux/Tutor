@@ -49,6 +49,7 @@ public final class TutorPlugin extends JavaPlugin {
         sessions.enable();
         pets.enable();
         Gui.enable();
+        new MinigameListener().enable();
     }
 
     @Override
