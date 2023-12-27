@@ -27,7 +27,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
     public enum Game {
         COLORFALL(3, "Colorfall", "Colorfall", MinigameMatchType.COLORFALL, VanillaItems.PINK_DYE, () -> new ItemStack(Material.PINK_DYE)),
         EXTREME_GRASS_GROWING(3, "EGG", "Extreme Grass Growing", MinigameMatchType.EXTREME_GRASS_GROWING,
-                              VanillaItems.GRASS, () -> new ItemStack(Material.GRASS)),
+                              VanillaItems.SHORT_GRASS, () -> new ItemStack(Material.SHORT_GRASS)),
         HIDE_AND_SEEK(3, "Hide&Seek", "Hide and Seek", MinigameMatchType.HIDE_AND_SEEK, Mytems.MAGNIFYING_GLASS, Mytems.MAGNIFYING_GLASS::createIcon),
         PVP_ARENA(3, "PvP Arena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
         TETRIS(3, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
