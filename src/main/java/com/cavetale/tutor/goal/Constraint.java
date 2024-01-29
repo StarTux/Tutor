@@ -11,7 +11,7 @@ public interface Constraint {
 
     Component getMissedMessage(PlayerQuest playerQuest, Background background);
 
-    public interface Simple extends Constraint {
+    interface Simple extends Constraint {
         default Component getMissedMessage() {
             return Component.text("You cannot do this right now!");
         }
