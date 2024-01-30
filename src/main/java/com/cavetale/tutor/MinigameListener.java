@@ -36,7 +36,7 @@ public final class MinigameListener implements Listener {
                                          : Mytems.DIAMOND_COIN.createItemStack())
                                       : (ThreadLocalRandom.current().nextBoolean()
                                          ? Mytems.RUBY.createItemStack(3)
-                                         : Mytems.DIAMOND_COIN.createItemStack())),
+                                         : Mytems.GOLDEN_COIN.createItemStack(3))),
                               text("Winning a game of " + event.getType().getDisplayName(), GOLD));
             } else {
                 // Regular Player
