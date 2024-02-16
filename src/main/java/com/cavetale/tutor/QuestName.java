@@ -115,7 +115,7 @@ public enum QuestName {
     },
     MARKET(QuestType.TUTORIAL, text("The Market")) {
         @Override public List<Component> getDescription() {
-            return List.of(text("Visit out Market"),
+            return List.of(text("Visit our Market"),
                            text("to buy and sell"),
                            text("items"));
         }
