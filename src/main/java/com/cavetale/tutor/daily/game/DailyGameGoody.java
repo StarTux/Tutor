@@ -141,6 +141,8 @@ public final class DailyGameGoody {
         result.add(Mytems.DIVIDERS.createItemStack());
         result.add(Mytems.YARDSTICK.createItemStack());
         result.add(Mytems.LUMINATOR.createItemStack());
+        result.add(Mytems.SCUBA_HELMET.createItemStack());
+        result.add(Mytems.MINER_HELMET.createItemStack());
         return result;
     }
 }
