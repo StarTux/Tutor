@@ -328,9 +328,13 @@ public final class DailyGame {
                 removeSkull();
                 placeGoodies();
                 placeSkull(tag.progress);
-                for (int i = 0; i < tag.rolls.size(); i += 1) {
-                    final int roll = tag.rolls.get(i);
+                for (int i = 0; i < 3; i += 1) {
                     final int diceIndex = diceIndices.get(i);
+                    if (i >= tag.rolls.size()) {
+                        gui.setItem(diceIndex, null);
+                        continue;
+                    }
+                    final int roll = tag.rolls.get(i);
                     if (roll == tag.roll) {
                         gui.setItem(diceIndex, diceIcon(roll).createIcon(List.of(text(roll, WHITE))));
                     } else {
@@ -354,14 +358,16 @@ public final class DailyGame {
                     player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE, SoundCategory.MASTER, 1.0f, 1.5f);
                 } else {
                     finished = true;
-                    DailyGameGoody goody = tag.getGoodyAt(to);
+                    final DailyGameGoody goody = tag.getGoodyAt(to);
                     int newRolls = session.getPlayerRow().getDailyGameRolls();
-                    boolean boardComplete = to >= tag.board.cells.size() - 1;
+                    int forceNextRoll = 0;
+                    final boolean boardComplete = to >= tag.board.cells.size() - 1;
                     if (goody != null) {
                         tag.goodies.remove(goody);
                         switch (goody.type) {
                         case REDO: to = 0; break;
                         case ROLL: newRolls += 1; break;
+                        case REPEAT: forceNextRoll = tag.roll; break;
                         case WARP: {
                             for (DailyGameGoody it : List.copyOf(tag.goodies)) {
                                 if (it.type == goody.type) {
@@ -383,6 +389,7 @@ public final class DailyGame {
                         tag.rolls.clear();
                         tag.roll = 0;
                     }
+                    final int finalForceNextRoll = forceNextRoll;
                     session.saveDailyGameAsync(newRolls, tag, () -> {
                             if (goody != null) {
                                 goody.type.deliver(player);
@@ -399,6 +406,10 @@ public final class DailyGame {
                                 newGame.selectState();
                                 session.addDailyGamesCompletedAsync(1);
                                 Perm.get().addLevelProgress(player.getUniqueId());
+                            } else if (finalForceNextRoll > 0) {
+                                tag.roll = finalForceNextRoll;
+                                tag.rolls.add(finalForceNextRoll);
+                                moveSkull.setup();
                             } else {
                                 idle.setup();
                             }

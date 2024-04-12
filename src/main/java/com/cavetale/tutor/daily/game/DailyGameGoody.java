@@ -40,7 +40,12 @@ public final class DailyGameGoody {
 
     @RequiredArgsConstructor
     public enum Type {
-        ROLL(2, Mytems.DICE::createIcon, Mytems.DICE, text("Bonus Dice Roll")) {
+        ROLL(3, Mytems.DICE::createIcon, Mytems.DICE, text("Bonus Dice Roll", GRAY)) {
+            @Override public void deliver(Player player) {
+                player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
+            }
+        },
+        REPEAT(3, Mytems.TURN_RIGHT::createIcon, Mytems.TURN_RIGHT, text("Move Previous Roll Again", AQUA)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
             }
@@ -50,14 +55,21 @@ public final class DailyGameGoody {
                 player.playSound(player.getLocation(), ENTITY_GENERIC_EXPLODE, MASTER, 1.0f, 1.0f);
             }
         },
-        DIAMOND(1, () -> new ItemStack(Material.DIAMOND), VanillaItems.DIAMOND, text("Free Diamonds", GREEN)) {
+        DIAMOND(2, () -> new ItemStack(Material.DIAMOND), VanillaItems.DIAMOND, text("Free Diamonds", GREEN)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 ItemStack item = new ItemStack(Material.DIAMOND, 1 + ThreadLocalRandom.current().nextInt(64));
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Bonus"));
             }
         },
-        RUBY(2, Mytems.RUBY::createIcon, Mytems.RUBY, text("Free Rubies", GREEN)) {
+        EMERALD(2, () -> new ItemStack(Material.EMERALD), VanillaItems.EMERALD, text("Free Emeralds", GREEN)) {
+            @Override public void deliver(Player player) {
+                player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
+                ItemStack item = new ItemStack(Material.EMERALD, 1 + ThreadLocalRandom.current().nextInt(64));
+                ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Bonus"));
+            }
+        },
+        RUBY(1, Mytems.RUBY::createIcon, Mytems.RUBY, text("Free Rubies", GREEN)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 ItemStack item = Mytems.RUBY.createItemStack(1 + ThreadLocalRandom.current().nextInt(10));
@@ -71,7 +83,7 @@ public final class DailyGameGoody {
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Bonus"));
             }
         },
-        CHEST(1, Mytems.BOSS_CHEST::createIcon, Mytems.QUESTION_MARK, text("Secret Chest", BLUE)) {
+        CHEST(0, Mytems.BOSS_CHEST::createIcon, Mytems.QUESTION_MARK, text("Secret Chest", BLUE)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), BLOCK_CHEST_OPEN, MASTER, 1.0f, 1.0f);
                 List<ItemStack> pool = getChestLootPool();
@@ -79,7 +91,7 @@ public final class DailyGameGoody {
                 ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Secret Chest"));
             }
         },
-        SILVER_COIN(2, Mytems.SILVER_COIN::createIcon, Mytems.SILVER_COIN, text("Bonus Coins", GOLD)) {
+        SILVER_COIN(1, Mytems.SILVER_COIN::createIcon, Mytems.SILVER_COIN, text("Bonus Coins", GOLD)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 int amount = 100 * (1 + ThreadLocalRandom.current().nextInt(10));
@@ -90,6 +102,13 @@ public final class DailyGameGoody {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                 int amount = 1000 * (1 + ThreadLocalRandom.current().nextInt(10));
+                Money.get().give(player.getUniqueId(), (double) amount, plugin(), "Daily Game Bonus");
+            }
+        },
+        DIAMOND_COIN(1, Mytems.DIAMOND_COIN::createIcon, Mytems.DIAMOND_COIN, text("Bonus Coins", GOLD)) {
+            @Override public void deliver(Player player) {
+                player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
+                int amount = 10_000 * (1 + ThreadLocalRandom.current().nextInt(10));
                 Money.get().give(player.getUniqueId(), (double) amount, plugin(), "Daily Game Bonus");
             }
         },

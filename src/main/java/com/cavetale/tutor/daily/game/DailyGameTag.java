@@ -3,7 +3,6 @@ package com.cavetale.tutor.daily.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Data;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -64,7 +63,7 @@ public final class DailyGameTag {
             }
         }
         Collections.shuffle(goodyTypes, random);
-        final int goodyStep = 4;
+        final int goodyStep = 3;
         for (int offset = 1; offset < board.cells.size() - 1; offset += goodyStep) {
             if (goodyTypes.isEmpty()) break;
             int min = offset;
@@ -73,23 +72,29 @@ public final class DailyGameTag {
             DailyGameGoody.Type type = goodyTypes.remove(random.nextInt(goodyTypes.size()));
             goodies.add(new DailyGameGoody(goodyIndex, type));
         }
-        List<Integer> warps = new ArrayList<>();
+        List<Integer> emptyCells = new ArrayList<>();
         for (int i = 1; i < board.cells.size() - 1; i += 1) {
-            if (getGoodyAt(i) == null) warps.add(i);
+            if (getGoodyAt(i) == null) emptyCells.add(i);
         }
-        if (warps.size() >= 2) {
-            Collections.shuffle(warps, random);
-            goodies.add(new DailyGameGoody(warps.get(0), DailyGameGoody.Type.WARP));
-            goodies.add(new DailyGameGoody(warps.get(1), DailyGameGoody.Type.WARP));
+        if (emptyCells.size() >= 2) {
+            Collections.shuffle(emptyCells, random);
+            goodies.add(new DailyGameGoody(emptyCells.get(0), DailyGameGoody.Type.WARP));
+            goodies.add(new DailyGameGoody(emptyCells.get(1), DailyGameGoody.Type.WARP));
+            if (emptyCells.size() >= 3) {
+                goodies.add(new DailyGameGoody(emptyCells.get(2), DailyGameGoody.Type.CHEST));
+            }
         }
         return this;
     }
 
-    public void debug(Random random) {
+    /**
+     * The debug function can be changed to whatever needs testing
+     * right now.
+     * It is called by the "/tutoradm daily debug <player>" command.
+     */
+    public void debug() {
+        DailyGameGoody.Type type = DailyGameGoody.Type.REPEAT;
         for (int i = 1; i < board.cells.size() - 1; i += 1) {
-            DailyGameGoody.Type type = random.nextBoolean()
-                ? DailyGameGoody.Type.WARP
-                : DailyGameGoody.Type.REDO;
             if (getGoodyAt(i) == null) goodies.add(new DailyGameGoody(i, type));
         }
     }

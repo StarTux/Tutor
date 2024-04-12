@@ -93,6 +93,20 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                         CommandArgCompleter.integer(i -> i > 0))
             .description("Make daily quest progress")
             .senderCaller(this::dailyMakeProgress);
+        dailyNode.addChild("reset").arguments("<player>")
+            .description("Reset daily game")
+            .completers(CommandArgCompleter.PLAYER_CACHE)
+            .playerCaller(this::dailyReset);
+        dailyNode.addChild("setrolls").arguments("<player> <rolls...>")
+            .description("Reset daily game")
+            .completers(CommandArgCompleter.PLAYER_CACHE,
+                        CommandArgCompleter.integer(i -> i >= 1 && i <= 6),
+                        CommandArgCompleter.REPEAT)
+            .playerCaller(this::dailySetRolls);
+        dailyNode.addChild("debug").arguments("<player>")
+            .description("Daily game debug")
+            .completers(CommandArgCompleter.PLAYER_CACHE)
+            .playerCaller(this::dailyDebug);
         CommandNode collectNode = rootNode.addChild("collect")
             .description("Collection commands");
         collectNode.addChild("give").arguments("<collection>")
@@ -392,11 +406,8 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         sender.sendMessage("Total " + index);
     }
 
-    private DailyGameTag tag = new DailyGameTag();
-
     private void dailyTest(Player player) {
-        tag.randomize();
-        DailyGame game = new DailyGame(player, tag);
+        DailyGame game = new DailyGame(player, new DailyGameTag().randomize());
         game.start();
         game.test.setup();
     }
@@ -428,6 +439,49 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                     return;
                 }
                 sender.sendMessage(text("Daily quest not found: group=" + group, RED));
+            });
+        return true;
+    }
+
+    private boolean dailyReset(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        final PlayerCache target = PlayerCache.require(args[0]);
+        plugin.sessions.findOrLoad(target, session -> {
+                final DailyGameTag tag = new DailyGameTag().randomize();
+                session.saveDailyGameAsync(0, tag, () -> {
+                        sender.sendMessage(text("Daily game of " + target.name + " was reset", YELLOW));
+                    });
+            });
+        return true;
+    }
+
+    private boolean dailyDebug(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        final PlayerCache target = PlayerCache.require(args[0]);
+        plugin.sessions.findOrLoad(target, session -> {
+                final DailyGameTag tag = session.getPlayerRow().parseDailyGameTag();
+                tag.debug();
+                session.saveDailyGameAsync(0, tag, () -> {
+                        sender.sendMessage(text("Daily game of " + target.name + " 'debugged'", YELLOW));
+                    });
+            });
+        return true;
+    }
+
+    private boolean dailySetRolls(CommandSender sender, String[] args) {
+        if (args.length < 2) return false;
+        final PlayerCache target = PlayerCache.require(args[0]);
+        final List<Integer> rolls = new ArrayList<>();
+        for (int i = 1; i < args.length; i += 1) {
+            rolls.add(CommandArgCompleter.requireInt(args[i], roll -> roll >= roll && roll <= 6));
+        }
+        plugin.sessions.findOrLoad(target, session -> {
+                final DailyGameTag tag = session.getPlayerRow().parseDailyGameTag();
+                tag.setRolls(rolls);
+                session.saveDailyGameAsync(0, tag, () -> {
+                        sender.sendMessage(text("Daily game rolls of " + target.name
+                                                + " set to " + rolls, YELLOW));
+                    });
             });
         return true;
     }
