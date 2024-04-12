@@ -21,7 +21,7 @@ public final class DailyGameTag {
     protected List<Integer> rolls = new ArrayList<>();
     protected int roll = 0;
     protected List<DailyGameGoody> goodies = new ArrayList<>();
-    protected DailyGameGoody goodyWaiting;
+    protected long chestSeed;
 
     public TextColor getBackgroundColor() {
         return TextColor.color(background);

@@ -368,6 +368,7 @@ public final class DailyGame {
                         case REDO: to = 0; break;
                         case ROLL: newRolls += 1; break;
                         case REPEAT: forceNextRoll = tag.roll; break;
+                        case CHEST: tag.chestSeed = ThreadLocalRandom.current().nextLong(); break;
                         case WARP: {
                             for (DailyGameGoody it : List.copyOf(tag.goodies)) {
                                 if (it.type == goody.type) {
@@ -410,6 +411,8 @@ public final class DailyGame {
                                 tag.roll = finalForceNextRoll;
                                 tag.rolls.add(finalForceNextRoll);
                                 moveSkull.setup();
+                            } else if (tag.chestSeed != 0L) {
+                                session.openDailyGame(player);
                             } else {
                                 idle.setup();
                             }

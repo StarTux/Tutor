@@ -5,7 +5,6 @@ import com.cavetale.core.money.Money;
 import com.cavetale.inventory.mail.ItemMail;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -86,9 +85,6 @@ public final class DailyGameGoody {
         CHEST(0, Mytems.BOSS_CHEST::createIcon, Mytems.QUESTION_MARK, text("Secret Chest", BLUE)) {
             @Override public void deliver(Player player) {
                 player.playSound(player.getLocation(), BLOCK_CHEST_OPEN, MASTER, 1.0f, 1.0f);
-                List<ItemStack> pool = getChestLootPool();
-                ItemStack item = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
-                ItemMail.send(player.getUniqueId(), List.of(item), text("Daily Game Secret Chest"));
             }
         },
         SILVER_COIN(1, Mytems.SILVER_COIN::createIcon, Mytems.SILVER_COIN, text("Bonus Coins", GOLD)) {
@@ -134,34 +130,5 @@ public final class DailyGameGoody {
         }
 
         protected abstract void deliver(Player player);
-    }
-
-    private static List<ItemStack> getChestLootPool() {
-        final List<ItemStack> result = new ArrayList<>();
-        result.add(Mytems.RUBY_COIN.createItemStack());
-        result.add(Mytems.MAGIC_CAPE.createItemStack());
-        result.add(Mytems.MOBSLAYER.createItemStack());
-        result.add(Mytems.BINGO_BUKKIT.createItemStack());
-        result.add(Mytems.WITCH_BROOM.createItemStack());
-        result.add(Mytems.BLUNDERBUSS.createItemStack());
-        result.add(Mytems.CAPTAINS_CUTLASS.createItemStack());
-        result.add(Mytems.ENDERBALL.createItemStack());
-        result.add(Mytems.MAGNIFYING_GLASS.createItemStack());
-        result.add(Mytems.FERTILIZER.createItemStack(64));
-        result.add(Mytems.SNOW_SHOVEL.createItemStack());
-        result.add(Mytems.SNEAKERS.createItemStack());
-        result.add(Mytems.UNICORN_HORN.createItemStack());
-        result.add(Mytems.SEALED_CAVEBOY.createItemStack());
-        result.add(Mytems.SCISSORS.createItemStack());
-        result.add(Mytems.COLORFALL_HOURGLASS.createItemStack());
-        result.add(Mytems.STRUCTURE_FINDER.createItemStack());
-        result.add(Mytems.DEFLECTOR_SHIELD.createItemStack());
-        result.add(Mytems.COPPER_SPLEEF_SHOVEL.createItemStack());
-        result.add(Mytems.DIVIDERS.createItemStack());
-        result.add(Mytems.YARDSTICK.createItemStack());
-        result.add(Mytems.LUMINATOR.createItemStack());
-        result.add(Mytems.SCUBA_HELMET.createItemStack());
-        result.add(Mytems.MINER_HELMET.createItemStack());
-        return result;
     }
 }

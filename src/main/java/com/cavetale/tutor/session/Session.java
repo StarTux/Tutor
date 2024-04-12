@@ -23,6 +23,7 @@ import com.cavetale.tutor.collect.PlayerItemCollection;
 import com.cavetale.tutor.daily.DailyQuest;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.daily.game.DailyGame;
+import com.cavetale.tutor.daily.game.DailyGameChest;
 import com.cavetale.tutor.daily.game.DailyGameTag;
 import com.cavetale.tutor.goal.Constraint;
 import com.cavetale.tutor.goal.Goal;
@@ -1281,12 +1282,17 @@ public final class Session {
 
     public void openDailyGame(Player player) {
         DailyGameTag tag = playerRow.parseDailyGameTag();
-        DailyGame game = new DailyGame(player, tag);
-        game.start();
-        game.selectState();
-        if (playerRow.isRollReminder()) {
-            playerRow.setRollReminder(false);
-            database().updateAsync(playerRow, null, "rollReminder");
+        if (tag.getChestSeed() != 0L) {
+            DailyGameChest dailyGameChest = new DailyGameChest(player, tag, this, tag.getChestSeed());
+            dailyGameChest.start();
+        } else {
+            DailyGame game = new DailyGame(player, tag);
+            game.start();
+            game.selectState();
+            if (playerRow.isRollReminder()) {
+                playerRow.setRollReminder(false);
+                database().updateAsync(playerRow, null, "rollReminder");
+            }
         }
     }
 }
