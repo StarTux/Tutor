@@ -461,7 +461,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         plugin.sessions.findOrLoad(target, session -> {
                 final DailyGameTag tag = session.getPlayerRow().parseDailyGameTag();
                 tag.debug();
-                session.saveDailyGameAsync(0, tag, () -> {
+                session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls(), tag, () -> {
                         sender.sendMessage(text("Daily game of " + target.name + " 'debugged'", YELLOW));
                     });
             });
@@ -478,7 +478,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         plugin.sessions.findOrLoad(target, session -> {
                 final DailyGameTag tag = session.getPlayerRow().parseDailyGameTag();
                 tag.setRolls(rolls);
-                session.saveDailyGameAsync(0, tag, () -> {
+                session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls(), tag, () -> {
                         sender.sendMessage(text("Daily game rolls of " + target.name
                                                 + " set to " + rolls, YELLOW));
                     });

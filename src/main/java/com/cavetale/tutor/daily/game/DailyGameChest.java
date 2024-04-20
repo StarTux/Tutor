@@ -159,7 +159,7 @@ public final class DailyGameChest {
             gui.setItem(ITEM_INDEXES[i], null);
         }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
-        session.saveDailyGameAsync(0, tag, () -> {
+        session.saveDailyGameAsync(session.getPlayerRow().getDailyGameRolls(), tag, () -> {
                 final Component message = text("Daily Game Secret Chest", GOLD);
                 ItemMail.send(player.getUniqueId(), List.of(reward), message);
                 plugin().getLogger().info("[DailyChest] " + player.getName() + " delivered");
