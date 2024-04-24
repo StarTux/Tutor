@@ -1,8 +1,8 @@
 package com.cavetale.tutor.goal;
 
 import com.cavetale.core.connect.NetworkServer;
-import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.List;

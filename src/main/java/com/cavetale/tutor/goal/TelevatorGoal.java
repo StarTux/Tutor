@@ -1,7 +1,7 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.event.player.PluginPlayerEvent.Detail;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.session.PlayerQuest;

@@ -2,9 +2,9 @@ package com.cavetale.tutor.sql;
 
 import com.cavetale.tutor.pet.PetGender;
 import com.cavetale.tutor.pet.PetType;
+import com.winthier.sql.SQLRow;
 import com.winthier.sql.SQLRow.Name;
 import com.winthier.sql.SQLRow.NotNull;
-import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
 import lombok.Data;
