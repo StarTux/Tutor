@@ -2,7 +2,6 @@ package com.cavetale.tutor.util;
 
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
-import com.cavetale.mytems.util.Items;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static com.cavetale.tutor.TutorPlugin.plugin;
 
 public final class Gui implements InventoryHolder {
@@ -51,7 +51,7 @@ public final class Gui implements InventoryHolder {
         }
 
         public static Slot of(ItemStack theItem, List<Component> text, Consumer<InventoryClickEvent> clickHandler) {
-            Items.text(theItem, text);
+            tooltip(theItem, text);
             return new Slot(theItem, clickHandler);
         }
     }

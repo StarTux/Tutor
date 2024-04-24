@@ -4,7 +4,6 @@ import com.cavetale.core.font.VanillaItems;
 import com.cavetale.core.money.Money;
 import com.cavetale.inventory.mail.ItemMail;
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -16,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static com.cavetale.tutor.TutorPlugin.plugin;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -123,7 +123,7 @@ public final class DailyGameGoody {
         public ItemStack createIcon() {
             ItemStack result = iconSupplier.get();
             result.editMeta(meta -> {
-                    Items.text(meta, List.of(description));
+                    tooltip(meta, List.of(description));
                     meta.addItemFlags(ItemFlag.values());
                 });
             return result;

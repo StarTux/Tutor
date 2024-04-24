@@ -11,7 +11,6 @@ import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.core.util.Json;
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.Quest;
 import com.cavetale.tutor.QuestName;
 import com.cavetale.tutor.QuestType;
@@ -63,6 +62,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import static com.cavetale.core.font.Unicode.tiny;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static com.cavetale.tutor.TutorPlugin.database;
 import static java.awt.Color.HSBtoRGB;
 import static java.awt.Color.RGBtoHSB;
@@ -710,7 +710,7 @@ public final class Session {
                 }
             }
         }
-        Items.text(item, text);
+        tooltip(item, text);
         return item;
     }
 
@@ -844,7 +844,7 @@ public final class Session {
             }
             text.add(empty());
             text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Details", GRAY)));
-            Items.text(icon, text);
+            tooltip(icon, text);
             gui.setItem(offset + i, 2, icon, click -> {
                     if (!click.isLeftClick()) return;
                     player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);

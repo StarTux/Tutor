@@ -5,7 +5,6 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.session.Session;
 import com.cavetale.tutor.util.Gui;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitTask;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static com.cavetale.tutor.TutorPlugin.plugin;
 import static com.cavetale.tutor.daily.DailyQuest.checkGameModeAndSurvivalServer;
 import static net.kyori.adventure.text.Component.empty;
@@ -63,8 +63,8 @@ public final class DailyGame {
         skull.editMeta(m -> {
                 SkullMeta meta = (SkullMeta) m;
                 meta.setPlayerProfile(player.getPlayerProfile());
-                Items.text(meta, List.of(player.displayName(),
-                                         text("You are here", GRAY)));
+                tooltip(meta, List.of(player.displayName(),
+                                      text("You are here", GRAY)));
             });
         bg = tag.getBackgroundColor();
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, bg)

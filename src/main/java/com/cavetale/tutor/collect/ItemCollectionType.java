@@ -1,7 +1,6 @@
 package com.cavetale.tutor.collect;
 
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import com.cavetale.mytems.util.Text;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -1017,7 +1017,7 @@ public enum ItemCollectionType {
                 txt.addAll(Text.wrapLore(description, c -> c.color(GRAY)));
                 txt.add(empty());
                 txt.add(textOfChildren(Mytems.MOUSE_LEFT, text(" View Collection", GRAY)));
-                Items.text(meta, txt);
+                tooltip(meta, txt);
             });
         return icon;
     }

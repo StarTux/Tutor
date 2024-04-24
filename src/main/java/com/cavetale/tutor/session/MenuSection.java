@@ -1,7 +1,6 @@
 package com.cavetale.tutor.session;
 
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import com.cavetale.tutor.util.Gui;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.font.Unicode.tiny;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -24,12 +24,12 @@ public enum MenuSection {
         @Override protected ItemStack createIcon(Session session) {
             ItemStack tutorialItem = new ItemStack(Material.WRITTEN_BOOK);
             tutorialItem.editMeta(meta -> {
-                    Items.text(meta, List.of(text("Tutorials", YELLOW),
-                                             text("Tutorials help you learn", GRAY),
-                                             text("the ropes of playing on", GRAY),
-                                             text("Cavetale. Each completed", GRAY),
-                                             text("tutorial grants you a tier", GRAY),
-                                             text("point.", GRAY)));
+                    tooltip(meta, List.of(text("Tutorials", YELLOW),
+                                          text("Tutorials help you learn", GRAY),
+                                          text("the ropes of playing on", GRAY),
+                                          text("Cavetale. Each completed", GRAY),
+                                          text("tutorial grants you a tier", GRAY),
+                                          text("point.", GRAY)));
                     meta.addItemFlags(ItemFlag.values());
                 });
             return tutorialItem;
@@ -64,11 +64,11 @@ public enum MenuSection {
             ItemStack collectItem = new ItemStack(Material.BUNDLE);
             collectItem.editMeta(meta -> {
                     final int total = session.getPlayerRow().getCollections();
-                    Items.text(meta, List.of(text("Collections", YELLOW),
-                                             text("Complete collections,", GRAY),
-                                             text("one at a time.", GRAY),
-                                             empty(),
-                                             textOfChildren(text(tiny("completed "), GRAY), text(total, YELLOW))));
+                    tooltip(meta, List.of(text("Collections", YELLOW),
+                                          text("Complete collections,", GRAY),
+                                          text("one at a time.", GRAY),
+                                          empty(),
+                                          textOfChildren(text(tiny("completed "), GRAY), text(total, YELLOW))));
                     meta.addItemFlags(ItemFlag.values());
                 });
             return collectItem;
@@ -83,8 +83,8 @@ public enum MenuSection {
         @Override protected ItemStack createIcon(Session session) {
             ItemStack petItem = session.pet.getType().mytems.createIcon();
             petItem.editMeta(meta -> {
-                    Items.text(meta, List.of(session.playerPetRow.getNameComponent(),
-                                             text("Access Pet Options", GRAY)));
+                    tooltip(meta, List.of(session.playerPetRow.getNameComponent(),
+                                          text("Access Pet Options", GRAY)));
                 });
             return petItem;
         }

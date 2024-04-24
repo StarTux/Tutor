@@ -1,7 +1,6 @@
 package com.cavetale.tutor.collect;
 
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -10,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.core.font.Unicode.subscript;
 import static com.cavetale.core.font.Unicode.superscript;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -61,7 +61,7 @@ public abstract class CollectItem {
                 } else {
                     txt.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" " + superscript(score) + "/" + subscript(totalAmount), GREEN)));
                 }
-                Items.text(meta, txt);
+                tooltip(meta, txt);
             });
         icon.setAmount(Math.max(1, Math.min(64, totalAmount - score)));
         return icon;
