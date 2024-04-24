@@ -42,6 +42,7 @@ import com.cavetale.tutor.util.Gui;
 import com.cavetale.tutor.util.Reward;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -1105,6 +1106,17 @@ public final class Session {
         for (PlayerDailyQuest playerDailyQuest : List.copyOf(dailyQuests)) {
             if (playerDailyQuest.getDailyQuest().getDayId() == newDayId) continue;
             dailyQuests.remove(playerDailyQuest);
+            playerDailyQuest.disable();
+        }
+    }
+
+    public void cleanDailyQuests() {
+        for (PlayerDailyQuest playerDailyQuest : List.copyOf(dailyQuests)) {
+            if (plugin.getDailyQuests().getDailyQuests().contains(playerDailyQuest.getDailyQuest())) {
+                continue;
+            }
+            dailyQuests.remove(playerDailyQuest);
+            playerDailyQuest.disable();
         }
     }
 
@@ -1127,7 +1139,10 @@ public final class Session {
                     if (playerDailyQuest.loadRow()) break;
                     throw new IllegalStateException("loadDailyQuest() fail: " + dailyQuest);
                 } while (false);
-                Bukkit.getScheduler().runTask(plugin, playerDailyQuest::enable);
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                        dailyQuests.sort(Comparator.comparing(pdq -> pdq.getDailyQuest().getGroup()));
+                        playerDailyQuest.enable();
+                    });
             });
     }
 

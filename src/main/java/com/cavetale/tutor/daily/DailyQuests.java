@@ -14,6 +14,7 @@ import com.cavetale.core.util.Json;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
+import com.cavetale.tutor.sql.SQLPlayerDailyQuest;
 import com.cavetale.tutor.time.Timer;
 import io.papermc.paper.event.entity.EntityFertilizeEggEvent;
 import java.io.File;
@@ -137,11 +138,13 @@ public final class DailyQuests implements Listener {
     }
 
     public DailyQuest generateNewQuest(final int group, Set<DailyQuestType> exclusion) {
+        // Delete old
         final DailyQuest old = forGroup(group);
         if (old != null) {
             plugin.getLogger().info("[Daily] Quest already exists for group " + group);
             return null;
         }
+        // Build new bag, exclusions avoid duplicates
         List<DailyQuestIndex> types = DailyQuestType.getAllWithGroup(group);
         types.removeIf(it -> exclusion.contains(it.type));
         if (types.isEmpty()) {
@@ -149,6 +152,7 @@ public final class DailyQuests implements Listener {
             return null;
         }
         List<DailyQuestIndex> bag = new ArrayList<>(types);
+        // Eliminate all recently done types in this group
         File doneFile = new File(plugin.getDataFolder(), "dailyDone" + group + ".json");
         DailyQuestBag done = Json.load(doneFile, DailyQuestBag.class, DailyQuestBag::new);
         bag.removeAll(done.indexes);
@@ -156,11 +160,36 @@ public final class DailyQuests implements Listener {
             bag.addAll(types);
             done.indexes.clear();
         }
+        // Pick one, save new bag
         final DailyQuestIndex index = bag.get(ThreadLocalRandom.current().nextInt(bag.size()));
         done.indexes.add(index);
         plugin.getDataFolder().mkdirs();
         Json.save(doneFile, done, true);
-        DailyQuest<?, ?> quest = index.type.create();
+        // Create the quest
+        DailyQuest<?, ?> quest = generateNewQuest(group, index);
+        return quest;
+    }
+
+    public DailyQuest deleteDailyQuest(int group) {
+        DailyQuest oldQuest = null;
+        for (DailyQuest it : dailyQuests) {
+            if (it.getGroup() == group) {
+                oldQuest = it;
+                break;
+            }
+        }
+        if (oldQuest == null) return null;
+        final SQLDailyQuest oldRow = oldQuest.getRow();
+        plugin.getDatabase().delete(oldRow);
+        dailyQuests.remove(oldQuest);
+        plugin.getDatabase().find(SQLPlayerDailyQuest.class)
+            .eq("dailyQuestId", oldQuest.getRow().getId())
+            .deleteAsync(null);
+        return oldQuest;
+    }
+
+    public DailyQuest generateNewQuest(int group, DailyQuestIndex index) {
+        final DailyQuest<?, ?> quest = index.type.create();
         quest.setGroup(group);
         quest.generate(index.index);
         dailyQuests.add(quest);
@@ -173,11 +202,15 @@ public final class DailyQuests implements Listener {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                         quest.enable();
                         plugin.getSessions().loadDailyQuest(quest);
-                        Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, "" + quest.getDayId());
+                        broadcastUpdate(quest);
                         plugin.getLogger().info("[Daily] Quest generated: " + index.type + ", " + index.index);
                     });
             });
         return quest;
+    }
+
+    public void broadcastUpdate(DailyQuest<?, ?> quest) {
+        Connect.get().broadcastMessage(ServerGroup.current(), DAILY_QUEST_UPDATE, "" + quest.getDayId());
     }
 
     public DailyQuest forRowId(int id) {
@@ -200,7 +233,12 @@ public final class DailyQuests implements Listener {
         case DAILY_QUEST_UPDATE:
             int dayId = Integer.parseInt(event.getPayload());
             plugin.getLogger().info("[Daily] Received Daily Quest Update: " + dayId);
-            database().scheduleAsyncTask(() -> loadDailyQuestsSync(dayId));
+            database().scheduleAsyncTask(() -> {
+                    loadDailyQuestsSync(dayId);
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                            plugin.getSessions().cleanDailyQuests();
+                        });
+                });
             break;
         default: break;
         }

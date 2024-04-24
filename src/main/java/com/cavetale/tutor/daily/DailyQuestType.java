@@ -3,6 +3,7 @@ package com.cavetale.tutor.daily;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
  * - 1) Dangerous or combat
  * - 2) Community task
  */
+@Getter
 @RequiredArgsConstructor
 public enum DailyQuestType {
     DUMMY(DailyQuestDummy::new, List.of(), () -> 0),
@@ -19,7 +21,8 @@ public enum DailyQuestType {
     MINING(DailyQuestMining::new, Group.PEACEFUL, () -> DailyQuestMining.Ore.values().length),
     HARVEST(DailyQuestHarvest::new, Group.PEACEFUL, () -> DailyQuestHarvest.Crop.values().length),
     FISHING(DailyQuestFishing::new, Group.PEACEFUL, () -> DailyQuestFishing.Fish.values().length),
-    TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL, () -> DailyQuestTreeChopper.getAllTypes().size()),
+    TREE_CHOPPER(DailyQuestTreeChopper::new, Group.PEACEFUL, () -> DailyQuestTreeChopper.getAllTypes().size()), // disabled
+    CHOP_TREES(DailyQuestChopTrees::new, Group.PEACEFUL, () -> DailyQuestChopTrees.Wood.values().length),
     SHEAR_SHEEP(DailyQuestShearSheep::new, Group.PEACEFUL, () -> DailyQuestShearSheep.getAllColors().length),
     CRAFTING(DailyQuestCrafting::new, Group.PEACEFUL, () -> DailyQuestCrafting.MATERIALS.length),
     EATING(DailyQuestEating::new, Group.PEACEFUL, () -> DailyQuestEating.FOODS.length),
@@ -35,13 +38,20 @@ public enum DailyQuestType {
     // 2 Community
     MINIGAME_MATCH(DailyQuestMinigameMatch::new, Group.COMMUNITY, () -> DailyQuestMinigameMatch.Game.values().length),
     FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 7),
-    MOB_ARENA_WAVE(DailyQuestMobArenaWave::new, Group.COMMUNITY, () -> 1),
+    MOB_ARENA_WAVE(DailyQuestMobArenaWave::new, Group.COMMUNITY, () -> 1), // disabled
+    MOB_ARENA_WAVES(DailyQuestMobArenaWaves::new, Group.COMMUNITY, () -> 1),
     ;
 
     protected final String key = name().toLowerCase();
     protected final Supplier<? extends DailyQuest> ctor;
     protected final List<Integer> groups;
     protected final Supplier<Integer> optionCountGetter;
+    private boolean disabled = false;
+
+    static {
+        TREE_CHOPPER.disabled = true;
+        MOB_ARENA_WAVE.disabled = true;
+    }
 
     /**
      * Get all quest types with the given group.  The result will be
@@ -50,11 +60,11 @@ public enum DailyQuestType {
     public static List<DailyQuestIndex> getAllWithGroup(int group) {
         List<DailyQuestIndex> list = new ArrayList<>();
         for (var it : values()) {
-            if (it.groups.contains(group)) {
-                int count = it.getOptionCount();
-                for (int i = 0; i < count; i += 1) {
-                    list.add(new DailyQuestIndex(it, i));
-                }
+            if (it.disabled) continue;
+            if (!it.groups.contains(group)) continue;
+            int count = it.getOptionCount();
+            for (int i = 0; i < count; i += 1) {
+                list.add(new DailyQuestIndex(it, i));
             }
         }
         return list;

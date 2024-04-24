@@ -10,6 +10,8 @@ import com.cavetale.tutor.collect.CollectItem;
 import com.cavetale.tutor.collect.ItemCollectionType;
 import com.cavetale.tutor.collect.PlayerItemCollection;
 import com.cavetale.tutor.daily.DailyQuest;
+import com.cavetale.tutor.daily.DailyQuestIndex;
+import com.cavetale.tutor.daily.DailyQuestType;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.daily.game.DailyGame;
 import com.cavetale.tutor.daily.game.DailyGameTag;
@@ -23,6 +25,7 @@ import com.cavetale.tutor.sql.SQLPlayerQuest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -107,6 +110,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .description("Daily game debug")
             .completers(CommandArgCompleter.PLAYER_CACHE)
             .playerCaller(this::dailyDebug);
+        dailyNode.addChild("generate").arguments("<group> <type>")
+            .description("Generate a new daily quest")
+            .completers(CommandArgCompleter.integer(i -> i >= 0),
+                        CommandArgCompleter.enumLowerList(DailyQuestType.class))
+            .playerCaller(this::dailyGenerate);
         CommandNode collectNode = rootNode.addChild("collect")
             .description("Collection commands");
         collectNode.addChild("give").arguments("<collection>")
@@ -465,6 +473,21 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                         sender.sendMessage(text("Daily game of " + target.name + " 'debugged'", YELLOW));
                     });
             });
+        return true;
+    }
+
+    private boolean dailyGenerate(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        final int group = CommandArgCompleter.requireInt(args[0], i -> i >= 0);
+        final DailyQuestType type = CommandArgCompleter.requireEnum(DailyQuestType.class, args[1]);
+        final DailyQuest<?, ?> oldQuest = plugin.getDailyQuests().deleteDailyQuest(group);
+        if (oldQuest == null) {
+            sender.sendMessage(text("Could not delete daily with group " + group, RED));
+        }
+        final int index = ThreadLocalRandom.current().nextInt(type.getOptionCount());
+        final DailyQuest<?, ?> newQuest = plugin.getDailyQuests().generateNewQuest(group, new DailyQuestIndex(type, index));
+        plugin.getSessions().cleanDailyQuests();
+        plugin.getDailyQuests().broadcastUpdate(newQuest);
         return true;
     }
 

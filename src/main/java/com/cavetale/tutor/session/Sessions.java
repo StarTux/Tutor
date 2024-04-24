@@ -222,4 +222,10 @@ public final class Sessions implements Listener {
             session.apply(s -> s.loadDailyQuest(dailyQuest));
         }
     }
+
+    public void cleanDailyQuests() {
+        for (Session session : sessionsMap.values()) {
+            session.apply(s -> s.cleanDailyQuests());
+        }
+    }
 }
