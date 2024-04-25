@@ -355,6 +355,8 @@ public final class DailyQuests implements Listener {
                     DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                     if (dailyQuest instanceof DailyQuestMobArenaWave mobArenaQuest) {
                         mobArenaQuest.onMobArenaWaveComplete(player, playerDailyQuest, event);
+                    } else if (dailyQuest instanceof DailyQuestMobArenaWaves mobArenaQuest) {
+                        mobArenaQuest.onMobArenaWaveComplete(player, playerDailyQuest, event);
                     }
                 });
         }
