@@ -248,7 +248,7 @@ public enum ItemCollectionType {
         @Override public List<ItemStack> getRewards() {
             return List.of(new ItemStack(Material.FISHING_ROD),
                            enchantedBook(Enchantment.LURE, 3),
-                           enchantedBook(Enchantment.LUCK, 3));
+                           enchantedBook(Enchantment.LUCK_OF_THE_SEA, 3));
         }
     },
 
@@ -270,7 +270,7 @@ public enum ItemCollectionType {
                            new CollectMaterial(Material.HORN_CORAL));
         }
         @Override public List<ItemStack> getRewards() {
-            return List.of(enchantedBook(Enchantment.WATER_WORKER, 1),
+            return List.of(enchantedBook(Enchantment.AQUA_AFFINITY, 1),
                            Mytems.RUBY.createItemStack(),
                            Mytems.RUBY.createItemStack());
         }
@@ -483,7 +483,7 @@ public enum ItemCollectionType {
                            new CollectMaterial(Material.RAW_GOLD_BLOCK, 1));
         }
         @Override public List<ItemStack> getRewards() {
-            return List.of(enchantedBook(Enchantment.LOOT_BONUS_BLOCKS, 3),
+            return List.of(enchantedBook(Enchantment.FORTUNE, 3),
                            new ItemStack(Material.IRON_INGOT, 64),
                            new ItemStack(Material.GOLD_INGOT, 64));
         }
@@ -563,7 +563,7 @@ public enum ItemCollectionType {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMytems(Mytems.POCKET_ALLAY),
                            new CollectMytems(Mytems.POCKET_STRIDER),
-                           new CollectMytems(Mytems.POCKET_MUSHROOM_COW));
+                           new CollectMytems(Mytems.POCKET_MOOSHROOM));
         }
         @Override public List<ItemStack> getRewards() {
             return List.of(Mytems.ANIMAL_CATCHER.createItemStack(16),
@@ -735,7 +735,7 @@ public enum ItemCollectionType {
                  Mytems.POCKET_IRON_GOLEM::createItemStack) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMytems(Mytems.POCKET_IRON_GOLEM),
-                           new CollectMytems(Mytems.POCKET_SNOWMAN));
+                           new CollectMytems(Mytems.POCKET_SNOW_GOLEM));
         }
         @Override public List<ItemStack> getRewards() {
             return List.of(Mytems.MONSTER_CATCHER.createItemStack(16),

@@ -92,7 +92,7 @@ public final class Pet {
             Player owner = getOwner();
             if (owner != null) {
                 Location petLocation = entity.getLocation().add(0, 0.25, 0);
-                owner.spawnParticle(Particle.SMOKE_NORMAL, petLocation, 32, 0.25, 0.25, 0.25, 0.0);
+                owner.spawnParticle(Particle.SMOKE, petLocation, 32, 0.25, 0.25, 0.25, 0.0);
                 owner.playSound(petLocation, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.NEUTRAL, 0.25f, 2.0f);
             }
             entity.remove();
