@@ -28,11 +28,10 @@ public final class DailyQuestMobArenaWaves extends DailyQuest<DailyQuest.Details
 
     @Override @SuppressWarnings("LineLength")
     public void onEnable() {
-        this.skullItem = Skull
-            .create("Creepy Clown",
-                    UUID.fromString("7d792e23-8853-4f7e-9b05-5e60babfe7f3"),
-                    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQwYmJhMzliOGM1MDA0NDk3Y2IzYWI2MDM3OWMwOTM1ZmY0ZGEzZjY3NDYzZDQyNmJlNDMyMWRlZDNiMzhkNyJ9fX0=",
-                    null);
+        this.skullItem = Skull.create("CreepyClown",
+                                      UUID.fromString("7d792e23-8853-4f7e-9b05-5e60babfe7f3"),
+                                      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQwYmJhMzliOGM1MDA0NDk3Y2IzYWI2MDM3OWMwOTM1ZmY0ZGEzZjY3NDYzZDQyNmJlNDMyMWRlZDNiMzhkNyJ9fX0=",
+                                      null);
     }
 
     @Override
