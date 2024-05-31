@@ -1,6 +1,6 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.tutor.util.Json;
+import com.cavetale.core.util.Json;
 import java.util.function.Supplier;
 import lombok.Data;
 
