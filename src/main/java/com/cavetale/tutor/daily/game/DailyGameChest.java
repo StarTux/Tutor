@@ -193,6 +193,9 @@ public final class DailyGameChest {
         result.add(Mytems.LUMINATOR.createItemStack());
         result.add(Mytems.SCUBA_HELMET.createItemStack());
         result.add(Mytems.MINER_HELMET.createItemStack());
+        result.add(Mytems.EMPTY_WATERING_CAN.createItemStack());
+        result.add(Mytems.IRON_SCYTHE.createItemStack());
+        result.add(Mytems.TREE_CHOPPER.createItemStack());
         return result;
     }
 }
