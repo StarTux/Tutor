@@ -63,7 +63,7 @@ public final class DailyQuestTreeChopper extends DailyQuest<DailyQuestTreeChoppe
         if (!NetworkServer.current().isSurvival()) return;
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) return;
         if (!event.isSuccessful()) return;
-        if (event.getTreeChop().guessChoppedType() != details.chopped) return;
+        if (event.getTreeChop().getChoppedType() != details.chopped) return;
         makeProgress(playerDailyQuest, 1);
     }
 
