@@ -390,7 +390,11 @@ public final class DailyGame {
                         tag.rolls.clear();
                         tag.roll = 0;
                     }
-                    final int finalForceNextRoll = forceNextRoll;
+                    final boolean doForceNextRoll = forceNextRoll > 0;
+                    if (doForceNextRoll) {
+                        tag.roll = forceNextRoll;
+                        tag.rolls.add(forceNextRoll);
+                    }
                     session.saveDailyGameAsync(newRolls, tag, () -> {
                             if (goody != null) {
                                 goody.type.deliver(player);
@@ -407,9 +411,7 @@ public final class DailyGame {
                                 newGame.selectState();
                                 session.addDailyGamesCompletedAsync(1);
                                 Perm.get().addLevelProgress(player.getUniqueId());
-                            } else if (finalForceNextRoll > 0) {
-                                tag.roll = finalForceNextRoll;
-                                tag.rolls.add(finalForceNextRoll);
+                            } else if (doForceNextRoll) {
                                 moveSkull.setup();
                             } else if (tag.chestSeed != 0L) {
                                 session.openDailyGame(player);
