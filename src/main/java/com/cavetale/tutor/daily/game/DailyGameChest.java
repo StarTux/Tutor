@@ -196,6 +196,7 @@ public final class DailyGameChest {
         result.add(Mytems.EMPTY_WATERING_CAN.createItemStack());
         result.add(Mytems.IRON_SCYTHE.createItemStack());
         result.add(Mytems.TREE_CHOPPER.createItemStack());
+        result.add(Mytems.HASTY_PICKAXE.createItemStack());
         return result;
     }
 }
