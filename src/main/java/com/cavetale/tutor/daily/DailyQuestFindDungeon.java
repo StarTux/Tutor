@@ -1,6 +1,6 @@
 package com.cavetale.tutor.daily;
 
-import com.cavetale.core.event.dungeon.DungeonDiscoverEvent;
+import com.cavetale.core.event.structure.PlayerDiscoverStructureEvent;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.mytems.Mytems;
@@ -45,7 +45,10 @@ public final class DailyQuestFindDungeon extends DailyQuest<DailyQuest.Details, 
         return result;
     }
 
-    protected void onDungeonDiscover(Player player, PlayerDailyQuest playerDailyQuest, DungeonDiscoverEvent event) {
+    protected void onPlayerDiscoverStructure(Player player, PlayerDailyQuest playerDailyQuest, PlayerDiscoverStructureEvent event) {
+        if (!"dungeons".equals(event.getStructure().getKey().getNamespace()) || !"dungeon".equals(event.getStructure().getKey().getKey())) {
+            return;
+        }
         if (!checkGameModeAndSurvivalServer(player)) return;
         makeProgress(playerDailyQuest, 1);
     }

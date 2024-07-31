@@ -5,11 +5,11 @@ import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.connect.ServerGroup;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.connect.ConnectMessageEvent;
-import com.cavetale.core.event.dungeon.DungeonDiscoverEvent;
 import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
 import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
 import com.cavetale.core.event.mobarena.MobArenaWaveCompleteEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.event.structure.PlayerDiscoverStructureEvent;
 import com.cavetale.core.util.Json;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
 import com.cavetale.tutor.TutorPlugin;
@@ -324,12 +324,12 @@ public final class DailyQuests implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    private void onDungeonDiscover(DungeonDiscoverEvent event) {
+    private void onPlayerDiscoverStructure(PlayerDiscoverStructureEvent event) {
         Player player = event.getPlayer();
         plugin.getSessions().applyDailyQuests(player, playerDailyQuest -> {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestFindDungeon dungeonDiscover) {
-                    dungeonDiscover.onDungeonDiscover(player, playerDailyQuest, event);
+                    dungeonDiscover.onPlayerDiscoverStructure(player, playerDailyQuest, event);
                 }
             });
     }
