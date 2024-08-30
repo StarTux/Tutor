@@ -33,6 +33,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         TETRIS(3, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
         VERTIGO(3, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
         SPLEEF(3, "Spleef", "Spleef", MinigameMatchType.SPLEEF, Mytems.COPPER_SPLEEF_SHOVEL, Mytems.COPPER_SPLEEF_SHOVEL::createIcon),
+        CHESS(1, "Chess", "Chess", MinigameMatchType.CHESS, Mytems.WHITE_QUEEN, Mytems.WHITE_QUEEN::createIcon),
         ;
 
         public final int minPlayers;
@@ -57,9 +58,19 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
-        return textOfChildren(text("Play a game of "),
-                              details.game.chatIcon, text(details.game.displayName),
-                              text(" with at least " + (details.game.minPlayers - 1) + " fellow players."));
+        if (details.game.minPlayers == 1) {
+            return textOfChildren(text("Play a game of "),
+                                  details.game.chatIcon, text(details.game.displayName),
+                                  text(" alone or with other players."));
+        } else if (details.game.minPlayers == 2) {
+            return textOfChildren(text("Play a game of "),
+                                  details.game.chatIcon, text(details.game.displayName),
+                                  text(" with at least one fellow player."));
+        } else {
+            return textOfChildren(text("Play a game of "),
+                                  details.game.chatIcon, text(details.game.displayName),
+                                  text(" with at least " + (details.game.minPlayers - 1) + " fellow players."));
+        }
     }
 
     @Override
