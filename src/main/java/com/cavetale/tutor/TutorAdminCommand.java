@@ -115,6 +115,11 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .completers(CommandArgCompleter.integer(i -> i >= 0),
                         CommandArgCompleter.enumLowerList(DailyQuestType.class))
             .playerCaller(this::dailyGenerate);
+        dailyNode.addChild("testmonthchange").arguments("<year> <month>")
+            .description("Test a month change")
+            .completers(CommandArgCompleter.integer(i -> i >= 2012 && i <= 9999),
+                        CommandArgCompleter.integer(i -> i >= 1 && i <= 12))
+            .senderCaller(this::dailyTestMonthChange);
         CommandNode collectNode = rootNode.addChild("collect")
             .description("Collection commands");
         collectNode.addChild("give").arguments("<collection>")
@@ -506,6 +511,15 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
                                                 + " set to " + rolls, YELLOW));
                     });
             });
+        return true;
+    }
+
+    private boolean dailyTestMonthChange(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        final int year = CommandArgCompleter.requireInt(args[0], i -> i >= 2012 && i <= 9999);
+        final int month = CommandArgCompleter.requireInt(args[1], i -> i >= 1 && i <= 12);
+        sender.sendMessage(text("Testing month change: " + year + " " + month + ". See console", YELLOW));
+        plugin.getDailyQuests().onMonthChange(year, month, true);
         return true;
     }
 

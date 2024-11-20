@@ -11,17 +11,26 @@ import com.cavetale.core.event.mobarena.MobArenaWaveCompleteEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.event.structure.PlayerDiscoverStructureEvent;
 import com.cavetale.core.util.Json;
+import com.cavetale.fam.trophy.Highscore;
+import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.item.treechopper.TreeChopEvent;
+import com.cavetale.mytems.item.trophy.TrophyCategory;
 import com.cavetale.tutor.TutorPlugin;
 import com.cavetale.tutor.sql.SQLDailyQuest;
 import com.cavetale.tutor.sql.SQLPlayerDailyQuest;
 import com.cavetale.tutor.time.Timer;
 import io.papermc.paper.event.entity.EntityFertilizeEggEvent;
 import java.io.File;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +49,9 @@ import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import static com.cavetale.tutor.TutorPlugin.database;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 
 @Getter @RequiredArgsConstructor
 public final class DailyQuests implements Listener {
@@ -54,6 +66,9 @@ public final class DailyQuests implements Listener {
         this.manager = NetworkServer.current() == NetworkServer.current().getManager();
         timer.enable(plugin);
         timer.setOnHourChange(this::onHourChange);
+        if (manager) {
+            timer.setOnMonthChange(this::onMonthChange);
+        }
         Bukkit.getPluginManager().registerEvents(this, plugin);
         database().scheduleAsyncTask(() -> {
                 loadDailyQuestsSync(timer.getDayId());
@@ -67,6 +82,44 @@ public final class DailyQuests implements Listener {
     private void onHourChange() {
         if (!ready) return;
         checkDailyQuestExpiry();
+    }
+
+    private void onMonthChange(int year, int month) {
+        onMonthChange(year, month, false);
+    }
+
+    public void onMonthChange(int year, int month, boolean testing) {
+        plugin.getLogger().info("Triggering month change: " + year + " " + month + " Testing:" + testing);
+        final int dayMin = year * 1_00_00 + month * 1_00;
+        final int dayMax = dayMin + 99;
+        final String sql = "select player,count(*) score"
+            + " from `" + plugin.getDatabase().getTable(SQLPlayerDailyQuest.class).getTableName() + "`"
+            + " where `day_id` between " + dayMin + " and " + dayMax
+            + " and complete = 1"
+            + " group by player";
+        if (testing) {
+            plugin.getLogger().info("SQL " + sql);
+        }
+        final List<Map<String, Object>> rows = plugin.getDatabase().executeSafeQuery(sql);
+        final Map<UUID, Integer> scores = new HashMap<>();
+        for (Map<String, Object> row : rows) {
+            if (!(row.get("player") instanceof String uuidString) || !(row.get("score") instanceof Number scoreNumber)) {
+                throw new IllegalStateException("Invalid row: " + row);
+            }
+            scores.put(UUID.fromString(uuidString), scoreNumber.intValue());
+        }
+        if (testing) {
+            plugin.getLogger().info("Scores " + scores);
+            for (var line : Highscore.sidebar(Highscore.of(scores))) {
+                Bukkit.getConsoleSender().sendMessage(line);
+            }
+        }
+        final String monthName = Month.of(month).getDisplayName(TextStyle.FULL, Locale.US);
+        if (!testing) {
+            Highscore.reward(scores, "tutor:daily_month", TrophyCategory.PICKAXE,
+                             textOfChildren(Mytems.DICE, text("Daily Quests " + monthName + " " + year, BLUE)),
+                             hi -> "You completed " + hi.getScore() + " daily quest" + (hi.getScore() > 1 ? "s" : ""));
+        }
     }
 
     public void reload() {

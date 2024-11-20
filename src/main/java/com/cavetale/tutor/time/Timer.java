@@ -25,6 +25,7 @@ public final class Timer {
     private int dayId;
     @Setter private Runnable onDayBreak;
     @Setter private Runnable onHourChange;
+    @Setter private MonthChangeCallback onMonthChange;
 
     public Timer(final String zoneId) {
         this(ZoneId.of(zoneId));
@@ -50,12 +51,17 @@ public final class Timer {
     private void tick() {
         final int oldDay = day;
         final int oldHour = hour;
+        final int oldMonth = month;
+        final int oldYear = year;
         update();
         if (oldHour != hour && onHourChange != null) {
             onHourChange.run();
         }
         if (oldDay != day && onDayBreak != null) {
             onDayBreak.run();
+        }
+        if (oldMonth != month && onMonthChange != null) {
+            onMonthChange.call(oldYear, oldMonth);
         }
     }
 
