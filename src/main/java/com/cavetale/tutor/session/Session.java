@@ -7,6 +7,7 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.core.item.ItemKinds;
+import com.cavetale.core.menu.MenuItemEvent;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.core.util.Json;
@@ -601,7 +602,10 @@ public final class Session {
             }
         }
         section.makeGui(gui, player, this);
-        gui.setItem(Gui.OUTSIDE, null, click -> Noise.FAIL.play(player));
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                MenuItemEvent.openMenu(player);
+            });
         gui.open(player);
     }
 

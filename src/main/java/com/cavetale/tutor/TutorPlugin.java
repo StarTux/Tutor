@@ -50,6 +50,7 @@ public final class TutorPlugin extends JavaPlugin {
         pets.enable();
         Gui.enable();
         new MinigameListener().enable();
+        new MenuListener().enable();
     }
 
     @Override
