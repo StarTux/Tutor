@@ -1175,11 +1175,7 @@ public final class Session {
         }
         if (!playerRow.isIgnoreDailies()) {
             List<PlayerDailyQuest> visibleDailies = getVisibleDailies();
-            int unfinished = 0;
-            for (var it : visibleDailies) {
-                if (!it.isComplete()) unfinished += 1;
-            }
-            if (unfinished > 0) {
+            if (countUnfinishedDailies(visibleDailies) > 0) {
                 Component prefix = Mytems.COLORFALL_HOURGLASS.getCurrentAnimationFrame();
                 lines.add(textOfChildren(prefix, text("/daily ", YELLOW), text(tiny("quests (" + visibleDailies.size() + ")"), AQUA)));
                 for (PlayerDailyQuest playerDailyQuest : visibleDailies) {
@@ -1196,6 +1192,14 @@ public final class Session {
             lines.add(textOfChildren(VanillaItems.BUNDLE, text("You have new ", AQUA)));
             lines.add(textOfChildren(VanillaItems.BUNDLE, text("/collect", YELLOW), text("ions", AQUA)));
         }
+    }
+
+    public static int countUnfinishedDailies(List<PlayerDailyQuest> visibleDailies) {
+        int result = 0;
+        for (var it : visibleDailies) {
+            if (!it.isComplete()) result += 1;
+        }
+        return result;
     }
 
     protected void applyDailyQuests(Consumer<PlayerDailyQuest> callback) {
