@@ -180,7 +180,7 @@ public final class DailyGameChest {
         // result.add(Mytems.MAGNIFYING_GLASS.createItemStack());
         // result.add(Mytems.FERTILIZER.createItemStack(64));
         // result.add(Mytems.SNOW_SHOVEL.createItemStack());
-        // result.add(Mytems.SNEAKERS.createItemStack());
+        result.add(Mytems.SNEAKERS.createItemStack());
         result.add(Mytems.UNICORN_HORN.createItemStack());
         result.add(Mytems.SEALED_CAVEBOY.createItemStack());
         result.add(Mytems.SCISSORS.createItemStack());
