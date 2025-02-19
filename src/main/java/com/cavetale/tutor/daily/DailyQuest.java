@@ -3,6 +3,7 @@ package com.cavetale.tutor.daily;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.block.PlayerBreakBlockEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
+import com.cavetale.core.money.Money;
 import com.cavetale.core.perm.Perm;
 import com.cavetale.core.util.Json;
 import com.cavetale.inventory.mail.ItemMail;
@@ -301,6 +302,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
                     playerDailyQuest.getSession().addDailyRollsAsync(1, null);
                     playerDailyQuest.getSession().addDailiesCompletedAsync(1);
                     Perm.get().addLevelProgress(playerDailyQuest.getSession().getUuid());
+                    Money.get().give(playerDailyQuest.getSession().getUuid(), (group + 1) * 1000, plugin(), "Daily Quest");
                     if (!rewards.isEmpty()) {
                         ItemMail.send(playerDailyQuest.getSession().getUuid(), rewards,
                                       textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));
