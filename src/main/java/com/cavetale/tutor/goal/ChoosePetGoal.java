@@ -1,11 +1,12 @@
 package com.cavetale.tutor.goal;
 
+import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Gui;
 import com.cavetale.tutor.TutorEvent;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
-import com.cavetale.tutor.util.Gui;
 import java.util.List;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -96,8 +97,10 @@ public final class ChoosePetGoal implements Goal {
 
     private void onClick(PlayerQuest playerQuest) {
         condClick.progress(playerQuest);
-        Gui gui = new Gui();
-        gui.withOverlay(3 * 9, BLUE, text("Choose a pet!", BLUE));
+        Gui gui = new Gui()
+            .size(3 * 9)
+            .layer(GuiOverlay.BLANK, BLUE)
+            .title(text("Choose a pet!", BLUE));
         ItemStack cat = PetType.CAT.mytems.createIcon();
         cat.editMeta(meta -> {
                 meta.displayName(text("I'm more of a cat person!", BLUE));

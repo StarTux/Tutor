@@ -4,8 +4,8 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.item.ItemKinds;
 import com.cavetale.inventory.mail.ItemMail;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Gui;
 import com.cavetale.tutor.session.Session;
-import com.cavetale.tutor.util.Gui;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,11 +76,11 @@ public final class DailyGameChest {
         final int size = 6 * 9;
         final int arrowSlot = 13;
         this.gui = new Gui().size(size);
-        gui.setOverlay(GuiOverlay.BLANK.builder(size, BLUE)
-                       .title(text("Daily Game Secret Chest", GOLD))
-                       .highlightSlot(ITEM_INDEXES[0], GOLD));
+        gui.layer(GuiOverlay.BLANK, BLUE)
+            .title(text("Daily Game Secret Chest", GOLD))
+            .highlight(ITEM_INDEXES[0], GOLD);
         for (int i = 1; i < TOTAL_ITEM_COUNT; i += 1) {
-            gui.getOverlay().highlightSlot(ITEM_INDEXES[i], color(0x3333DD));
+            gui.highlight(ITEM_INDEXES[i], color(0x3333DD));
         }
         gui.onClose(evt -> closed = true);
         gui.setItem(Gui.OUTSIDE, null, click -> {

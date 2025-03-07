@@ -1,7 +1,7 @@
 package com.cavetale.tutor.session;
 
 import com.cavetale.mytems.Mytems;
-import com.cavetale.tutor.util.Gui;
+import com.cavetale.mytems.util.Gui;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;

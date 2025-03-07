@@ -4,7 +4,6 @@ import com.cavetale.tutor.daily.DailyQuests;
 import com.cavetale.tutor.goal.Goal;
 import com.cavetale.tutor.pet.Pets;
 import com.cavetale.tutor.session.Sessions;
-import com.cavetale.tutor.util.Gui;
 import com.winthier.sql.SQLDatabase;
 import java.util.EnumMap;
 import java.util.Map;
@@ -48,7 +47,6 @@ public final class TutorPlugin extends JavaPlugin {
         adminCommand.enable();
         sessions.enable();
         pets.enable();
-        Gui.enable();
         new MinigameListener().enable();
         new MenuListener().enable();
     }
