@@ -1,5 +1,6 @@
 package com.cavetale.tutor.collect;
 
+import com.cavetale.core.item.ItemKinds;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Text;
 import java.util.ArrayList;
@@ -1010,16 +1011,16 @@ public enum ItemCollectionType {
     public abstract List<ItemStack> getRewards();
 
     public ItemStack makeIcon() {
-        ItemStack icon = iconSupplier.get();
-        icon.editMeta(meta -> {
-                List<Component> txt = new ArrayList<>();
-                txt.add(text(displayName, color));
-                txt.addAll(Text.wrapLore(description, c -> c.color(GRAY)));
-                txt.add(empty());
-                txt.add(textOfChildren(Mytems.MOUSE_LEFT, text(" View Collection", GRAY)));
-                tooltip(meta, txt);
-            });
-        return icon;
+        return tooltip(iconSupplier.get(), makeIconText());
+    }
+
+    public List<Component> makeIconText() {
+        List<Component> txt = new ArrayList<>();
+        txt.add(textOfChildren(ItemKinds.icon(iconSupplier.get()), text(displayName, color)));
+        txt.addAll(Text.wrapLore(description, c -> c.color(GRAY)));
+        txt.add(empty());
+        txt.add(textOfChildren(Mytems.MOUSE_LEFT, text(" View Collection", GRAY)));
+        return txt;
     }
 
     private static ItemStack enchantedBook(Enchantment enchantment, int level) {

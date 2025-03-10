@@ -65,8 +65,6 @@ import org.bukkit.inventory.meta.BookMeta;
 import static com.cavetale.core.font.Unicode.tiny;
 import static com.cavetale.mytems.util.Items.tooltip;
 import static com.cavetale.tutor.TutorPlugin.database;
-import static java.awt.Color.HSBtoRGB;
-import static java.awt.Color.RGBtoHSB;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.newline;
@@ -106,6 +104,14 @@ public final class Session {
     private MenuSection section = MenuSection.TUTORIALS;
     @Setter private boolean dailyGameLocked = false;
     @Setter private boolean collectionsLocked = false;
+    private int collectionPage = 0;
+    private boolean filterCollections;
+    private static final int[] BOTTOM_4_LEFT_SLOTS = {
+        18, 19, 20, 21, 22, 23, 24, 25,
+        27, 28, 29, 30, 31, 32, 33, 34,
+        36, 37, 38, 39, 40, 41, 42, 43,
+        45, 46, 47, 48, 49, 60, 61, 62,
+    };
 
     /**
      * This is the constructor for a regular session which will be
@@ -579,9 +585,8 @@ public final class Session {
     }
 
     public void openMenu(Player player) {
-        final int size = 4 * 9;
-        final Gui gui = new Gui()
-            .size(size)
+        final Gui gui = new Gui(plugin)
+            .size(6 * 9)
             .layer(GuiOverlay.BLANK, section.backgroundColor)
             .title(section.title);
         List<MenuSection> sectionList = new ArrayList<>(List.of(MenuSection.values()));
@@ -596,11 +601,7 @@ public final class Session {
                     openMenu(player, menuSection);
                 });
             if (section == menuSection) {
-                float[] hsv = RGBtoHSB(section.backgroundColor.red(),
-                                       section.backgroundColor.green(),
-                                       section.backgroundColor.blue(), null);
-                int hex = HSBtoRGB((hsv[0] + 0.5f) % 1.0f, hsv[1] * 0.65f, hsv[2] * 0.65f);
-                gui.tab(slot, section.backgroundColor, color(hex));
+                gui.tab(slot, section.backgroundColor, color(0x303040));
             }
         }
         section.makeGui(gui, player, this);
@@ -630,12 +631,9 @@ public final class Session {
 
     protected void makeTutorialMenu(Gui gui, Player player) {
         int nextIndex = 0;
-        List<Integer> slots = List.of(9, 10, 11, 12, 13, 14, 15, 16,
-                                      18, 19, 20, 21, 22, 23, 24, 25,
-                                      27, 28, 29, 30, 31, 32, 33, 34);
         for (QuestName questName : QuestName.values()) {
             if (!completedQuests.containsKey(questName) && !canSee(questName)) continue;
-            int slot = slots.get(nextIndex++);
+            final int slot = BOTTOM_4_LEFT_SLOTS[nextIndex++];
             gui.setItem(slot, makeQuestItem(questName), click -> {
                     if (!click.isLeftClick()) return;
                     if (currentQuests.containsKey(questName)) {
@@ -665,7 +663,7 @@ public final class Session {
                             openMenu(player);
                         });
         } else {
-            gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Quests", GREEN),
+            gui.setItem(8, 3, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Quests", GREEN),
                                                                          text("Quests and tutorials", GRAY),
                                                                          text("will show in your", GRAY),
                                                                          text("sidebar.", GRAY),
@@ -729,14 +727,14 @@ public final class Session {
         PetType petType = playerPetRow.parsePetType();
         PetGender petGender = playerPetRow.getGender();
         // Pet Type
-        gui.setItem(4, 1, petType.mytems.createIcon(List.of(text("Choose Pet", GREEN))),
+        gui.setItem(4, 2, petType.mytems.createIcon(List.of(text("Choose Pet", GREEN))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
                         openPetTypeSelectionMenu(player);
                     });
         // Spawn
-        gui.setItem(1, 2, Mytems.STAR.createIcon(List.of(textOfChildren(text("Spawn ", GREEN), petName))),
+        gui.setItem(1, 4, Mytems.STAR.createIcon(List.of(textOfChildren(text("Spawn ", GREEN), petName))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
@@ -752,7 +750,7 @@ public final class Session {
                         pet.setAutoDespawn(false);
                     });
         // Auto Respawn
-        gui.setItem(3, 2, (on
+        gui.setItem(3, 4, (on
                            ? Mytems.OK.createIcon(List.of(text("Auto Respawn Enabled", GREEN)))
                            : Mytems.NO.createIcon(List.of(text("Auto Respawn Disabled", RED)))),
                     click -> {
@@ -767,7 +765,7 @@ public final class Session {
                         openMenu(player, MenuSection.PET);
                     });
         // Name
-        gui.setItem(5, 2, tooltip(new ItemStack(Material.NAME_TAG), List.of(text("Change Name", GREEN))),
+        gui.setItem(5, 4, tooltip(new ItemStack(Material.NAME_TAG), List.of(text("Change Name", GREEN))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
@@ -777,7 +775,7 @@ public final class Session {
                                            .hoverEvent(showText(text("/tutor rename", YELLOW))));
                     });
         // Gender
-        gui.setItem(7, 2, tooltip(petGender.itemStack.clone(), List.of(petGender.component)),
+        gui.setItem(7, 4, tooltip(petGender.itemStack.clone(), List.of(petGender.component)),
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (playerPetRow.getGender() != petGender) {
@@ -808,7 +806,7 @@ public final class Session {
                 icon = Mytems.CHECKED_CHECKBOX.createIcon();
             } else {
                 icon = dailyQuest.createIcon(playerDailyQuest);
-                gui.highlight(offset + i, 2, MenuSection.DAILY.backgroundColor);
+                gui.highlight(offset + i, 3, MenuSection.DAILY.backgroundColor);
             }
             List<Component> text = new ArrayList<>();
             text.add(dailyQuest.getDescription(playerDailyQuest));
@@ -842,7 +840,7 @@ public final class Session {
             text.add(empty());
             text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Details", GRAY)));
             tooltip(icon, text);
-            gui.setItem(offset + i, 2, icon, click -> {
+            gui.setItem(offset + i, 3, icon, click -> {
                     if (!click.isLeftClick()) return;
                     player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                     openDailyQuestBook(player, dailyQuest, playerDailyQuest);
@@ -865,7 +863,7 @@ public final class Session {
                                                             textOfChildren(text(tiny("total games "), GRAY), text(totalGames, WHITE)),
                                                             textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY))));
         diceIcon.setAmount(Math.max(1, Math.min(64, rolls)));
-        gui.setItem(0, 2, diceIcon,
+        gui.setItem(0, 3, diceIcon,
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (dailyGameLocked) return;
@@ -886,7 +884,7 @@ public final class Session {
                             openMenu(player);
                         });
         } else {
-            gui.setItem(8, 2, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Daily Quests", GREEN),
+            gui.setItem(8, 3, Mytems.MAGNIFYING_GLASS.createIcon(List.of(text("Observing Daily Quests", GREEN),
                                                                          text("Daily Quests will show", GRAY),
                                                                          text("in your sidebar.", GRAY),
                                                                          empty(),
@@ -953,8 +951,8 @@ public final class Session {
     public void openPetTypeSelectionMenu(Player player) {
         final PetType[] allTypes = PetType.values();
         final int rows = (allTypes.length - 1) / 9 + 1;
-        final int size = rows * 9;
-        Gui gui = new Gui()
+        final int size = 6 * 9;
+        Gui gui = new Gui(plugin)
             .size(size)
             .layer(GuiOverlay.BLANK, color(0x008888))
             .title(text("Choose a Pet", WHITE));
@@ -993,19 +991,92 @@ public final class Session {
      * Collections overview menu.
      */
     protected void makeCollectMenu(Gui gui, Player player) {
-        int nextIndex = 0;
+        final int pageSize = BOTTOM_4_LEFT_SLOTS.length;
+        final List<PlayerItemCollection> displayCollections = new ArrayList<>();
         for (ItemCollectionType itemCollectionType : ItemCollectionType.values()) {
-            PlayerItemCollection playerItemCollection = collections.get(itemCollectionType);
-            if (!playerItemCollection.isUnlocked()) continue;
-            if (playerItemCollection.isComplete() && playerItemCollection.isClaimed()) continue;
-            final int slot = 9 + nextIndex++;
-            gui.setItem(slot, itemCollectionType.makeIcon(), click -> {
+            final PlayerItemCollection playerItemCollection = collections.get(itemCollectionType);
+            if (filterCollections && (!playerItemCollection.isUnlocked() || (playerItemCollection.isComplete() && playerItemCollection.isClaimed()))) {
+                continue;
+            }
+            displayCollections.add(playerItemCollection);
+        }
+        final int pageCount = ((displayCollections.size() - 1) / pageSize) + 1;
+        if (collectionPage >= pageCount) {
+            collectionPage = pageCount - 1;
+        }
+        gui.title(textOfChildren(text("Collections", WHITE),
+                                 text(" (" + (collectionPage + 1) + "/" + pageCount + ")")));
+        if (collectionPage > 0) {
+            gui.setItem(9, Mytems.ARROW_LEFT.createIcon(List.of(text("Previous Page", GRAY))), click -> {
                     if (!click.isLeftClick()) return;
-                    openItemCollectionMenu(player, itemCollectionType);
-                    player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    collectionPage -= 1;
+                    openMenu(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1f);
                 });
-            if (playerItemCollection.isComplete()) {
-                gui.highlight(slot, GOLD);
+        }
+        if (collectionPage < pageCount - 1) {
+            gui.setItem(17, Mytems.ARROW_RIGHT.createIcon(List.of(text("Next Page", GRAY))), click -> {
+                    if (!click.isLeftClick()) return;
+                    collectionPage += 1;
+                    openMenu(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1f);
+                });
+        }
+        if (!filterCollections) {
+            gui.setItem(8, 3, Mytems.EARTH.createIcon(List.of(text("Showing all Collections", GRAY),
+                                                              empty(),
+                                                              textOfChildren(Mytems.MOUSE_LEFT, text(" Filter", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            filterCollections = true;
+                            openMenu(player);
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1f);
+                        });
+        } else {
+            gui.setItem(8, 3, Mytems.BINOCULARS.createIcon(List.of(text("Showing only open Collections", GRAY),
+                                                                   empty(),
+                                                                   textOfChildren(Mytems.MOUSE_LEFT, text(" Show all", GRAY)))),
+                        click -> {
+                            if (!click.isLeftClick()) return;
+                            filterCollections = false;
+                            openMenu(player);
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1f);
+                        });
+        }
+        for (int i = 0; i < pageSize; i += 1) {
+            final int valueIndex = pageSize * collectionPage + i;
+            if (valueIndex >= displayCollections.size()) {
+                break;
+            }
+            final PlayerItemCollection playerItemCollection = displayCollections.get(valueIndex);
+            final ItemCollectionType itemCollectionType = playerItemCollection.getCollection();
+            final int slot = BOTTOM_4_LEFT_SLOTS[i];
+            if (!playerItemCollection.isUnlocked()) {
+                // Locked
+                gui.setItem(slot, Mytems.COPPER_KEYHOLE.createIcon(List.of(text("???", DARK_RED),
+                                                                           text("Not yet unlocked", DARK_GRAY))),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 0.5f);
+                            });
+            } else if (playerItemCollection.isComplete() && playerItemCollection.isClaimed()) {
+                // Finished
+                gui.setItem(slot, Mytems.CHECKED_CHECKBOX.createIcon(itemCollectionType.makeIconText()),
+                            click -> {
+                                if (!click.isLeftClick()) return;
+                                openItemCollectionMenu(player, itemCollectionType);
+                                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1f);
+                            });
+            } else {
+                // Unfinished
+                gui.setItem(slot, itemCollectionType.makeIcon(), click -> {
+                        if (!click.isLeftClick()) return;
+                        openItemCollectionMenu(player, itemCollectionType);
+                        player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, SoundCategory.MASTER, 0.5f, 1f);
+                    });
+                if (playerItemCollection.isComplete()) {
+                    gui.highlight(slot, GOLD);
+                }
             }
         }
         if (playerRow.isCollectionReminder()) {
@@ -1019,9 +1090,9 @@ public final class Session {
      */
     protected void openItemCollectionMenu(Player player, ItemCollectionType itemCollectionType) {
         PlayerItemCollection playerItemCollection = collections.get(itemCollectionType);
-        final int size = 6 * 9;
-        Gui gui = new Gui().size(size);
-        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, LIGHT_PURPLE)
+        Gui gui = new Gui(plugin)
+            .size(6 * 9)
+            .layer(GuiOverlay.BLANK, LIGHT_PURPLE)
             .layer(GuiOverlay.WHITE, itemCollectionType.getBackground())
             .layer(GuiOverlay.ITEM_COLLECTION, itemCollectionType.getColor())
             .title(text(itemCollectionType.getDisplayName() + " Collection", itemCollectionType.getColor()));
@@ -1089,7 +1160,6 @@ public final class Session {
                         });
                 });
         }
-        gui.title(builder.build());
         gui.open(player);
     }
 

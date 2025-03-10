@@ -4,6 +4,7 @@ import com.cavetale.core.util.Json;
 import com.cavetale.tutor.session.Session;
 import com.cavetale.tutor.sql.SQLPlayerItemCollection;
 import java.util.function.Consumer;
+import lombok.Getter;
 import static com.cavetale.tutor.TutorPlugin.database;
 import static com.cavetale.tutor.TutorPlugin.plugin;
 
@@ -13,6 +14,7 @@ import static com.cavetale.tutor.TutorPlugin.plugin;
  * Most will not have a row or progress instance at first, only
  * creating them when the collection is unlocked.
  */
+@Getter
 public final class PlayerItemCollection {
     protected final Session session;
     protected final ItemCollectionType collection;
