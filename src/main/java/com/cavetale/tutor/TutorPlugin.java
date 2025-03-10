@@ -32,6 +32,7 @@ public final class TutorPlugin extends JavaPlugin {
         if (!database.createAllTables()) {
             throw new IllegalStateException("Table creation failed!");
         }
+        database.getTable(com.cavetale.tutor.sql.SQLPlayer.class).createColumnIfMissing("questReminder");
         // We make sure that all quests are set (non null)
         for (QuestName questName : QuestName.values()) {
             Quest quest = questName.create(); // throws

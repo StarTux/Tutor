@@ -304,6 +304,10 @@ public final class Session {
                     }
                 });
         }
+        if (!playerRow.isQuestReminder()) {
+            playerRow.setQuestReminder(true);
+            database().updateAsync(playerRow, null, "questReminder");
+        }
         triggerAutomaticQuests();
         triggerQuestReminder();
     }
@@ -476,7 +480,7 @@ public final class Session {
 
     public void triggerQuestReminder() {
         if (!currentQuests.isEmpty()) return;
-        if (!playerRow.isIgnoreQuests()) {
+        if (!playerRow.isIgnoreQuests() && playerRow.isQuestReminder()) {
             for (QuestName questName : QuestName.values()) {
                 if (!completedQuests.containsKey(questName) && canSee(questName)) {
                     if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
@@ -676,6 +680,10 @@ public final class Session {
                             database().updateAsync(playerRow, null, "ignoreQuests");
                             openMenu(player);
                         });
+        }
+        if (playerRow.isQuestReminder()) {
+            playerRow.setQuestReminder(false);
+            database().updateAsync(playerRow, null, "questReminder");
         }
     }
 

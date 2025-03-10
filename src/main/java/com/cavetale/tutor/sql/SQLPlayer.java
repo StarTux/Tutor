@@ -26,6 +26,7 @@ public final class SQLPlayer implements SQLRow {
     @Default("0") private int totalRolls;
     @Default("0") private boolean rollReminder;
     @Default("0") private boolean collectionReminder;
+    @Default("0") private boolean questReminder;
 
     public SQLPlayer() { }
 
