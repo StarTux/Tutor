@@ -95,7 +95,7 @@ public final class DailyQuestChopTrees extends DailyQuest<DailyQuestChopTrees.De
 
     @Override
     protected List<ItemStack> generateRewards() {
-        return List.of(new ItemStack(details.wood.material, total));
+        return List.of(new ItemStack(details.wood.material, Math.min(64, total)));
     }
 
     public static final class Details extends DailyQuest.Details {
