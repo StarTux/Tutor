@@ -879,7 +879,7 @@ public final class Session {
                         openDailyGame(player);
                     });
         if (playerRow.isIgnoreDailies()) {
-            gui.setItem(8, 2, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Daily Quests", RED),
+            gui.setItem(8, 3, Mytems.BLIND_EYE.createIcon(List.of(text("Ignoring Daily Quests", RED),
                                                                   text("Daily Quests will not", GRAY),
                                                                   text("show in your sidebar.", GRAY),
                                                                   empty(),
