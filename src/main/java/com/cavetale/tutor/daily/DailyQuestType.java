@@ -40,6 +40,7 @@ public enum DailyQuestType {
     FRIENDSHIP_GIFT(DailyQuestFriendshipGift:: new, Group.COMMUNITY, () -> 7),
     MOB_ARENA_WAVE(DailyQuestMobArenaWave::new, Group.COMMUNITY, () -> 1), // disabled
     MOB_ARENA_WAVES(DailyQuestMobArenaWaves::new, Group.COMMUNITY, () -> 1),
+    SKYBLOCK(DailyQuestSkyblock::new, Group.COMMUNITY, () -> DailyQuestSkyblock.Task.values().length),
     ;
 
     protected final String key = name().toLowerCase();
