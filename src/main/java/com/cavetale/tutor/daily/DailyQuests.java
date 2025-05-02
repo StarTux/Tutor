@@ -24,12 +24,10 @@ import java.io.File;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
@@ -177,29 +175,23 @@ public final class DailyQuests implements Listener {
 
     private int generateNewQuests() {
         int result = 0;
-        Set<DailyQuestType> exclusions = EnumSet.noneOf(DailyQuestType.class);
-        for (DailyQuest dailyQuest : dailyQuests) {
-            exclusions.add(dailyQuest.getType());
-        }
         for (int group = 0; group < 3; group += 1) {
-            DailyQuest dailyQuest = generateNewQuest(group, exclusions);
+            DailyQuest dailyQuest = generateNewQuest(group);
             if (dailyQuest == null) continue;
             result += 1;
-            exclusions.add(dailyQuest.getType());
         }
         return result;
     }
 
-    public DailyQuest generateNewQuest(final int group, Set<DailyQuestType> exclusion) {
+    public DailyQuest generateNewQuest(final int group) {
         // Delete old
         final DailyQuest old = forGroup(group);
         if (old != null) {
             plugin.getLogger().info("[Daily] Quest already exists for group " + group);
             return null;
         }
-        // Build new bag, exclusions avoid duplicates
+        // Build new bag
         List<DailyQuestIndex> types = DailyQuestType.getAllWithGroup(group);
-        types.removeIf(it -> exclusion.contains(it.type));
         if (types.isEmpty()) {
             plugin.getLogger().severe("[Daily] No types for group " + group);
             return null;
