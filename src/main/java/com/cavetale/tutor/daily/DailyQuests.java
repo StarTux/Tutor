@@ -184,10 +184,8 @@ public final class DailyQuests implements Listener {
     }
 
     public DailyQuest generateNewQuest(final int group) {
-        // Delete old
         final DailyQuest old = forGroup(group);
         if (old != null) {
-            plugin.getLogger().info("[Daily] Quest already exists for group " + group);
             return null;
         }
         // Build new bag
@@ -212,6 +210,7 @@ public final class DailyQuests implements Listener {
         Json.save(doneFile, done, true);
         // Create the quest
         DailyQuest<?, ?> quest = generateNewQuest(group, index);
+        plugin.getLogger().info("[Daily] [" + group + "] Quest generated: " + index);
         return quest;
     }
 
