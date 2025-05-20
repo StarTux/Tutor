@@ -34,6 +34,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         VERTIGO(3, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
         SPLEEF(3, "Spleef", "Spleef", MinigameMatchType.SPLEEF, Mytems.COPPER_SPLEEF_SHOVEL, Mytems.COPPER_SPLEEF_SHOVEL::createIcon),
         CHESS(1, "Chess", "Chess", MinigameMatchType.CHESS, Mytems.WHITE_QUEEN, Mytems.WHITE_QUEEN::createIcon),
+        RACE(3, "Race", "Race", MinigameMatchType.RACE, Mytems.RED_SNEAKERS, Mytems.RED_SNEAKERS::createIcon),
         ;
 
         public final int minPlayers;
