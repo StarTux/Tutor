@@ -30,6 +30,7 @@ public final class DailyQuestSkyblock extends DailyQuest<DailyQuestSkyblock.Deta
     @RequiredArgsConstructor
     protected enum Task {
         PUNCH_TREE(4, textOfChildren(text("Punch "), VanillaItems.GRASS_BLOCK, text("Skyblock Tree"))),
+        COBBLE(3, textOfChildren(text("Mine "), VanillaItems.GRASS_BLOCK, text("Skyblock Cobble"))),
         ;
 
         protected final int total;
@@ -72,6 +73,11 @@ public final class DailyQuestSkyblock extends DailyQuest<DailyQuestSkyblock.Deta
         switch (details.task) {
         case PUNCH_TREE:
             if (Tag.LOGS.isTagged(event.getBlock().getType())) {
+                makeProgress(playerDailyQuest, 1);
+            }
+            break;
+        case COBBLE:
+            if (Material.COBBLESTONE == event.getBlock().getType()) {
                 makeProgress(playerDailyQuest, 1);
             }
             break;
