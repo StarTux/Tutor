@@ -35,6 +35,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         SPLEEF(3, "Spleef", "Spleef", MinigameMatchType.SPLEEF, Mytems.COPPER_SPLEEF_SHOVEL, Mytems.COPPER_SPLEEF_SHOVEL::createIcon),
         CHESS(1, "Chess", "Chess", MinigameMatchType.CHESS, Mytems.WHITE_QUEEN, Mytems.WHITE_QUEEN::createIcon),
         RACE(3, "Race", "Race", MinigameMatchType.RACE, Mytems.RED_SNEAKERS, Mytems.RED_SNEAKERS::createIcon),
+        GOLF(1, "Golf", "Endergolf", MinigameMatchType.ENDERGOLF, Mytems.IRON_GOLF_CLUB, Mytems.IRON_GOLF_CLUB::createIcon),
         ;
 
         public final int minPlayers;
