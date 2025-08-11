@@ -18,6 +18,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import static com.cavetale.mytems.loot.Loot.loot;
 import static com.cavetale.tutor.TutorPlugin.plugin;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -62,7 +63,8 @@ public final class DailyGameChest {
     public void start() {
         // Prep random items
         random = new Random(seed);
-        final List<ItemStack> allItems = getChestLootPool();
+        final List<ItemStack> allItems = new ArrayList<>();
+        loot().populatePrimeLoot(allItems, TOTAL_ITEM_COUNT);
         Collections.shuffle(allItems, random);
         for (int i = 0; i < TOTAL_ITEM_COUNT; i += 1) {
             items.add(allItems.get(i % allItems.size()));
@@ -165,39 +167,5 @@ public final class DailyGameChest {
                 plugin().getLogger().info("[DailyChest] " + player.getName() + " delivered");
             });
         return;
-    }
-
-    private static List<ItemStack> getChestLootPool() {
-        final List<ItemStack> result = new ArrayList<>();
-        result.add(Mytems.RUBY_COIN.createItemStack());
-        result.add(Mytems.MAGIC_CAPE.createItemStack());
-        result.add(Mytems.MOBSLAYER.createItemStack());
-        result.add(Mytems.BINGO_BUKKIT.createItemStack());
-        result.add(Mytems.WITCH_BROOM.createItemStack());
-        // result.add(Mytems.BLUNDERBUSS.createItemStack());
-        // result.add(Mytems.CAPTAINS_CUTLASS.createItemStack());
-        // result.add(Mytems.ENDERBALL.createItemStack());
-        // result.add(Mytems.MAGNIFYING_GLASS.createItemStack());
-        // result.add(Mytems.FERTILIZER.createItemStack(64));
-        // result.add(Mytems.SNOW_SHOVEL.createItemStack());
-        result.add(Mytems.SNEAKERS.createItemStack());
-        result.add(Mytems.UNICORN_HORN.createItemStack());
-        result.add(Mytems.SEALED_CAVEBOY.createItemStack());
-        result.add(Mytems.SCISSORS.createItemStack());
-        // result.add(Mytems.COLORFALL_HOURGLASS.createItemStack());
-        result.add(Mytems.STRUCTURE_FINDER.createItemStack());
-        result.add(Mytems.DEFLECTOR_SHIELD.createItemStack());
-        result.add(Mytems.COPPER_SPLEEF_SHOVEL.createItemStack());
-        result.add(Mytems.DIVIDERS.createItemStack());
-        result.add(Mytems.YARDSTICK.createItemStack());
-        result.add(Mytems.LUMINATOR.createItemStack());
-        result.add(Mytems.SCUBA_HELMET.createItemStack());
-        result.add(Mytems.MINER_HELMET.createItemStack());
-        result.add(Mytems.EMPTY_WATERING_CAN.createItemStack());
-        result.add(Mytems.IRON_SCYTHE.createItemStack());
-        result.add(Mytems.TREE_CHOPPER.createItemStack());
-        result.add(Mytems.HASTY_PICKAXE.createItemStack());
-        result.add(Mytems.BINOCULARS.createItemStack());
-        return result;
     }
 }
