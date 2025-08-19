@@ -29,8 +29,8 @@ public final class DailyQuestSkyblock extends DailyQuest<DailyQuestSkyblock.Deta
 
     @RequiredArgsConstructor
     protected enum Task {
-        PUNCH_TREE(4, textOfChildren(text("Punch "), VanillaItems.GRASS_BLOCK, text("Skyblock Tree"))),
-        COBBLE(3, textOfChildren(text("Mine "), VanillaItems.GRASS_BLOCK, text("Skyblock Cobble"))),
+        PUNCH_TREE(4, textOfChildren(text("Skyblock "), VanillaItems.OAK_LOG, text("Tree"))),
+        COBBLE(3, textOfChildren(text("Skyblock "), VanillaItems.COBBLESTONE, text("Cobble"))),
         ;
 
         protected final int total;
@@ -50,7 +50,7 @@ public final class DailyQuestSkyblock extends DailyQuest<DailyQuestSkyblock.Deta
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
-        return textOfChildren(details.task.description,
+        return textOfChildren(text("Mine some "), details.task.description,
                               text(". Join the Skyblock server via "),
                               (text("/skyblock", BLUE)
                                .hoverEvent(showText(text("/skyblock", BLUE)))
