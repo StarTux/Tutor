@@ -24,6 +24,7 @@ import java.io.File;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -150,7 +151,7 @@ public final class DailyQuests implements Listener {
                     dailyQuests.add(dailyQuest);
                     dailyQuest.enable();
                     plugin.getSessions().loadDailyQuest(dailyQuest);
-                    dailyQuests.sort((a, b) -> Integer.compare(a.getGroup(), b.getGroup()));
+                    dailyQuests.sort(Comparator.comparing(DailyQuest::getGroupValue));
                 });
         }
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -175,7 +176,8 @@ public final class DailyQuests implements Listener {
 
     private int generateNewQuests() {
         int result = 0;
-        for (int group = 0; group < 3; group += 1) {
+        for (DailyQuestGroup group : DailyQuestGroup.values()) {
+            if (group.isDisabled()) continue;
             DailyQuest dailyQuest = generateNewQuest(group);
             if (dailyQuest == null) continue;
             result += 1;
@@ -183,21 +185,22 @@ public final class DailyQuests implements Listener {
         return result;
     }
 
-    public DailyQuest generateNewQuest(final int group) {
+    public DailyQuest generateNewQuest(final DailyQuestGroup group) {
+        if (group.isDisabled()) return null;
         final DailyQuest old = forGroup(group);
         if (old != null) {
             return null;
         }
         // Build new bag
-        List<DailyQuestIndex> types = DailyQuestType.getAllWithGroup(group);
+        final List<DailyQuestIndex> types = DailyQuestType.getAllWithGroup(group);
         if (types.isEmpty()) {
             plugin.getLogger().severe("[Daily] No types for group " + group);
             return null;
         }
         List<DailyQuestIndex> bag = new ArrayList<>(types);
         // Eliminate all recently done types in this group
-        File doneFile = new File(plugin.getDataFolder(), "dailyDone" + group + ".json");
-        DailyQuestBag done = Json.load(doneFile, DailyQuestBag.class, DailyQuestBag::new);
+        final File doneFile = new File(plugin.getDataFolder(), "daily_done_" + group.name().toLowerCase() + ".json");
+        final DailyQuestBag done = Json.load(doneFile, DailyQuestBag.class, DailyQuestBag::new);
         bag.removeAll(done.indexes);
         if (bag.isEmpty()) {
             bag.addAll(types);
@@ -209,12 +212,12 @@ public final class DailyQuests implements Listener {
         plugin.getDataFolder().mkdirs();
         Json.save(doneFile, done, true);
         // Create the quest
-        DailyQuest<?, ?> quest = generateNewQuest(group, index);
+        final DailyQuest<?, ?> quest = generateNewQuest(group, index);
         plugin.getLogger().info("[Daily] [" + group + "] Quest generated: " + index);
         return quest;
     }
 
-    public DailyQuest deleteDailyQuest(int group) {
+    public DailyQuest deleteDailyQuest(DailyQuestGroup group) {
         DailyQuest oldQuest = null;
         for (DailyQuest it : dailyQuests) {
             if (it.getGroup() == group) {
@@ -232,12 +235,12 @@ public final class DailyQuests implements Listener {
         return oldQuest;
     }
 
-    public DailyQuest generateNewQuest(int group, DailyQuestIndex index) {
+    public DailyQuest generateNewQuest(DailyQuestGroup group, DailyQuestIndex index) {
         final DailyQuest<?, ?> quest = index.type.create();
         quest.setGroup(group);
         quest.generate(index.index);
         dailyQuests.add(quest);
-        dailyQuests.sort((a, b) -> Integer.compare(a.getGroup(), b.getGroup()));
+        dailyQuests.sort(Comparator.comparing(DailyQuest::getGroupValue));
         database().scheduleAsyncTask(() -> {
                 if (!quest.makeRow()) {
                     plugin.getLogger().severe("[Daily] Failed make row " + quest);
@@ -264,7 +267,7 @@ public final class DailyQuests implements Listener {
         return null;
     }
 
-    public DailyQuest forGroup(int group) {
+    public DailyQuest forGroup(DailyQuestGroup group) {
         for (DailyQuest it : dailyQuests) {
             if (it.getGroup() == group) return it;
         }

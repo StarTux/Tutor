@@ -60,7 +60,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected int year;
     protected int month;
     protected int day;
-    @Setter protected int group;
+    @Setter protected DailyQuestGroup group;
     protected D details;
     protected int total;
     @Setter protected boolean active;
@@ -81,8 +81,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
 
     protected final void load(SQLDailyQuest theRow) {
         this.row = theRow;
-        this.group = row.getDailyIndex();
-        this.permission = "tutor.daily." + (group + 1);
+        this.group = DailyQuestGroup.ofValue(row.getDailyIndex());
+        this.permission = "tutor.daily." + (group.value() + 1);
         this.dayId = row.getDayId();
         int tmp = dayId;
         this.day = tmp % 100;
@@ -104,7 +104,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
     protected final boolean makeRow() {
         this.row = new SQLDailyQuest();
         row.setDayId(dayId);
-        row.setDailyIndex(group);
+        row.setDailyIndex(group.value());
         row.setQuestType(type.key);
         for (ItemStack is : rewards) {
             details.rewards.add(ItemStorage.of(is));
@@ -139,7 +139,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * called here.
      */
     public final void generate(final int index) {
-        this.permission = "tutor.daily." + (group + 1);
+        this.permission = "tutor.daily." + (group.value() + 1);
         this.day = dailyQuests().getTimer().getDay();
         this.month = dailyQuests().getTimer().getMonth();
         this.year = dailyQuests().getTimer().getYear();
@@ -250,8 +250,8 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         return row != null ? row.getId() : 0;
     }
 
-    public final int getGroup() {
-        return row != null ? row.getDailyIndex() : -1;
+    public final int getGroupValue() {
+        return group.value();
     }
 
     /** Event Handler. */
@@ -302,7 +302,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
                     playerDailyQuest.getSession().addDailyRollsAsync(1, null);
                     playerDailyQuest.getSession().addDailiesCompletedAsync(1);
                     Perm.get().addLevelProgress(playerDailyQuest.getSession().getUuid());
-                    Money.get().give(playerDailyQuest.getSession().getUuid(), (group + 1) * 1000, plugin(), "Daily Quest");
+                    Money.get().give(playerDailyQuest.getSession().getUuid(), (group.value() + 1) * 1000, plugin(), "Daily Quest");
                     if (!rewards.isEmpty()) {
                         ItemMail.send(playerDailyQuest.getSession().getUuid(), rewards,
                                       textOfChildren(text("Daily Quest "), getDescription(playerDailyQuest)));

@@ -10,6 +10,7 @@ import com.cavetale.tutor.collect.CollectItem;
 import com.cavetale.tutor.collect.ItemCollectionType;
 import com.cavetale.tutor.collect.PlayerItemCollection;
 import com.cavetale.tutor.daily.DailyQuest;
+import com.cavetale.tutor.daily.DailyQuestGroup;
 import com.cavetale.tutor.daily.DailyQuestIndex;
 import com.cavetale.tutor.daily.DailyQuestType;
 import com.cavetale.tutor.daily.PlayerDailyQuest;
@@ -92,7 +93,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .senderCaller(this::dailyAddRolls);
         dailyNode.addChild("makeprogress").arguments("<player> <group> <amount>")
             .completers(CommandArgCompleter.PLAYER_CACHE,
-                        CommandArgCompleter.integer(i -> i >= 0),
+                        CommandArgCompleter.enumLowerList(DailyQuestGroup.class),
                         CommandArgCompleter.integer(i -> i > 0))
             .description("Make daily quest progress")
             .senderCaller(this::dailyMakeProgress);
@@ -112,7 +113,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .playerCaller(this::dailyDebug);
         dailyNode.addChild("generate").arguments("<group> <type>")
             .description("Generate a new daily quest")
-            .completers(CommandArgCompleter.integer(i -> i >= 0),
+            .completers(CommandArgCompleter.enumLowerList(DailyQuestGroup.class),
                         CommandArgCompleter.enumLowerList(DailyQuestType.class))
             .playerCaller(this::dailyGenerate);
         dailyNode.addChild("testmonthchange").arguments("<year> <month>")
@@ -437,8 +438,8 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
     private boolean dailyMakeProgress(CommandSender sender, String[] args) {
         if (args.length != 3) return false;
         PlayerCache target = PlayerCache.require(args[0]);
-        int group = CommandArgCompleter.requireInt(args[1], i -> i >= 0);
-        int amount = CommandArgCompleter.requireInt(args[2], i -> i > 0);
+        final DailyQuestGroup group = CommandArgCompleter.requireEnum(DailyQuestGroup.class, args[1]);
+        final int amount = CommandArgCompleter.requireInt(args[2], i -> i > 0);
         plugin.sessions.findOrLoad(target, session -> {
                 for (PlayerDailyQuest it : session.getDailyQuests()) {
                     DailyQuest dailyQuest = it.getDailyQuest();
@@ -483,7 +484,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
 
     private boolean dailyGenerate(CommandSender sender, String[] args) {
         if (args.length != 2) return false;
-        final int group = CommandArgCompleter.requireInt(args[0], i -> i >= 0);
+        final DailyQuestGroup group = CommandArgCompleter.requireEnum(DailyQuestGroup.class, args[0]);
         final DailyQuestType type = CommandArgCompleter.requireEnum(DailyQuestType.class, args[1]);
         final DailyQuest<?, ?> oldQuest = plugin.getDailyQuests().deleteDailyQuest(group);
         if (oldQuest == null) {
