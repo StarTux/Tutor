@@ -29,13 +29,14 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         EXTREME_GRASS_GROWING(3, "EGG", "Extreme Grass Growing", MinigameMatchType.EXTREME_GRASS_GROWING,
                               VanillaItems.SHORT_GRASS, () -> new ItemStack(Material.SHORT_GRASS)),
         HIDE_AND_SEEK(3, "Hide&Seek", "Hide and Seek", MinigameMatchType.HIDE_AND_SEEK, Mytems.MAGNIFYING_GLASS, Mytems.MAGNIFYING_GLASS::createIcon),
-        PVP_ARENA(3, "PvP Arena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
+        PVP_ARENA(3, "PvPArena", "PvP Arena", MinigameMatchType.PVP_ARENA, Mytems.SCARLET_SWORD, Mytems.SCARLET_SWORD::createIcon),
         TETRIS(3, "Tetris", "Tetris", MinigameMatchType.TETRIS, Mytems.TETRIS_T, Mytems.TETRIS_T::createIcon),
         VERTIGO(3, "Vertigo", "Vertigo", MinigameMatchType.VERTIGO, VanillaItems.WATER_BUCKET, () -> new ItemStack(Material.WATER_BUCKET)),
         SPLEEF(3, "Spleef", "Spleef", MinigameMatchType.SPLEEF, Mytems.COPPER_SPLEEF_SHOVEL, Mytems.COPPER_SPLEEF_SHOVEL::createIcon),
         CHESS(1, "Chess", "Chess", MinigameMatchType.CHESS, Mytems.WHITE_QUEEN, Mytems.WHITE_QUEEN::createIcon),
         RACE(3, "Race", "Race", MinigameMatchType.RACE, Mytems.RED_SNEAKERS, Mytems.RED_SNEAKERS::createIcon),
         GOLF(1, "Golf", "Endergolf", MinigameMatchType.ENDERGOLF, Mytems.IRON_GOLF_CLUB, Mytems.IRON_GOLF_CLUB::createIcon),
+        BUILD_MY_THING(3, "BmT", "Build my Thing", MinigameMatchType.BUILD_MY_THING, VanillaItems.GREEN_GLAZED_TERRACOTTA, () -> new ItemStack(Material.GREEN_GLAZED_TERRACOTTA)),
         ;
 
         public final int minPlayers;
