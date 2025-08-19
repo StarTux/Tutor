@@ -25,9 +25,8 @@ public final class DailyQuestShearSheep extends DailyQuest<DailyQuestShearSheep.
     }
 
     @Override
-    protected void onGenerate(final int index) {
-        BlockColor[] colors = getAllColors();
-        this.details.color = colors[index];
+    protected void onGenerate(final String name) {
+        this.details.color = BlockColor.valueOf(name.toUpperCase());
         if (details.color == BlockColor.WHITE) {
             this.total = 20;
         } else if (details.color == BlockColor.BLACK) {
@@ -39,8 +38,8 @@ public final class DailyQuestShearSheep extends DailyQuest<DailyQuestShearSheep.
         }
     }
 
-    public static BlockColor[] getAllColors() {
-        return BlockColor.values();
+    public static List<BlockColor> getAllColors() {
+        return List.of(BlockColor.values());
     }
 
     @Override

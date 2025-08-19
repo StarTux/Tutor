@@ -19,7 +19,7 @@ public final class DailyQuestFriendshipGift extends DailyQuest<DailyQuest.Detail
     }
 
     @Override
-    protected void onGenerate(final int index) {
+    protected void onGenerate(final String name) {
         total = 3;
     }
 

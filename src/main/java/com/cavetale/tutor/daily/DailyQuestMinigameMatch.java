@@ -48,9 +48,8 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
     }
 
     @Override
-    public void onGenerate(final int index) {
-        Game[] games = Game.values();
-        details.game = games[index];
+    public void onGenerate(final String name) {
+        details.game = Game.valueOf(name.toUpperCase());
         this.total = 1;
     }
 

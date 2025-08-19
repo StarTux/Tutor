@@ -14,7 +14,7 @@ import lombok.Data;
 public final class SQLDailyQuest implements SQLRow {
     @Id private Integer id;
     private int dayId; // e.g. 20221228
-    private int dailyIndex; // e.g. 01, aka group!
+    private int dailyIndex; // e.g. 01, aka DailyQuestGroup
     private boolean active;
     @VarChar(255) private String questType;
     @Text private String details; // json

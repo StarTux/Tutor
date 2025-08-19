@@ -38,9 +38,8 @@ public final class DailyQuestSkyblock extends DailyQuest<DailyQuestSkyblock.Deta
     }
 
     @Override
-    public void onGenerate(final int index) {
-        Task[] tasks = Task.values();
-        this.details.task = tasks[index];
+    public void onGenerate(final String name) {
+        this.details.task = Task.valueOf(name.toUpperCase());
         this.total = details.task.total;
     }
 

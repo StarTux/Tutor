@@ -77,9 +77,8 @@ public final class DailyQuestHarvest extends DailyQuest<DailyQuestHarvest.Detail
     }
 
     @Override
-    public void onGenerate(final int index) {
-        Crop[] crops = Crop.values();
-        this.details.crop = crops[index];
+    public void onGenerate(final String name) {
+        this.details.crop = Crop.valueOf(name.toUpperCase());
         this.total = details.crop.total;
     }
 

@@ -46,10 +46,9 @@ public final class DailyQuestChopTrees extends DailyQuest<DailyQuestChopTrees.De
     }
 
     @Override
-    public void onGenerate(final int index) {
+    public void onGenerate(final String name) {
         this.total = (1 + random.nextInt(10)) * 10;
-        Wood[] woods = Wood.values();
-        this.details.wood = woods[index];
+        this.details.wood = Wood.valueOf(name.toUpperCase());
     }
 
     @Override

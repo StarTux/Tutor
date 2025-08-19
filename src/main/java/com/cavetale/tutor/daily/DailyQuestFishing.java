@@ -45,9 +45,8 @@ public final class DailyQuestFishing extends DailyQuest<DailyQuestFishing.Detail
     }
 
     @Override
-    public void onGenerate(final int index) {
-        Fish[] fishes = Fish.values();
-        this.details.fish = fishes[index];
+    public void onGenerate(final String name) {
+        this.details.fish = Fish.valueOf(name.toUpperCase());
         this.total = details.fish.total;
     }
 

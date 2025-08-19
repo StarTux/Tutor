@@ -20,7 +20,7 @@ public final class DailyQuestFindDungeon extends DailyQuest<DailyQuest.Details, 
     }
 
     @Override
-    public void onGenerate(final int index) {
+    public void onGenerate(final String name) {
         total = 3;
     }
 

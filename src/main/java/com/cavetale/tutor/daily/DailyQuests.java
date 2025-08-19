@@ -238,7 +238,7 @@ public final class DailyQuests implements Listener {
     public DailyQuest generateNewQuest(DailyQuestGroup group, DailyQuestIndex index) {
         final DailyQuest<?, ?> quest = index.type.create();
         quest.setGroup(group);
-        quest.generate(index.index);
+        quest.generate(index.name);
         dailyQuests.add(quest);
         dailyQuests.sort(Comparator.comparing(DailyQuest::getGroupValue));
         database().scheduleAsyncTask(() -> {
@@ -250,7 +250,7 @@ public final class DailyQuests implements Listener {
                         quest.enable();
                         plugin.getSessions().loadDailyQuest(quest);
                         broadcastUpdate(quest);
-                        plugin.getLogger().info("[Daily] Quest generated: " + index.type + ", " + index.index);
+                        plugin.getLogger().info("[Daily] Quest generated: " + index.type + ", " + index.name);
                     });
             });
         return quest;

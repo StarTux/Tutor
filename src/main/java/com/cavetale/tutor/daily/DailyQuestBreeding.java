@@ -65,9 +65,8 @@ public final class DailyQuestBreeding extends DailyQuest<DailyQuestBreeding.Deta
     }
 
     @Override
-    public void onGenerate(final int index) {
-        BreedMob[] mobs = BreedMob.values();
-        details.mob = mobs[index];
+    public void onGenerate(final String name) {
+        details.mob = BreedMob.valueOf(name.toUpperCase());
         this.total = details.mob.total;
     }
 

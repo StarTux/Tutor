@@ -138,7 +138,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * Generate this quest with all its details.  onGenerate() is
      * called here.
      */
-    public final void generate(final int index) {
+    public final void generate(final String name) {
         this.permission = "tutor.daily." + (group.value() + 1);
         this.day = dailyQuests().getTimer().getDay();
         this.month = dailyQuests().getTimer().getMonth();
@@ -146,7 +146,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
         this.dayId = day + month * 100 + year * 10000;
         this.details = newDetails();
         this.total = 1; // onGenerate will override
-        onGenerate(Math.min(type.getOptionCount() - 1, index));
+        onGenerate(name);
         rewards.addAll(generateRewards());
     }
 
@@ -215,7 +215,7 @@ public abstract class DailyQuest<D extends DailyQuest.Details, P extends DailyQu
      * The details instance will have been generated already.
      * Must set total!
      */
-    protected void onGenerate(int index) { }
+    protected void onGenerate(String name) { }
 
     /**
      * Generate rewards.  This is called right after onGenerate().

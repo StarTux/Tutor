@@ -2,6 +2,11 @@ package com.cavetale.tutor.daily;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Each entry corresponds with the dailyIndex in the SQLDailyQuest.
+ *
+ * The value coincides with the ordinal, except for DISABLED.
+ */
 @RequiredArgsConstructor
 public enum DailyQuestGroup {
     /**

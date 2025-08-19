@@ -79,9 +79,8 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
     }
 
     @Override
-    public void onGenerate(final int index) {
-        TargetMob[] targets = TargetMob.values();
-        details.target = targets[index];
+    public void onGenerate(final String name) {
+        details.target = TargetMob.valueOf(name.toUpperCase());
         this.total = details.target.total;
         if (total > 1) total += random.nextInt(3) * details.target.total;
     }

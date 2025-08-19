@@ -490,8 +490,9 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         if (oldQuest == null) {
             sender.sendMessage(text("Could not delete daily with group " + group, RED));
         }
-        final int index = ThreadLocalRandom.current().nextInt(type.getOptionCount());
-        final DailyQuest<?, ?> newQuest = plugin.getDailyQuests().generateNewQuest(group, new DailyQuestIndex(type, index));
+        final List<String> options = type.getOptionNames();
+        final String name = options.get(ThreadLocalRandom.current().nextInt(options.size()));
+        final DailyQuest<?, ?> newQuest = plugin.getDailyQuests().generateNewQuest(group, new DailyQuestIndex(type, name));
         plugin.getSessions().cleanDailyQuests();
         plugin.getDailyQuests().broadcastUpdate(newQuest);
         return true;

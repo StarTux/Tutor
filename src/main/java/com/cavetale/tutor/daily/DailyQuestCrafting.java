@@ -2,6 +2,7 @@ package com.cavetale.tutor.daily;
 
 import com.cavetale.core.item.ItemKinds;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,55 +25,59 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
               Progress.class, Progress::new);
     }
 
-    public static final Material[] MATERIALS = {
+    @RequiredArgsConstructor
+    public enum Materials {
         // GOOD
-        Material.CAKE,
-        Material.PUMPKIN_PIE,
-        Material.RABBIT_STEW,
-        Material.GOLDEN_APPLE,
-        Material.GOLDEN_CARROT,
-        Material.COOKIE,
-        Material.BEETROOT_SOUP,
+        CAKE(Material.CAKE),
+        PUMPKIN_PIE(Material.PUMPKIN_PIE),
+        RABBIT_STEW(Material.RABBIT_STEW),
+        GOLDEN_APPLE(Material.GOLDEN_APPLE),
+        GOLDEN_CARROT(Material.GOLDEN_CARROT),
+        COOKIE(Material.COOKIE),
+        BEETROOT_SOUP(Material.BEETROOT_SOUP),
         // Decoration
-        Material.BARREL,
-        Material.BOOKSHELF,
-        Material.PAINTING,
-        Material.SCAFFOLDING,
+        BARREL(Material.BARREL),
+        BOOKSHELF(Material.BOOKSHELF),
+        PAINTING(Material.PAINTING),
+        SCAFFOLDING(Material.SCAFFOLDING),
         // Useful
-        Material.BOOK,
-        Material.FIREWORK_ROCKET,
-        Material.TNT,
-        Material.LODESTONE,
+        BOOK(Material.BOOK),
+        FIREWORK_ROCKET(Material.FIREWORK_ROCKET),
+        TNT(Material.TNT),
+        LODESTONE(Material.LODESTONE),
         // Redstone
-        Material.REPEATER,
-        Material.COMPARATOR,
-        Material.PISTON,
-        Material.OBSERVER,
-        Material.DISPENSER,
+        REPEATER(Material.REPEATER),
+        COMPARATOR(Material.COMPARATOR),
+        PISTON(Material.PISTON),
+        OBSERVER(Material.OBSERVER),
+        DISPENSER(Material.DISPENSER),
+        ;
+
+        private final Material material;
     };
 
     @Override
-    public void onGenerate(final int index) {
-        this.details.material = MATERIALS[index];
+    public void onGenerate(final String name) {
+        this.details.material = Materials.valueOf(name.toUpperCase());
         this.total = 1;
     }
 
     @Override
     public Component getDescription(PlayerDailyQuest playerDailyQuest) {
         return textOfChildren(text("Craft "),
-                              ItemKinds.icon(new ItemStack(details.material)));
+                              ItemKinds.icon(new ItemStack(details.material.material)));
     }
 
     @Override
     public Component getDetailedDescription(PlayerDailyQuest playerDailyQuest) {
         return textOfChildren(text("Craft one "),
-                              ItemKinds.chatDescription(new ItemStack(details.material)),
+                              ItemKinds.chatDescription(new ItemStack(details.material.material)),
                               text(" in survival mode."));
     }
 
     @Override
     public ItemStack createIcon(PlayerDailyQuest playerDailyQuest) {
-        ItemStack result = new ItemStack(details.material);
+        ItemStack result = new ItemStack(details.material.material);
         result.editMeta(meta -> meta.addItemFlags(ItemFlag.values()));
         return result;
     }
@@ -80,16 +85,16 @@ public final class DailyQuestCrafting extends DailyQuest<DailyQuestCrafting.Deta
     protected void onCraftItem(Player player, PlayerDailyQuest playerDailyQuest, CraftItemEvent event) {
         if (!checkGameModeAndSurvivalServer(player)) return;
         ItemStack result = event.getInventory().getResult();
-        if (result == null || details.material != result.getType()) return;
+        if (result == null || details.material.material != result.getType()) return;
         makeProgress(playerDailyQuest, 1);
     }
 
     @Override
     protected List<ItemStack> generateRewards() {
-        return List.of(new ItemStack(details.material, Math.min(details.material.getMaxStackSize(), 5)));
+        return List.of(new ItemStack(details.material.material, Math.min(details.material.material.getMaxStackSize(), 5)));
     }
 
     public static final class Details extends DailyQuest.Details {
-        protected Material material = Material.CAKE;
+        protected Materials material = Materials.CAKE;
     }
 }

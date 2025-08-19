@@ -8,5 +8,5 @@ import lombok.Value;
 @Value
 public final class DailyQuestIndex {
     public final DailyQuestType type;
-    public final int index;
+    public final String name;
 }
