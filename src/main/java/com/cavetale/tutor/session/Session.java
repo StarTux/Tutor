@@ -144,7 +144,8 @@ public final class Session {
         plugin.getLogger().warning("[Session] [" + name + "] " + msg);
     }
 
-    private final class Cache {
+    @Getter
+    public final class Cache {
         List<SQLPlayerQuest> playerQuestRows;
         List<SQLCompletedQuest> completedQuestRows;
         List<SQLPlayerPetUnlock> playerPetUnlockRows;
@@ -234,7 +235,6 @@ public final class Session {
         for (ItemCollectionType itemCollectionType : ItemCollectionType.values()) {
             collections.computeIfAbsent(itemCollectionType, t -> new PlayerItemCollection(this, t, null));
         }
-        cache = null;
         ready = true;
         for (Runnable callback : deferredCallbacks) {
             callback.run();

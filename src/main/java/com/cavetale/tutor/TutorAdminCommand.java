@@ -4,7 +4,6 @@ import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
-import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.tutor.collect.CollectItem;
 import com.cavetale.tutor.collect.ItemCollectionType;
@@ -17,6 +16,7 @@ import com.cavetale.tutor.daily.PlayerDailyQuest;
 import com.cavetale.tutor.daily.game.DailyGame;
 import com.cavetale.tutor.daily.game.DailyGameTag;
 import com.cavetale.tutor.goal.Condition;
+import com.cavetale.tutor.pet.PetType;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import com.cavetale.tutor.sql.SQLCompletedQuest;
@@ -27,16 +27,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.*;
 
 public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
     final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
@@ -72,7 +76,7 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
             .senderCaller(this::complete);
         rootNode.addChild("info").arguments("<player>")
             .description("Player quest info")
-            .completers(CommandArgCompleter.NULL)
+            .completers(CommandArgCompleter.PLAYER_CACHE)
             .senderCaller(this::info);
         rootNode.addChild("transfer").arguments("<from> <to>")
             .description("Account transfer")
@@ -262,82 +266,45 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         PlayerCache playerCache = requirePlayerCache(args[0]);
         plugin.sessions.findOrLoad(playerCache, session -> {
                 List<Component> lines = new ArrayList<>();
-                lines.add(text("Quest info for " + playerCache.name, YELLOW));
-                lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                            text("Completed ", GRAY),
-                            text("" + session.getCompletedQuests().size() + " ", YELLOW),
-                            Component.join(JoinConfiguration.separator(text(", ", GRAY)),
-                                           session.getCompletedQuests().entrySet().stream()
-                                           .map(entry -> {
-                                                   Component tooltip = Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
-                                                           plugin.getQuests().get(entry.getKey()).name.displayName,
-                                                           text("\nCompleted "
-                                                                          + dateFormat.format(entry.getValue().getTime()),
-                                                                          GRAY),
-                                                       });
-                                                   return text().content(entry.getKey().key)
-                                                       .color(GOLD)
-                                                       .hoverEvent(HoverEvent.showText(tooltip))
-                                                       .build();
-                                               })
-                                           .collect(Collectors.toList())),
-                        }));
-                lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                            text("Current Quests ", GRAY),
-                            text("" + session.getCurrentQuests().size(), YELLOW),
-                        }));
-                for (PlayerQuest playerQuest : session.getCurrentQuests().values()) {
-                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                text(Unicode.BULLET_POINT.character + " ", GRAY),
-                                (text().content(playerQuest.getQuest().getName().key)
-                                 .color(YELLOW)
-                                 .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
-                                                 playerQuest.getQuest().name.displayName,
-                                                 text("\n" + playerQuest.getQuest().getName().type.upper, GRAY),
-                                             })))
-                                 .build()),
-                                Component.space(),
-                                (text().content(playerQuest.getCurrentGoal().getId())
-                                 .color(GOLD)
-                                 .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.separator(Component.newline()), new Component[] {
-                                                 playerQuest.getCurrentGoal().getDisplayName(),
-                                                 text("" + (1 + playerQuest.getQuest().goalIndex(playerQuest.getCurrentGoal().getId()))
-                                                                + "/" + playerQuest.getQuest().getGoals().size(),
-                                                                GRAY),
-                                             })))
-                                 .build()),
-                                Component.space(),
-                                text(playerQuest.getCurrentProgress().serialize(), GRAY),
-                            }));
+                sender.sendMessage(text("Quest info for " + playerCache.name, YELLOW));
+                final List<Component> completed = new ArrayList<>();
+                for (SQLCompletedQuest row : session.getCache().getCompletedQuestRows()) {
+                    final QuestName questName = QuestName.of(row.getQuest());
+                    if (questName == null) continue;
+                    final Quest quest = plugin.getQuests().get(questName);
+                    final List<Component> tooltip = List.of(questName.getDisplayName(),
+                                                            textOfChildren(text("Completed ", GRAY),
+                                                                           text(dateFormat.format(row.getTime()), WHITE)));
+                    completed.add(text(questName.getKey(), GOLD)
+                                  .hoverEvent(showText(join(separator(newline()), tooltip))));
                 }
-                if (session.getPet() == null) {
-                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                text("Pet ", GRAY),
-                                text("None", DARK_GRAY),
-                            }));
+                sender.sendMessage(textOfChildren(text("Completed ", GRAY),
+                                                  join(separator(space()), completed)));
+                sender.sendMessage(textOfChildren(text("Current Quests ", GRAY),
+                                                  text("" + session.getCache().getPlayerQuestRows().size(), YELLOW)));
+                for (SQLPlayerQuest row : session.getCache().getPlayerQuestRows()) {
+                    final QuestName questName = QuestName.of(row.getQuest());
+                    if (questName == null) continue;
+                    sender.sendMessage(textOfChildren(text(" " + questName.getKey(), YELLOW),
+                                                      text(" " + row.getGoal(), GRAY),
+                                                      text(" " + row.getProgress(), DARK_GRAY)));
+                }
+                final PetType petType = session.getPlayerPetRow().parsePetType();
+                if (petType == null) {
+                    sender.sendMessage(textOfChildren(text("Pet ", GRAY),
+                                                      text("None", DARK_GRAY, ITALIC)));
                 } else {
-                    lines.add(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                                text("Pet", GRAY),
-                                Component.space(),
-                                (text()
-                                 .append(session.getPlayerPetRow().parsePetType().displayName)
-                                 .color(YELLOW)
-                                 .build()),
-                                Component.space(),
-                                session.getPlayerPetRow().getNameComponent(),
-                                Component.space(),
-                                text(session.getPet().isSpawned()
-                                               ? stringify(session.getPet().getEntity().getLocation())
-                                               : "despawned", GRAY),
-                                Component.space(),
-                                text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), YELLOW),
-                            }));
+                    sender.sendMessage(textOfChildren(text("Pet ", GRAY),
+                                                      text("", BLUE).append(petType.getDisplayName()),
+                                                      space(),
+                                                      session.getPlayerPetRow().getNameComponent(),
+                                                      space(),
+                                                      text(session.getPet() != null && session.getPet().isSpawned()
+                                                           ? stringify(session.getPet().getEntity().getLocation())
+                                                           : "despawned", GRAY),
+                                                      space(),
+                                                      text("autoSpawn=" + session.getPlayerPetRow().isAutoSpawn(), YELLOW)));
                 }
-                sender.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                            Component.newline(),
-                            Component.join(JoinConfiguration.separator(Component.newline()), lines),
-                            Component.newline(),
-                        }));
             });
         return true;
     }
