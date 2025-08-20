@@ -1,11 +1,13 @@
 package com.cavetale.tutor.pet;
 
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+@Getter
 public enum PetGender {
     OTHER('?', new ItemStack(Material.GRAY_CONCRETE), NamedTextColor.GRAY),
     FEMALE('\u2640', new ItemStack(Material.PINK_CONCRETE), TextColor.color(0xFFC0CB)),

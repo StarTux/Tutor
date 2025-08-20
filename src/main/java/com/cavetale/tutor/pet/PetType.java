@@ -2,6 +2,7 @@ package com.cavetale.tutor.pet;
 
 import com.cavetale.mytems.Mytems;
 import java.util.function.Consumer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
@@ -17,10 +18,12 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Turtle;
 import org.bukkit.entity.Wolf;
+import static net.kyori.adventure.text.Component.text;
 
+@Getter
 @RequiredArgsConstructor
 public enum PetType {
-    CAT(Component.text("Cat"), Noise.CAT, Mytems.PIC_CAT, true, "meow meow") {
+    CAT(text("Cat"), Noise.CAT, Mytems.PIC_CAT, true, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -29,7 +32,7 @@ public enum PetType {
                 });
         }
     },
-    DOG(Component.text("Dog"), Noise.DOG, Mytems.PIC_WOLF, true, "woof woof") {
+    DOG(text("Dog"), Noise.DOG, Mytems.PIC_WOLF, true, "woof woof") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Wolf.class, dog -> {
                     callback.accept(dog);
@@ -37,7 +40,7 @@ public enum PetType {
                 });
         }
     },
-    BLACK_CAT(Component.text("Black Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    BLACK_CAT(text("Black Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -46,7 +49,7 @@ public enum PetType {
                 });
         }
     },
-    SHORTHAIR_CAT(Component.text("Shorthair Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    SHORTHAIR_CAT(text("Shorthair Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -55,7 +58,7 @@ public enum PetType {
                 });
         }
     },
-    CALICO_CAT(Component.text("Calico Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    CALICO_CAT(text("Calico Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -64,7 +67,7 @@ public enum PetType {
                 });
         }
     },
-    JELLIE_CAT(Component.text("Jellie Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    JELLIE_CAT(text("Jellie Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -73,7 +76,7 @@ public enum PetType {
                 });
         }
     },
-    PERSIAN_CAT(Component.text("Persian Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    PERSIAN_CAT(text("Persian Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -82,7 +85,7 @@ public enum PetType {
                 });
         }
     },
-    RAGDOLL_CAT(Component.text("Ragdoll Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    RAGDOLL_CAT(text("Ragdoll Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -91,7 +94,7 @@ public enum PetType {
                 });
         }
     },
-    RED_CAT(Component.text("Red Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    RED_CAT(text("Red Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -100,7 +103,7 @@ public enum PetType {
                 });
         }
     },
-    SIAMESE_CAT(Component.text("Siamese Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    SIAMESE_CAT(text("Siamese Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -109,7 +112,7 @@ public enum PetType {
                 });
         }
     },
-    TABBY_CAT(Component.text("Tabby Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    TABBY_CAT(text("Tabby Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -118,7 +121,7 @@ public enum PetType {
                 });
         }
     },
-    WHITE_CAT(Component.text("White Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
+    WHITE_CAT(text("White Cat"), Noise.CAT, Mytems.PIC_CAT, false, "meow meow") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cat.class, cat -> {
                     callback.accept(cat);
@@ -127,7 +130,7 @@ public enum PetType {
                 });
         }
     },
-    SHEEP(Component.text("Baby Sheep"), Noise.FAIL, Mytems.QUESTION_MARK, false, "baa") {
+    SHEEP(text("Baby Sheep"), Noise.FAIL, Mytems.QUESTION_MARK, false, "baa") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Sheep.class, sheep -> {
                     callback.accept(sheep);
@@ -135,7 +138,7 @@ public enum PetType {
                 });
         }
     },
-    SLIME(Component.text("Lil' Slime"), Noise.FAIL, Mytems.QUESTION_MARK, false, "flup flup") {
+    SLIME(text("Lil' Slime"), Noise.FAIL, Mytems.QUESTION_MARK, false, "flup flup") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Slime.class, slime -> {
                     callback.accept(slime);
@@ -143,7 +146,7 @@ public enum PetType {
                 });
         }
     },
-    GOAT(Component.text("Lil' Goat"), Noise.FAIL, Mytems.QUESTION_MARK, false, "baa") {
+    GOAT(text("Lil' Goat"), Noise.FAIL, Mytems.QUESTION_MARK, false, "baa") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Goat.class, goat -> {
                     callback.accept(goat);
@@ -151,21 +154,21 @@ public enum PetType {
                 });
         }
     },
-    TURTLE(Component.text("Turtle"), Noise.FAIL, Mytems.QUESTION_MARK, false, "grumble") {
+    TURTLE(text("Turtle"), Noise.FAIL, Mytems.QUESTION_MARK, false, "grumble") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Turtle.class, turtle -> {
                     callback.accept(turtle);
                 });
         }
     },
-    CHICKEN(Component.text("Chicken"), Noise.FAIL, Mytems.QUESTION_MARK, false, "bawk") {
+    CHICKEN(text("Chicken"), Noise.FAIL, Mytems.QUESTION_MARK, false, "bawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Chicken.class, chicken -> {
                     callback.accept(chicken);
                 });
         }
     },
-    PIG(Component.text("Baby Pig"), Noise.FAIL, Mytems.QUESTION_MARK, false, "oink") {
+    PIG(text("Baby Pig"), Noise.FAIL, Mytems.QUESTION_MARK, false, "oink") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Pig.class, pig -> {
                     callback.accept(pig);
@@ -173,7 +176,7 @@ public enum PetType {
                 });
         }
     },
-    COW(Component.text("Baby Cow"), Noise.FAIL, Mytems.QUESTION_MARK, false, "mooo") {
+    COW(text("Baby Cow"), Noise.FAIL, Mytems.QUESTION_MARK, false, "mooo") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Cow.class, cow -> {
                     callback.accept(cow);
@@ -181,7 +184,7 @@ public enum PetType {
                 });
         }
     },
-    RED_PARROT(Component.text("Red Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
+    RED_PARROT(text("Red Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Parrot.class, parrot -> {
                     callback.accept(parrot);
@@ -189,7 +192,7 @@ public enum PetType {
                 });
         }
     },
-    GREEN_PARROT(Component.text("Green Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
+    GREEN_PARROT(text("Green Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Parrot.class, parrot -> {
                     callback.accept(parrot);
@@ -197,7 +200,7 @@ public enum PetType {
                 });
         }
     },
-    GRAY_PARROT(Component.text("Gray Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
+    GRAY_PARROT(text("Gray Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Parrot.class, parrot -> {
                     callback.accept(parrot);
@@ -205,7 +208,7 @@ public enum PetType {
                 });
         }
     },
-    CYAN_PARROT(Component.text("Cyan Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
+    CYAN_PARROT(text("Cyan Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Parrot.class, parrot -> {
                     callback.accept(parrot);
@@ -213,7 +216,7 @@ public enum PetType {
                 });
         }
     },
-    BLUE_PARROT(Component.text("Blue Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
+    BLUE_PARROT(text("Blue Parrot"), Noise.FAIL, Mytems.QUESTION_MARK, false, "squawk") {
         @Override public LivingEntity spawn(Location location, Consumer<LivingEntity> callback) {
             return location.getWorld().spawn(location, Parrot.class, parrot -> {
                     callback.accept(parrot);
