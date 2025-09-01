@@ -34,7 +34,7 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
                 Mytems.CREEPER_FACE, Set.of(EntityType.CREEPER)),
         ENDERMAN("Endermen", 5, rnd -> new ItemStack(Material.ENDER_PEARL, 16),
                  Mytems.ENDERMAN_FACE, Set.of(EntityType.ENDERMAN)),
-        GHAST("Ghasts", 3, rnd -> new ItemStack(Material.GHAST_TEAR, 16),
+        GHAST("Ghasts", 3, rnd -> new ItemStack(Material.GHAST_TEAR, 4 + rnd.nextInt(4)),
               Mytems.GHAST_FACE, Set.of(EntityType.GHAST)),
         SKELETON("Skeleton", 10, rnd -> new ItemStack(Material.BONE, 64),
                  Mytems.SKELETON_FACE, Set.of(EntityType.SKELETON, EntityType.WITHER_SKELETON, EntityType.STRAY)),
@@ -114,9 +114,7 @@ public final class DailyQuestKillMonster extends DailyQuest<DailyQuestKillMonste
 
     @Override
     protected List<ItemStack> generateRewards() {
-        ItemStack result = details.target.rewardsFunction.apply(random);
-        result.setAmount(Math.min(result.getType().getMaxStackSize(), result.getAmount() * total));
-        return List.of(result);
+        return List.of(details.target.rewardsFunction.apply(random));
     }
 
     public static final class Details extends DailyQuest.Details {
