@@ -38,6 +38,7 @@ public final class DailyQuestMinigameMatch extends DailyQuest<DailyQuestMinigame
         GOLF(1, "Golf", "Endergolf", MinigameMatchType.ENDERGOLF, Mytems.IRON_GOLF_CLUB, Mytems.IRON_GOLF_CLUB::createIcon),
         BUILD_MY_THING(3, "BmT", "Build my Thing", MinigameMatchType.BUILD_MY_THING, VanillaItems.GREEN_GLAZED_TERRACOTTA, () -> new ItemStack(Material.GREEN_GLAZED_TERRACOTTA)),
         ENDERBALL(3, "Enderball", "Enderball", MinigameMatchType.ENDERBALL, Mytems.SILVER_ENDERBALL_TROPHY, () -> new ItemStack(Material.DRAGON_EGG)),
+        KING_OF_THE_LADDER(3, "KOTL", "King of the Ladder", MinigameMatchType.KING_OF_THE_LADDER, VanillaItems.LADDER, () -> new ItemStack(Material.LADDER)),
         ;
 
         public final int minPlayers;
