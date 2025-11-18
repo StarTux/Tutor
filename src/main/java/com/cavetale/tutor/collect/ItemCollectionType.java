@@ -186,7 +186,7 @@ public enum ItemCollectionType {
               () -> new ItemStack(Material.RAIL)) {
         @Override public List<CollectItem> getItems() {
             return List.of(new CollectMaterial(Material.COBWEB, 64),
-                           new CollectMaterial(Material.CHAIN, 16),
+                           new CollectMaterial(Material.IRON_CHAIN, 16),
                            new CollectMaterial(Material.RAIL, 64),
                            new CollectMaterial(Material.CHEST_MINECART, 1),
                            new CollectMaterial(Material.POWERED_RAIL, 1),
