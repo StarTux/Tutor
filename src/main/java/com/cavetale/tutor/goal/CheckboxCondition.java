@@ -1,6 +1,6 @@
 package com.cavetale.tutor.goal;
 
-import com.cavetale.core.font.Unicode;
+import com.cavetale.mytems.Mytems;
 import com.cavetale.tutor.Background;
 import com.cavetale.tutor.session.PlayerQuest;
 import java.util.function.Consumer;
@@ -10,7 +10,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import static net.kyori.adventure.text.Component.space;
+import static net.kyori.adventure.text.Component.textOfChildren;
 
 /**
  * Condition classes have an inherent look but no builtin
@@ -32,14 +33,14 @@ public final class CheckboxCondition implements Condition {
 
     @Override
     public Component toComponent(PlayerQuest playerQuest, Background background) {
-        boolean checked = checkedGetter.apply(playerQuest);
-        return Component.text()
-            .append(checked
-                    ? Component.text(Unicode.CHECKED_CHECKBOX.character, background.green)
-                    : Component.text(Unicode.CHECKBOX.character, NamedTextColor.BLUE))
-            .append(Component.space())
-            .append(description)
-            .build();
+        final boolean checked = checkedGetter.apply(playerQuest);
+        return textOfChildren(
+            (checked
+             ? Mytems.CHECKED_CHECKBOX.getCurrentAnimationFrame()
+             : Mytems.CHECKBOX.getCurrentAnimationFrame()),
+            space(),
+            description
+        );
     }
 
     @Override
