@@ -73,7 +73,6 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.JoinConfiguration.separator;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
-import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
 import static net.kyori.adventure.text.event.HoverEvent.showText;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextColor.color;
@@ -778,9 +777,7 @@ public final class Session {
                         if (!click.isLeftClick()) return;
                         Noise.CLICK.play(player);
                         player.closeInventory();
-                        player.sendMessage(text("\n  Click here to change the name of your pet\n", GREEN, BOLD)
-                                           .clickEvent(suggestCommand("/tutor rename "))
-                                           .hoverEvent(showText(text("/tutor rename", YELLOW))));
+                        new PetRenameDialog(player, this).open();
                     });
         // Gender
         gui.setItem(7, 4, tooltip(petGender.itemStack.clone(), List.of(petGender.component)),

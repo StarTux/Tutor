@@ -5,15 +5,13 @@ import com.cavetale.core.command.CommandWarn;
 import com.cavetale.tutor.pet.Pet;
 import com.cavetale.tutor.pet.SpawnRule;
 import com.cavetale.tutor.session.MenuSection;
+import com.cavetale.tutor.session.PetRenameDialog;
 import com.cavetale.tutor.session.PlayerQuest;
 import com.cavetale.tutor.session.Session;
 import org.bukkit.entity.Player;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
-import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
-import static net.kyori.adventure.text.event.HoverEvent.showText;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
-import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 public final class TutorCommand extends AbstractCommand<TutorPlugin> {
     public TutorCommand(final TutorPlugin plugin) {
@@ -121,15 +119,13 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
     }
 
     private boolean rename(Player player, String[] args) {
-        if (args.length == 0) {
-            player.sendMessage(text("\n  Click here to change the name of your pet\n", GREEN, BOLD)
-                               .clickEvent(suggestCommand("/tutor rename "))
-                               .hoverEvent(showText(text("/tutor rename", YELLOW))));
-            return true;
-        }
         Session session = plugin.sessions.find(player);
         if (session == null) {
             throw new CommandWarn("Session loading. Please try again later!");
+        }
+        if (args.length == 0) {
+            new PetRenameDialog(player, session).open();
+            return true;
         }
         if (session.getPet() == null) {
             throw new CommandWarn("You don't have a pet yet!");
@@ -151,12 +147,12 @@ public final class TutorCommand extends AbstractCommand<TutorPlugin> {
     private boolean spawn(Player player, String[] args) {
         if (args.length != 0) return false;
         Session session = plugin.sessions.find(player);
-        if (session == null) {
-            throw new CommandWarn("Session loading. Please try again later!");
-        }
         Pet pet = session.getPet();
         if (pet == null) {
             throw new CommandWarn("You don't have a pet yet!");
+        }
+        if (session == null) {
+            throw new CommandWarn("Session loading. Please try again later!");
         }
         if (!pet.tryToSpawn(player, SpawnRule.LOOKAT)) {
             if (!pet.tryToSpawn(player, SpawnRule.NEARBY)) {
