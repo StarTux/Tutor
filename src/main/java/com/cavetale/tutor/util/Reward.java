@@ -35,11 +35,7 @@ public final class Reward {
             }
         }
         gui.onClose(cle -> {
-                PlayerReceiveItemsEvent event = new PlayerReceiveItemsEvent(player, gui.getInventory());
-                if (event.isEmpty()) return;
-                event.giveItems();
-                event.callEvent();
-                event.dropItems();
+                PlayerReceiveItemsEvent.receiveInventory(player, gui.getInventory());
                 player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, SoundCategory.MASTER, 1.0f, 1.0f);
             });
         gui.open(player);
