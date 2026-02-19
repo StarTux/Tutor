@@ -24,8 +24,9 @@ public enum DailyQuestType {
 
     // 1 Adventure
     KILL_MONSTER(DailyQuestKillMonster::new, DailyQuestGroup.ADVENTURE, () -> enumToStringList(DailyQuestKillMonster.TargetMob.class)),
-    FIND_DUNGEON(DailyQuestFindDungeon::new, DailyQuestGroup.ADVENTURE, () -> List.of("any")),
+    FIND_DUNGEON(DailyQuestFindDungeon::new, DailyQuestGroup.DISABLED, () -> List.of("any")),
     FORAGING(DailyQuestForaging::new, DailyQuestGroup.ADVENTURE, () -> enumToStringList(DailyQuestForaging.Forage.class)),
+    DISCOVER(DailyQuestDiscover::new, DailyQuestGroup.ADVENTURE, () -> enumToStringList(DailyQuestDiscover.Discovery.class)),
     // Capture Monster
 
     // 2 Community

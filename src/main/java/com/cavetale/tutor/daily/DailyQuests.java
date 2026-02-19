@@ -377,6 +377,8 @@ public final class DailyQuests implements Listener {
                 DailyQuest dailyQuest = playerDailyQuest.getDailyQuest();
                 if (dailyQuest instanceof DailyQuestFindDungeon dungeonDiscover) {
                     dungeonDiscover.onPlayerDiscoverStructure(player, playerDailyQuest, event);
+                } else if (dailyQuest instanceof DailyQuestDiscover discover) {
+                    discover.onPlayerDiscoverStructure(player, playerDailyQuest, event);
                 }
             });
     }

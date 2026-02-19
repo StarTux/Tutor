@@ -104,22 +104,22 @@ public final class TutorAdminCommand extends AbstractCommand<TutorPlugin> {
         dailyNode.addChild("reset").arguments("<player>")
             .description("Reset daily game")
             .completers(CommandArgCompleter.PLAYER_CACHE)
-            .playerCaller(this::dailyReset);
+            .senderCaller(this::dailyReset);
         dailyNode.addChild("setrolls").arguments("<player> <rolls...>")
             .description("Reset daily game")
             .completers(CommandArgCompleter.PLAYER_CACHE,
                         CommandArgCompleter.integer(i -> i >= 1 && i <= 6),
                         CommandArgCompleter.REPEAT)
-            .playerCaller(this::dailySetRolls);
+            .senderCaller(this::dailySetRolls);
         dailyNode.addChild("debug").arguments("<player>")
             .description("Daily game debug")
             .completers(CommandArgCompleter.PLAYER_CACHE)
-            .playerCaller(this::dailyDebug);
+            .senderCaller(this::dailyDebug);
         dailyNode.addChild("generate").arguments("<group> <type>")
             .description("Generate a new daily quest")
             .completers(CommandArgCompleter.enumLowerList(DailyQuestGroup.class),
                         CommandArgCompleter.enumLowerList(DailyQuestType.class))
-            .playerCaller(this::dailyGenerate);
+            .senderCaller(this::dailyGenerate);
         dailyNode.addChild("testmonthchange").arguments("<year> <month>")
             .description("Test a month change")
             .completers(CommandArgCompleter.integer(i -> i >= 2012 && i <= 9999),
