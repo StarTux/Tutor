@@ -112,6 +112,7 @@ public final class Session {
         45, 46, 47, 48, 49, 50, 51, 52,
     };
     @Setter private Runnable onClickPet;
+    private QuestName questReminder;
 
     /**
      * This is the constructor for a regular session which will be
@@ -479,29 +480,13 @@ public final class Session {
     }
 
     public void triggerQuestReminder() {
+        questReminder = null;
         if (!currentQuests.isEmpty()) return;
-        if (!playerRow.isIgnoreQuests() && playerRow.isQuestReminder()) {
-            for (QuestName questName : QuestName.values()) {
-                if (!completedQuests.containsKey(questName) && canSee(questName)) {
-                    if (pet != null && (pet.isSpawned() || playerPetRow.isAutoSpawn())) {
-                        pet.addSpeechBubble("session", 60L, 150L,
-                                            text("There is another"),
-                                            text(questName.type.lower + " waiting"),
-                                            text("for you!"));
-                        pet.addSpeechBubble("session", 0L, 150L,
-                                            text("Click me or type"),
-                                            text(questName.type.command, YELLOW));
-                    } else {
-                        getPlayer().sendMessage(text()
-                                                .content("There is another " + questName.type.lower
-                                                         + " waiting for you! Type ")
-                                                .append(text(questName.type.command, YELLOW))
-                                                .color(AQUA)
-                                                .clickEvent(questName.type.clickEvent())
-                                                .hoverEvent(questName.type.hoverEvent()));
-                    }
-                    return;
-                }
+        if (playerRow.isIgnoreQuests() || !playerRow.isQuestReminder()) return;
+        for (QuestName questName : QuestName.values()) {
+            if (!completedQuests.containsKey(questName) && canSee(questName)) {
+                questReminder = questName;
+                return;
             }
         }
     }
@@ -683,6 +668,7 @@ public final class Session {
         if (playerRow.isQuestReminder()) {
             playerRow.setQuestReminder(false);
             database().updateAsync(playerRow, null, "questReminder");
+            triggerQuestReminder();
         }
     }
 
@@ -1237,6 +1223,13 @@ public final class Session {
                 }
                 lines.addAll(playerQuest.getCurrentGoal().getSidebarLines(playerQuest));
                 break;
+            }
+            if (questReminder != null) {
+                if (questReminder.type == QuestType.TUTORIAL) {
+                    lines.add(textOfChildren(text("NEW ", AQUA, BOLD), text("/tut", YELLOW), text(tiny("orial"), AQUA)));
+                } else {
+                    lines.add(textOfChildren(text("NEW ", AQUA, BOLD), text("/q", YELLOW), text(tiny("uest"), AQUA)));
+                }
             }
         }
         if (!playerRow.isIgnoreDailies()) {
