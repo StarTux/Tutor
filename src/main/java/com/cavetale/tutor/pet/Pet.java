@@ -1,5 +1,6 @@
 package com.cavetale.tutor.pet;
 
+import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.tutor.event.PetSpawnEvent;
 import com.cavetale.tutor.goal.MainServerConstraint;
 import com.destroystokyo.paper.entity.ai.Goal;
@@ -142,6 +143,7 @@ public final class Pet {
     }
 
     public void addSpeechBubble(String theTag, long warmup, long lifetime, Component... lines) {
+        if (!NetworkServer.HUB.isThisServer()) return;
         SpeechBubble speechBubble = new SpeechBubble(this);
         speechBubble.setLines(lifetime, lines);
         speechBubble.setWarmup(warmup);
@@ -290,6 +292,7 @@ public final class Pet {
     }
 
     public boolean tryToSpawn(Player owner, SpawnRule rule) {
+        if (!NetworkServer.HUB.isThisServer()) return false;
         if (!MainServerConstraint.isTrue()) return false;
         switch (rule) {
         case LOOKAT: {
