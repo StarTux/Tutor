@@ -175,14 +175,19 @@ public final class Pets implements Listener {
     void onEntityDamage(EntityDamageEvent event) {
         Pet pet = handleEventEntity(event.getEntity(), event);
         if (pet == null) return;
-        if (pet.autoRespawn || pet.spawnOnce) {
-            pet.autoRespawnCooldown = System.currentTimeMillis() + 10000L;
-            if (pet.tag == null && event instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent eedbee = (EntityDamageByEntityEvent) event;
-                if (Objects.equals(pet.ownerId, eedbee.getDamager().getUniqueId())) {
-                    pet.autoRespawnCooldown = System.currentTimeMillis() + 30000L;
+        if (event instanceof EntityDamageByEntityEvent damageByEntityEvent) {
+            final Player player = damageByEntityEvent.getDamager() instanceof Player p ? p : null;
+            final boolean isOwner = player != null && pet.isOwner(player);
+            if (pet.autoRespawn || pet.spawnOnce) {
+                pet.autoRespawnCooldown = System.currentTimeMillis() + 10000L;
+                if (isOwner) {
                     pet.resetSpeechBubbles();
                 }
+            } else {
+                pet.autoRespawnCooldown = 0L;
+            }
+            if (isOwner) {
+                plugin.getSessions().apply(player, session -> session.clickPet(player));
             }
         } else {
             pet.autoRespawnCooldown = 0L;
@@ -254,7 +259,7 @@ public final class Pets implements Listener {
         if (pet == null) return;
         Player player = event.getPlayer();
         if (!Objects.equals(player.getUniqueId(), pet.ownerId)) return;
-        if (pet.onClick != null) pet.onClick.run();
+        plugin.getSessions().apply(player, session -> session.clickPet(player));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

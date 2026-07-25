@@ -81,12 +81,12 @@ public final class ChoosePetGoal implements Goal {
                 Pet pet = playerQuest.getPlugin().getPets().createPet(player, petType);
                 pet.setTag(id);
                 pet.setCustomName(text("Click me!", BLUE));
-                pet.setOnClick(() -> onClick(playerQuest));
                 pet.setExclusive(true);
                 pet.setCollidable(true);
                 pet.setAutoRespawn(true);
                 pet.setOwnerDistance(2.0);
             }
+            playerQuest.getSession().setOnClickPet(() -> onClick(playerQuest));
         }
     }
 
@@ -141,6 +141,7 @@ public final class ChoosePetGoal implements Goal {
                         text(petType.speechGimmick + "."),
                     });
             });
+        playerQuest.getSession().setOnClickPet(null);
     }
 
     @Override

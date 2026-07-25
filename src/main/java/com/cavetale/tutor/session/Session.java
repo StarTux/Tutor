@@ -111,6 +111,7 @@ public final class Session {
         36, 37, 38, 39, 40, 41, 42, 43,
         45, 46, 47, 48, 49, 50, 51, 52,
     };
+    @Setter private Runnable onClickPet;
 
     /**
      * This is the constructor for a regular session which will be
@@ -523,9 +524,6 @@ public final class Session {
         pet.setAutoRespawn(playerPetRow.isAutoSpawn());
         pet.setOwnerDistance(4.0);
         pet.setCustomName(playerPetRow.getNameComponent());
-        pet.setOnClick(() -> {
-                clickPet(getPlayer());
-            });
         pet.setOnDespawn(this::onPetDespawn);
         return pet;
     }
@@ -558,7 +556,9 @@ public final class Session {
      * - Otherwise: Tutor menu
      */
     public void clickPet(Player player) {
-        if (!currentQuests.isEmpty()) {
+        if (onClickPet != null) {
+            onClickPet.run();
+        } else if (!currentQuests.isEmpty()) {
             openQuestBook(player);
         } else {
             openMenu(player);

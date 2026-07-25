@@ -48,7 +48,6 @@ public final class Pet {
     @Setter protected boolean autoDespawn;
     protected Component customName;
     @Setter protected boolean customNameVisible;
-    @Setter protected Runnable onClick;
     @Setter protected Runnable onDespawn;
     protected LivingEntity entity;
     private long tickCooldown;
